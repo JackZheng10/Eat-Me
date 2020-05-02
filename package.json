@@ -1,0 +1,20 @@
+{
+  "name": "eat-me",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JackZheng10/Eat-Me.git"
+  },
+  "author": "Jack Zheng and William Gutierrez",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JackZheng10/Eat-Me/issues"
+  },
+  "homepage": "https://github.com/JackZheng10/Eat-Me#readme",
+  "dependencies": {}
+}
