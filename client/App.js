@@ -1,39 +1,60 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, SafeAreaView, Button } from "react-native";
-import axios from "axios";
-import baseURL from "./baseURL";
+import { Container, Header, Content, Footer, FooterTab, Button, Icon } from 'native-base';
+import Friends from "./src/components/Friends";
+import Sessions from  "./src/components/Sessions"
+import Settings from "./src/components/Settings";
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
+const Views = {
+  Sessions: { Title: "Sessions ",
+              View: <Sessions/>
+            },
+  Friends: { Title: "Friends",
+              View: <Friends/>
+            },
+  Settings: { Title: "Settings",
+              View: <Settings/>
+            }
+}
 
 class App extends Component {
-  simpleRequest = async () => {
-    await axios
-      .post(baseURL + "/simple/helloWorld", {})
-      .then((res) => {
-        if (res.data.success) {
-          alert("Response from server: " + res.data.message);
-        } else {
-          alert("You shouldn't see this");
-        }
-      })
-      .catch((error) => {
-        alert("Error: " + error);
-      });
-  };
+  
+  state = {
+    CurrentView: Views.Sessions
+  }
 
-  render() {
-    return (
-      <SafeAreaView style={styles.container}>
-        <Text>Here is a simple button that communicates with the backend!</Text>
-        <Button title="Click me" color="#841584" onPress={this.simpleRequest} />
-      </SafeAreaView>
+  switchView = (view) =>{
+    this.setState({CurrentView: view});
+  }
+
+  setActiveState = (viewTitle) =>{
+    let activeState  = false;
+    if(viewTitle == this.state.CurrentView.Title){
+      activeState = true;
+    }
+    return activeState;
+  }
+
+  render(){
+    return(
+        <Container>
+          <Header />
+          <Content>
+            {this.state.CurrentView.View}
+          </Content>
+          <Footer>
+              <FooterTab>
+                <Button active={this.setActiveState(Views.Friends.Title)} onPress={()=>this.switchView(Views.Friends)}>
+                  <Icon name="person" />
+                </Button>
+                <Button active={this.setActiveState(Views.Sessions.Title)} onPress={()=>this.switchView(Views.Sessions)}>
+                  <Icon name="pie" />
+                </Button>
+                <Button active={this.setActiveState(Views.Settings.Title)} onPress={()=>this.switchView(Views.Settings)}>
+                  <Icon name="settings" />
+                </Button>
+              </FooterTab>
+          </Footer>
+        </Container>
     );
   }
 }
