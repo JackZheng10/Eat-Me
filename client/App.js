@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import { Container, Header, Content, Footer, FooterTab, Button, Icon } from 'native-base';
+import { Container, Header, Content, Footer, FooterTab, Button, Icon, Text } from 'native-base';
 import Friends from "./src/components/Friends";
 import Sessions from  "./src/components/Sessions"
 import Settings from "./src/components/Settings";
 
 const Views = {
-  Sessions: { Title: "Sessions ",
+  Sessions: { Title: "Sessions",
               View: <Sessions/>
             },
   Friends: { Title: "Friends",
@@ -38,9 +38,9 @@ class App extends Component {
     return(
         <Container>
           <Header />
-          <Content>
-            {this.state.CurrentView.View}
-          </Content>
+          
+          {this.state.CurrentView.View}
+          
           <Footer>
               <FooterTab>
                 <Button active={this.setActiveState(Views.Friends.Title)} onPress={()=>this.switchView(Views.Friends)}>

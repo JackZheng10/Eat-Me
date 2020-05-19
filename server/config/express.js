@@ -8,13 +8,15 @@ const path = require("path"),
 
 module.exports.init = () => {
   //connect to db
+  
   mongoose.connect(process.env.DB_URI || require("./config").db.uri, {
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
   });
-
+  
+  
   //initialize app
   const app = express();
 
