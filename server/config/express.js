@@ -4,6 +4,7 @@ const path = require("path"),
   morgan = require("morgan"),
   bodyParser = require("body-parser"),
   simpleRoutes = require("../routes/simpleRoutes"),
+  yelpRoutes = require("../routes/yelpRoutes"),
   cors = require("cors");
 
 module.exports.init = () => {
@@ -37,6 +38,7 @@ module.exports.init = () => {
 
   //add routers
   app.use("/api/simple", simpleRoutes);
+  app.use("/api/yelp", yelpRoutes);
 
   //for production build
   if (process.env.NODE_ENV === "production") {

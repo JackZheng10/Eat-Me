@@ -24,7 +24,7 @@ const SessionSchema = new mongoose.Schema({
     required: false
   },
   
-  //Need to think about all this
+  //Need to think about all this 
   Votes:{
     type: [String],
     unique: false,

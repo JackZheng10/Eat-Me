@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/JackZheng10/Eat-Me#readme",
   "dependencies": {
+    "axios": "^0.19.2",
     "body-parser": "^1.19.0",
     "concurrently": "^5.2.0",
     "cors": "^2.8.5",

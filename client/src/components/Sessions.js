@@ -1,8 +1,10 @@
 import React, { Component } from "react";
 import {StyleSheet} from "react-native";
 import { List, ListItem, Icon, Thumbnail, Left, Right, Body, Text, Container, Content, Footer, Button } from 'native-base';
+import Session from "./Session";
 import baseURL from "../../baseURL";
 import axios from "axios";
+
 
 const styles = StyleSheet.create({
   ListItem: {
@@ -56,27 +58,36 @@ class Sessions extends Component {
   	return(
   		<List>
   			{this.renderSessionListItems()}
-        </List>
+      </List>
   	);
+  }
+
+  renderSession = (sessionDetails) =>{
+    const sessionView = {
+      Title: "Sessions",
+      View: <Session sessionDetails={sessionDetails} />
+    }
+
+    this.props.switchView(sessionView);
   }
 
   renderSessionListItems = () =>{
   	return this.state.SessionList.map( (Session) =>{
   		return (
-  			<ListItem key={Session._id} style={styles.ListItem} avatar>
-                <Left>
-                  <Icon name="person" />
-                </Left>
-                <Body>
-                  <Text>{Session.Members}</Text>
-                  <Text numberOfLines={1} note>
-                   {Session.ID}
-                  </Text>
-                </Body>
-                <Right>
-                  <Text note>{Session.Status}</Text>
-                </Right>
-            </ListItem>
+  			<ListItem onPress={() => this.renderSession(Session)} key={Session._id} style={styles.ListItem} avatar>
+          <Left>
+            <Icon name="person" />
+          </Left>
+          <Body>
+            <Text>{Session.Members}</Text>
+            <Text numberOfLines={1} note>
+             {Session.ID}
+            </Text>
+          </Body>
+          <Right>
+            <Text note>{Session.Status}</Text>
+          </Right>
+        </ListItem>
   		)
   	});
   }
