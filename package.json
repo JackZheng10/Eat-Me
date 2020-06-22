@@ -3,6 +3,16 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "body-parser": "^1.19.0",
+    "concurrently": "^5.2.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongoose": "^5.9.13",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.3"
+  },
   "scripts": {
     "install-all": "concurrently \"npm install\" \"cd client && npm install\"",
     "client": "cd client && npm start",
@@ -20,15 +30,5 @@
   "bugs": {
     "url": "https://github.com/JackZheng10/Eat-Me/issues"
   },
-  "homepage": "https://github.com/JackZheng10/Eat-Me#readme",
-  "dependencies": {
-    "axios": "^0.19.2",
-    "body-parser": "^1.19.0",
-    "concurrently": "^5.2.0",
-    "cors": "^2.8.5",
-    "express": "^4.17.1",
-    "mongoose": "^5.9.13",
-    "morgan": "^1.10.0",
-    "nodemon": "^2.0.3"
-  }
+  "homepage": "https://github.com/JackZheng10/Eat-Me#readme"
 }

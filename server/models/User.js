@@ -1,59 +1,57 @@
 const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema({
-  UserID:{
+  ID: {
     type: Number,
     unique: true,
-    required: true
+    required: true,
   },
-
-  First:{
+  fName: {
     type: String,
     unique: false,
-    required: true
+    required: true,
   },
-  Last:{
+  lName: {
     type: String,
     unique: false,
-    required: true
+    required: true,
   },
-  Email: {
+  email: {
     type: String,
     unique: true,
     required: true,
   },
-  Password:{
-    type: String,
-    unique: false,
-    required: true
-  },
-
-  //Maybe int instead
-  Sessions:{
-    type:[Number],
-    unique: false,
-    required: false
-  },
-
-  //ForeignKey, Email or uniqueID
-  Friends:{
-    type: [String],
-    unique: false,
-    required: false
-  },
-
-  PhoneNumber:{
+  phone: {
     type: String,
     unique: true,
-    required: false
+    required: true,
   },
-
-  //Probably need a settings schema
-  Settings:{
+  password: {
+    type: String,
+    unique: false,
+    required: true,
+  },
+  //Maybe int instead
+  Sessions: {
+    type: [Number],
+    unique: false,
+    required: true,
+    default: [],
+  },
+  //ForeignKey, Email or uniqueID
+  Friends: {
     type: [String],
     unique: false,
-    required: false
-  }
+    required: true,
+    default: [],
+  },
+  //Probably need a settings schema
+  Settings: {
+    type: [String],
+    unique: false,
+    required: true,
+    default: [],
+  },
 });
 
 const User = mongoose.model("User", UserSchema);
