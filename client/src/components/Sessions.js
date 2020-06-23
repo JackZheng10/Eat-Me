@@ -71,12 +71,14 @@ class Sessions extends Component {
   };
 
   renderSession = (sessionDetails) => {
+    /*
     const sessionView = {
       Title: "Sessions",
       View: <Session sessionDetails={sessionDetails} />,
     };
+    */
 
-    this.props.switchView(sessionView);
+    this.props.switchView("session", sessionDetails);
   };
 
   renderSessionListItems = () => {

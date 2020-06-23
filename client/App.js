@@ -14,6 +14,7 @@ import * as Font from "expo-font";
 //import { NavigationContainer } from '@react-navigation/native';
 import Friends from "./src/components/Friends";
 import Sessions from "./src/components/Sessions";
+import Session from "./src/components/Session";
 import Settings from "./src/components/Settings";
 import Login from "./src/components/Login";
 import Register from "./src/components/Register";
@@ -22,6 +23,7 @@ class App extends Component {
   state = {
     currentView: "register",
     loading: true,
+    config: null
   };
 
   //needed on android sorry
@@ -41,16 +43,18 @@ class App extends Component {
       case "login":
         return <Login />;
       case "sessions":
-        return <Sessions />;
+        return <Sessions switchView={this.handleSetView} />;
       case "friends":
         return <Friends />;
       case "settings":
         return <Settings />;
+      case "session":
+        return <Session sessionDetails={this.state.config} />
     }
   };
 
-  handleSetView = (view) => {
-    this.setState({ currentView: view });
+  handleSetView = (view, config) => {
+    this.setState({ currentView: view, config });
   };
 
   handleActive = (view) => {

@@ -1,12 +1,12 @@
-const { getRestarauntCategories, searchRestaraunts, getRestarauntInfo } = require("../controllers/yelpController"),
+const { getRestaurantCategories, searchRestaurants, getRestaurantInfo } = require("../controllers/yelpController"),
   express = require("express"),
   router = express.Router();
 
-router.get("/categories", getRestarauntCategories);
+router.get("/categories", getRestaurantCategories);
 
-router.post("/session-restaraunts", searchRestaraunts);
-//Futute Post methods I believe
-router.get("/session-restaraunts", searchRestaraunts);
-router.get("/restaraunt", getRestarauntInfo);
+router.post("/session-restaurants", searchRestaurants);
+
+router.post("/restaurant", getRestaurantInfo);
+
 
 module.exports = router;

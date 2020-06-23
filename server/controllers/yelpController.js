@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { yelp } = require("./apis/yelp");
 
-const getRestarauntCategories = async (req, res) => {
+const getRestaurantCategories = async (req, res) => {
 	
 	try{
 		const categories = await yelp.get('/categories');
@@ -14,16 +14,14 @@ const getRestarauntCategories = async (req, res) => {
 
 };
 
-const getRestarauntInfo = async (req, res) =>{
-	//ID may come from request
-	const businessID = 'L6E2itP6FAooZR6K4NQXgg'
-	const businessURL = `/businesses/${businessID}`;
+const getRestaurantInfo = async (req, res) =>{
+	const businessURL = `/businesses/${req.body.restaurantID}`;
 	const restaurauntInfo = await yelp.get(businessURL);
 	res.json(restaurauntInfo.data);
 };
 
-const searchRestaraunts = async (req, res) =>{
-	
+const searchRestaurants = async (req, res) =>{
+	console.log("Searching Rest on the backend");
 	//think we should use latitude and longitude like coordinates from a map to get location
 	//stored in session DB object
 	//categories filter in params object
@@ -38,4 +36,4 @@ const searchRestaraunts = async (req, res) =>{
 	res.json(restauraunts.data);
 };
 
-module.exports = { getRestarauntCategories, getRestarauntInfo, searchRestaraunts };
+module.exports = { getRestaurantCategories, getRestaurantInfo, searchRestaurants };
