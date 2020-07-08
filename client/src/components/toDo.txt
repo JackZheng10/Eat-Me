@@ -3,3 +3,4 @@
 -I hate native base so I'm gonna use react-native-elements. Can switch back if needed
 -Different grid system?
 -Clean up the server stuff. Split into proper routes/controllers
+-Styling. It hurts so much on mobile. MUI spoils people

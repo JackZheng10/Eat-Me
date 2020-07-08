@@ -14,14 +14,18 @@ const checkDuplicatePhone = async (req, res, next) => {
       return res.json({
         success: false,
         message:
-          "Duplicate phone number. Please enter a new one and try again.",
+          "Phone number already in use. Please enter a new one and try again.",
       });
     } else {
       next();
     }
   } catch (error) {
-    console.log(error);
-    return res.json({ success: false, message: error._message });
+    console.log("Error with checking duplicate phone number: " + error);
+
+    return res.json({
+      success: false,
+      message: "Error with registration. Please try again.",
+    });
   }
 };
 
@@ -37,8 +41,12 @@ const countUsers = async (req, res, next) => {
 
     next();
   } catch (error) {
-    console.log(error);
-    return res.json({ success: false, message: error._message });
+    console.log("Error with counting users: " + error);
+
+    return res.json({
+      success: false,
+      message: "Error with registration. Please try again.",
+    });
   }
 };
 
@@ -54,8 +62,12 @@ const register = async (req, res) => {
 
     return res.json({ success: true, message: "Successfully registered!" });
   } catch (error) {
-    console.log(error);
-    return res.json({ success: false, message: error._message });
+    console.log("Error with registering: " + error);
+
+    return res.json({
+      success: false,
+      message: "Error with registration. Please try again.",
+    });
   }
 };
 
