@@ -1,9 +1,34 @@
 const mongoose = require("mongoose");
 const User = require("../models/User");
+const signToken = require("../helpers/auth").signToken;
 
-const login = (req, res) => {
-  console.log(2);
-  return res.json({ success: true, message: "Hello world!" });
+const login = async (req, res) => {
+  try {
+    const user = await User.findOne({ phone: req.body.phone });
+
+    if (!user || !user.validPassword(req.body.password)) {
+      return res.json({
+        success: false,
+        message: "Invalid login. Please try again.",
+      });
+    } else {
+      //granting access to the token, the information for current user
+      const token = await signToken(user);
+
+      return res.json({
+        success: true,
+        message: "Successfully logged in, token is attached",
+        token: token,
+      });
+    }
+  } catch (error) {
+    console.log("Error with logging in: " + error);
+
+    return res.json({
+      success: false,
+      message: "Error with login. Please try again.",
+    });
+  }
 };
 
 const checkDuplicatePhone = async (req, res, next) => {

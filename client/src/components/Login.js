@@ -51,7 +51,7 @@ class Login extends Component {
         password: this.state.password,
       });
 
-      console.log(response.data.message);
+      alert(response.data.message);
     } catch (error) {
       console.log(error);
     }
