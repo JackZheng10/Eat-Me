@@ -3,6 +3,11 @@
 
 module.exports = {
   db: {
-    uri: "", //place the URI of your mongo database here.
+    uri: "", //place the URI of your mongo database here
   },
+  yelp: {
+    apiKey: "", //place your yelp api key here
+    clientId: "", //place your yelp client ID here
+  },
+  secret: "", //secret used to sign JWT tokens
 };
