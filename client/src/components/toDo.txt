@@ -1,0 +1,5 @@
+-Organize files for views into these folders, and use component sub-folders for them as well
+-Standardize the layout (nesting of container/view/whatever we want to use)
+-I hate native base so I'm gonna use react-native-elements. Can switch back if needed
+-Different grid system?
+-Clean up the server stuff. Split into proper routes/controllers

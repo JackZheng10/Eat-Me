@@ -6,10 +6,11 @@ import {
   Footer,
   FooterTab,
   Button,
-  Icon, //
+  Icon,
   Text,
 } from "native-base";
-import { ActivityIndicator } from "react-native";
+import { ActivityIndicator, StyleSheet } from "react-native";
+import { Col, Row, Grid } from "react-native-easy-grid";
 import * as Font from "expo-font";
 //import { NavigationContainer } from '@react-navigation/native';
 import Friends from "./src/components/Friends";
@@ -19,11 +20,25 @@ import Settings from "./src/components/Settings";
 import Login from "./src/components/Login";
 import Register from "./src/components/Register";
 
+const styles = StyleSheet.create({
+  mainColumn: {
+    alignItems: "center",
+  },
+  appName: {
+    fontWeight: "bold",
+    fontSize: 40,
+    color: "white",
+  },
+  header: {
+    backgroundColor: "#BB4430",
+  },
+});
+
 class App extends Component {
   state = {
     currentView: "register",
     loading: true,
-    config: null
+    config: null,
   };
 
   //needed on android sorry
@@ -49,7 +64,7 @@ class App extends Component {
       case "settings":
         return <Settings />;
       case "session":
-        return <Session sessionDetails={this.state.config} />
+        return <Session sessionDetails={this.state.config} />;
     }
   };
 
@@ -71,10 +86,16 @@ class App extends Component {
     } else {
       return (
         <Container>
-          <Header />
+          <Header style={styles.header}>
+            <Col style={styles.mainColumn}>
+              <Row>
+                <Text style={styles.appName}>Eat Me</Text>
+              </Row>
+            </Col>
+          </Header>
           {this.renderView()}
           <Footer>
-            <FooterTab>
+            <FooterTab style={styles.header}>
               <Button
                 active={this.handleActive("friends")}
                 onPress={() => this.handleSetView("friends")}

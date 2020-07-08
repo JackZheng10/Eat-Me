@@ -3,21 +3,21 @@ const path = require("path"),
   mongoose = require("mongoose"),
   morgan = require("morgan"),
   bodyParser = require("body-parser"),
+  userRoutes = require("../routes/userRoutes"),
   simpleRoutes = require("../routes/simpleRoutes"),
   yelpRoutes = require("../routes/yelpRoutes"),
   cors = require("cors");
 
 module.exports.init = () => {
   //connect to db
-  
+
   mongoose.connect(process.env.DB_URI || require("./config").db.uri, {
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
   });
-  
-  
+
   //initialize app
   const app = express();
 
@@ -37,6 +37,7 @@ module.exports.init = () => {
   connection.on("error", (error) => console.log("Error: " + error));
 
   //add routers
+  app.use("/api/user", userRoutes);
   app.use("/api/simple", simpleRoutes);
   app.use("/api/yelp", yelpRoutes);
 
