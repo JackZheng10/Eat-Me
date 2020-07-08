@@ -26,7 +26,7 @@ const login = async (req, res) => {
 
     return res.json({
       success: false,
-      message: "Error with login. Please try again.",
+      message: "Error with logging in. Please try again.",
     });
   }
 };

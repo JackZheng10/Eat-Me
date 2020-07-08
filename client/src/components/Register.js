@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
 class Register extends Component {
   state = { fName: "", lName: "", phone: "", password: "" };
 
-  handleChange = (event, property) => {
+  handleInputChange = (event, property) => {
     let input = event.nativeEvent.text;
     const nameRegex = /^[a-zA-Z][a-zA-Z\s]*$/;
     const phoneRegex = /^[0-9\b]+$/;
@@ -71,6 +71,7 @@ class Register extends Component {
       alert(response.data.message);
     } catch (error) {
       console.log(error);
+      alert("Error with registering. Please try again.");
     }
   };
 
@@ -90,7 +91,7 @@ class Register extends Component {
                       placeholder="First Name"
                       leftIcon={{ type: "material-community", name: "account" }}
                       onChange={(event) => {
-                        this.handleChange(event, "fName");
+                        this.handleInputChange(event, "fName");
                       }}
                       value={this.state.fName}
                     />
@@ -100,7 +101,7 @@ class Register extends Component {
                       placeholder="Last Name"
                       leftIcon={{ type: "material-community", name: "account" }}
                       onChange={(event) => {
-                        this.handleChange(event, "lName");
+                        this.handleInputChange(event, "lName");
                       }}
                       value={this.state.lName}
                     />
@@ -110,7 +111,7 @@ class Register extends Component {
                       placeholder="Phone Number"
                       leftIcon={{ type: "material-community", name: "phone" }}
                       onChange={(event) => {
-                        this.handleChange(event, "phone");
+                        this.handleInputChange(event, "phone");
                       }}
                       value={this.state.phone}
                     />
@@ -123,7 +124,7 @@ class Register extends Component {
                         name: "onepassword",
                       }}
                       onChange={(event) => {
-                        this.handleChange(event, "password");
+                        this.handleInputChange(event, "password");
                       }}
                       value={this.state.password}
                     />

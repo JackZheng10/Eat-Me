@@ -3,7 +3,9 @@ import { View, Image, StyleSheet } from "react-native";
 import { Content, Text, Container } from "native-base";
 import { Col, Row, Grid } from "react-native-easy-grid";
 import { Input, Button } from "react-native-elements";
+import AsyncStorage from "@react-native-community/async-storage";
 import axios from "axios";
+import jwtDecode from "jwt-decode";
 import baseURL from "../../baseURL";
 
 const styles = StyleSheet.create({
@@ -20,7 +22,7 @@ const styles = StyleSheet.create({
 class Login extends Component {
   state = { phone: "", password: "" };
 
-  handleChange = (event, property) => {
+  handleInputChange = (event, property) => {
     let input = event.nativeEvent.text;
 
     switch (property) {
@@ -45,15 +47,43 @@ class Login extends Component {
   handleLogin = async () => {
     //validation here, then:
 
+    //attempt to login
     try {
       const response = await axios.post(`${baseURL}/user/login`, {
         phone: this.state.phone,
         password: this.state.password,
       });
 
-      alert(response.data.message);
+      //if login successful
+      if (response.data.success) {
+        try {
+          //store JWT token
+          const token = response.data.token;
+          await AsyncStorage.setItem("@token", token);
+
+          alert("Logged in successfully, see console for token info");
+
+          //demonstration of how to fetch and decode the token
+          try {
+            const value = await AsyncStorage.getItem("@token");
+
+            if (value !== null) {
+              const data = jwtDecode(value);
+              console.log(data);
+            }
+          } catch (error) {
+            console.log("Error with retrieving token: " + error);
+          }
+        } catch (error) {
+          console.log(error);
+          alert("Error with logging in. Please try again.");
+        }
+      } else {
+        alert(response.data.message);
+      }
     } catch (error) {
       console.log(error);
+      alert("Error with logging in. Please try again.");
     }
   };
 
@@ -73,7 +103,7 @@ class Login extends Component {
                       placeholder="Phone Number"
                       leftIcon={{ type: "material-community", name: "phone" }}
                       onChange={(event) => {
-                        this.handleChange(event, "phone");
+                        this.handleInputChange(event, "phone");
                       }}
                       value={this.state.phone}
                     />
@@ -86,7 +116,7 @@ class Login extends Component {
                         name: "onepassword",
                       }}
                       onChange={(event) => {
-                        this.handleChange(event, "password");
+                        this.handleInputChange(event, "password");
                       }}
                       value={this.state.password}
                     />
