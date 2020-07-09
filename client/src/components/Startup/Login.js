@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { Text, View, ScrollView, StyleSheet, Dimensions } from "react-native";
-import { Input, Button } from "react-native-elements";
+import { View, ScrollView, StyleSheet, Dimensions, Image } from "react-native";
+import { Input, Button, Text } from "react-native-elements";
 import { Col, Row, Grid } from "react-native-easy-grid";
 import { withNavigation } from "react-navigation";
 import Constants from "expo-constants";
@@ -8,16 +8,17 @@ import AsyncStorage from "@react-native-community/async-storage";
 import axios from "axios";
 import jwtDecode from "jwt-decode";
 import baseURL from "../../../baseURL";
+import Logo from "../../images/Logo.png";
 
 const windowHeight = Dimensions.get("window").height;
 
 const styles = StyleSheet.create({
-  container: {
+  mainContainer: {
     flex: 1,
     alignItems: "center",
     // justifyContent: "center",
     paddingTop: Constants.statusBarHeight,
-    backgroundColor: "#FBD1A2",
+    backgroundColor: "#F5F1ED",
     height: windowHeight,
   },
   loginFieldContainer: {
@@ -53,6 +54,14 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: "#00B2CA",
+  },
+  logoContainer: {
+    width: "100%",
+    margin: -80,
+  },
+  logo: {
+    resizeMode: "contain",
+    width: "100%",
   },
   // mainColumn: {
   //   flex: 1,
@@ -132,10 +141,13 @@ class Login extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <View style={styles.mainContainer}>
         {/* <Grid>
           <Col style={styles.mainColumn}>
             <Row size={10}> */}
+        <View style={styles.logoContainer}>
+          <Image source={Logo} style={styles.logo} />
+        </View>
         <Text style={styles.header}>Login</Text>
         {/* </Row>
             <Row size={10}>
