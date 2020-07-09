@@ -1,4 +1,4 @@
 -Organize files for views into these folders, and use component sub-folders for them as well
 -Standardize the layout (nesting of container/view/whatever we want to use)
--Different grid system? Or figure out current one.
+-Different grid system? Or figure out current one. May not even need one. See: https://github.com/react-native-elements/react-native-elements-app
 -Clean up the server stuff. Split into proper routes/controllers

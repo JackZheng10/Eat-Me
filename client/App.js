@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Text, View, Button } from "react-native";
+import { Text, View, Platform, Keyboard, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -67,7 +67,33 @@ function SettingsStackScreen() {
 }
 
 class App extends Component {
-  state = { loading: true };
+  state = { loading: true, keyboardVisible: false };
+
+  //for android, because android.
+  componentDidMount = () => {
+    if (Platform.OS !== "android") {
+      return;
+    }
+
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        this.setState({ keyboardVisible: true });
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        this.setState({ keyboardVisible: false });
+      }
+    );
+
+    //understand better please
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  };
 
   render() {
     if (!this.state.loading) {
@@ -114,7 +140,8 @@ class App extends Component {
             tabBarOptions={{
               activeTintColor: "tomato",
               inactiveTintColor: "gray",
-              keyboardHidesTabBar: true, //janky
+              // keyboardHidesTabBar: true,
+              style: this.state.keyboardVisible ? { display: "none" } : {},
             }}
             initialRouteName="Friends"
           >
