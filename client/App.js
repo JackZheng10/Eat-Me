@@ -9,6 +9,7 @@ import { Friends, Sessions, Settings, Login, Register } from "./src/components";
 
 //bottom navigator docs: https://reactnavigation.org/docs/bottom-tab-navigator/
 //stack navigation docs: https://reactnavigation.org/docs/stack-navigator/#props
+//go to (for example) the settings component to see how to add a "stack" which also uses the navigation prop to navigate to another element
 //i didnt uninstall any packages, so after refactoring remove any extraneous ones
 
 const FriendsStack = createStackNavigator();
@@ -113,6 +114,7 @@ class App extends Component {
             tabBarOptions={{
               activeTintColor: "tomato",
               inactiveTintColor: "gray",
+              // keyboardHidesTabBar: true, //janky
             }}
             initialRouteName="Friends"
           >

@@ -1,0 +1,4 @@
+-Organize files for views into these folders, and use component sub-folders for them as well
+-Standardize the layout (nesting of container/view/whatever we want to use)
+-Different grid system? Or figure out current one.
+-Clean up the server stuff. Split into proper routes/controllers
