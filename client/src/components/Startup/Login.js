@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Text, View, ScrollView, StyleSheet } from "react-native";
+import { Text, View, ScrollView, StyleSheet, Dimensions } from "react-native";
 import { Input, Button } from "react-native-elements";
 import { Col, Row, Grid } from "react-native-easy-grid";
 import { withNavigation } from "react-navigation";
@@ -8,6 +8,8 @@ import AsyncStorage from "@react-native-community/async-storage";
 import axios from "axios";
 import jwtDecode from "jwt-decode";
 import baseURL from "../../../baseURL";
+
+const windowHeight = Dimensions.get("window").height;
 
 const styles = StyleSheet.create({
   container: {
@@ -21,6 +23,8 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    width: "100%",
+    height: windowHeight,
   },
   header: {
     fontWeight: "bold",

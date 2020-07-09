@@ -114,7 +114,7 @@ class App extends Component {
             tabBarOptions={{
               activeTintColor: "tomato",
               inactiveTintColor: "gray",
-              // keyboardHidesTabBar: true, //janky
+              keyboardHidesTabBar: true, //janky
             }}
             initialRouteName="Friends"
           >
