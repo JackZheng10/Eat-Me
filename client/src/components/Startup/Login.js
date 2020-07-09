@@ -15,21 +15,51 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
+    // justifyContent: "center",
     paddingTop: Constants.statusBarHeight,
-    backgroundColor: "#ecf0f1",
-  },
-  mainColumn: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
+    backgroundColor: "#FBD1A2",
     height: windowHeight,
+  },
+  loginFieldContainer: {
+    width: "90%",
+    alignItems: "center",
+    backgroundColor: "#7DCFB6",
+    paddingTop: 20,
+    marginBottom: 20,
+    marginTop: 20,
+    borderRadius: 50,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 12,
+    },
+    shadowOpacity: 0.58,
+    shadowRadius: 16.0,
+    elevation: 24,
   },
   header: {
     fontWeight: "bold",
     fontSize: 50,
+    color: "#00B2CA",
   },
+  inputContainer: {
+    width: "70%",
+  },
+  inputLabel: {
+    color: "black",
+  },
+  buttonContainer: {
+    width: "60%",
+  },
+  button: {
+    backgroundColor: "#00B2CA",
+  },
+  // mainColumn: {
+  //   flex: 1,
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  //   height: windowHeight,
+  // },
 });
 
 class Login extends Component {
@@ -103,41 +133,54 @@ class Login extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Grid>
+        {/* <Grid>
           <Col style={styles.mainColumn}>
+            <Row size={10}> */}
+        <Text style={styles.header}>Login</Text>
+        {/* </Row>
             <Row size={10}>
-              <Text style={styles.header}>Login</Text>
-            </Row>
-            <Row size={10}>
-              <Col>
-                <Input
-                  placeholder="Phone Number"
-                  leftIcon={{ type: "material-community", name: "phone" }}
-                  onChange={(event) => {
-                    this.handleInputChange(event, "phone");
-                  }}
-                  value={this.state.phone}
-                />
-                <Input
-                  placeholder="Password"
-                  leftIcon={{
-                    type: "material-community",
-                    name: "onepassword",
-                  }}
-                  onChange={(event) => {
-                    this.handleInputChange(event, "password");
-                  }}
-                  value={this.state.password}
-                />
-              </Col>
+              <Col> */}
+        <View style={styles.loginFieldContainer}>
+          <Input
+            label="Phone Number"
+            leftIcon={{ type: "material-community", name: "phone" }}
+            onChange={(event) => {
+              this.handleInputChange(event, "phone");
+            }}
+            value={this.state.phone}
+            containerStyle={styles.inputContainer}
+            labelStyle={styles.inputLabel}
+          />
+          <Input
+            label="Password"
+            leftIcon={{
+              type: "material-community",
+              name: "onepassword",
+            }}
+            onChange={(event) => {
+              this.handleInputChange(event, "password");
+            }}
+            value={this.state.password}
+            containerStyle={styles.inputContainer}
+            labelStyle={styles.inputLabel}
+          />
+        </View>
+        {/* </Col>
             </Row>
             <Row size={20}>
-              <Col>
-                <Button title="Login" raised onPress={this.handleLogin} />
-              </Col>
+              <Col> */}
+        <Button
+          title="Login"
+          raised
+          onPress={this.handleLogin}
+          containerStyle={styles.buttonContainer}
+          buttonStyle={styles.button}
+        />
+
+        {/* </Col>
             </Row>
           </Col>
-        </Grid>
+        </Grid> */}
       </View>
     );
   }

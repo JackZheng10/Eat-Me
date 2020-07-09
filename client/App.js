@@ -69,7 +69,7 @@ function SettingsStackScreen() {
 class App extends Component {
   state = { loading: true, keyboardVisible: false };
 
-  //for android, because android.
+  //for android, because android. prob still janky. with access to manifest file would be easy
   componentDidMount = () => {
     if (Platform.OS !== "android") {
       return;
