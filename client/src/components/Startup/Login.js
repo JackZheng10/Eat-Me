@@ -14,18 +14,20 @@ const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
 
 const styles = StyleSheet.create({
+  wrapperContainer: {
+    height: windowHeight - 45,
+  },
   mainContainer: {
     flex: 1,
     alignItems: "center",
     // justifyContent: "center",
     paddingTop: Constants.statusBarHeight,
     backgroundColor: "#F5F1ED",
-    height: windowHeight,
   },
   loginFieldContainer: {
     width: windowWidth - 50,
     alignItems: "center",
-    backgroundColor: "#7DCFB6",
+    backgroundColor: "white",
     paddingTop: 25,
     marginBottom: 20,
     marginTop: 20,
@@ -40,7 +42,7 @@ const styles = StyleSheet.create({
     elevation: 24,
   },
   containerStyle: {
-    width: windowWidth - 160,
+    width: windowWidth - 150,
   },
   inputContainerStyle: {
     borderRadius: 40,
@@ -50,16 +52,17 @@ const styles = StyleSheet.create({
   },
   inputStyle: {
     marginLeft: 10,
-    color: "white",
+    color: "black",
   },
   labelStyle: {
     color: "black",
   },
-  buttonContainer: {
+  buttonContainerStyle: {
     width: windowWidth - 280,
   },
-  button: {
-    backgroundColor: "#00B2CA",
+  buttonStyle: {
+    backgroundColor: "#F79256",
+    borderRadius: 40,
   },
   logoContainer: {
     width: windowWidth,
@@ -152,70 +155,78 @@ class Login extends Component {
 
   render() {
     return (
-      <View style={styles.mainContainer}>
-        {/* <Grid>
+      <View style={styles.wrapperContainer}>
+        {/*^^^used for making elements not shift up due to keyboard (android...)*/}
+        <View style={styles.mainContainer}>
+          {/* <Grid>
           <Col style={styles.mainColumn}>
             <Row size={10}> */}
-        <View style={styles.logoContainer}>
-          <Image source={Logo} style={styles.logo} />
-        </View>
-        {/* <Text style={styles.header}>Login</Text> */}
-        {/* </Row>
+          <View style={styles.logoContainer}>
+            <Image source={Logo} style={styles.logo} />
+          </View>
+          {/* <Text style={styles.header}>Login</Text> */}
+          {/* </Row>
             <Row size={10}>
               <Col> */}
-        <View style={styles.loginFieldContainer}>
-          <Input
-            placeholder="Phone Number"
-            leftIcon={{
-              type: "material-community",
-              name: "phone",
-              color: "#00B2CA",
-            }}
-            onChange={(event) => {
-              this.handleInputChange(event, "phone");
-            }}
-            value={this.state.phone}
-            containerStyle={styles.containerStyle}
-            inputContainerStyle={styles.inputContainerStyle}
-            inputStyle={styles.inputStyle}
-            labelStyle={styles.labelStyle}
-            placeholderTextColor="#00B2CA"
-          />
-          <Input
-            placeholder="Password"
-            leftIcon={{
-              type: "material-community",
-              name: "onepassword",
-              color: "#00B2CA",
-            }}
-            onChange={(event) => {
-              this.handleInputChange(event, "password");
-            }}
-            value={this.state.password}
-            containerStyle={styles.containerStyle}
-            inputContainerStyle={styles.inputContainerStyle}
-            inputStyle={styles.inputStyle}
-            labelStyle={styles.labelStyle}
-            placeholderTextColor="#00B2CA"
-            secureTextEntry={true}
-          />
-        </View>
-        {/* </Col>
+          <View style={styles.loginFieldContainer}>
+            <Input
+              placeholder="Phone Number"
+              leftIcon={{
+                type: "material-community",
+                name: "phone",
+                color: "#00B2CA",
+              }}
+              onChange={(event) => {
+                this.handleInputChange(event, "phone");
+              }}
+              value={this.state.phone}
+              containerStyle={styles.containerStyle}
+              inputContainerStyle={styles.inputContainerStyle}
+              inputStyle={styles.inputStyle}
+              labelStyle={styles.labelStyle}
+              placeholderTextColor="#00B2CA"
+            />
+            <Input
+              placeholder="Password"
+              leftIcon={{
+                type: "material",
+                name: "lock",
+                color: "#00B2CA",
+              }}
+              onChange={(event) => {
+                this.handleInputChange(event, "password");
+              }}
+              value={this.state.password}
+              containerStyle={styles.containerStyle}
+              inputContainerStyle={styles.inputContainerStyle}
+              inputStyle={styles.inputStyle}
+              labelStyle={styles.labelStyle}
+              placeholderTextColor="#00B2CA"
+              secureTextEntry={true}
+            />
+          </View>
+          {/* </Col>
             </Row>
             <Row size={20}>
               <Col> */}
-        <Button
-          title="Login"
-          raised
-          onPress={this.handleLogin}
-          containerStyle={styles.buttonContainer}
-          buttonStyle={styles.button}
-        />
+          <Button
+            title="Log In"
+            raised
+            onPress={this.handleLogin}
+            containerStyle={styles.buttonContainerStyle}
+            buttonStyle={styles.buttonStyle}
+            // linearGradientProps={{
+            //   colors: ["#F79256", "#F44336"],
+            //   start: [1, 0],
+            //   end: [0.2, 0],
+            // }}
+          />
 
-        {/* </Col>
+          {/* </Col>
             </Row>
           </Col>
         </Grid> */}
+        </View>
       </View>
     );
   }

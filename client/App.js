@@ -11,6 +11,8 @@ import { Friends, Sessions, Settings, Login, Register } from "./src/components";
 //stack navigation docs: https://reactnavigation.org/docs/stack-navigator/#props
 //go to (for example) the settings component to see how to add a "stack" which also uses the navigation prop to navigate to another element
 //i didnt uninstall any packages, so after refactoring remove any extraneous ones
+//available icons for RNE and as a raw icon (seen in this file): https://icons.expo.fyi/
+//color palette: https://coolors.co/f79256-8ed5f5-f5f1ed-00b2ca
 
 const FriendsStack = createStackNavigator();
 const SessionsStack = createStackNavigator();
@@ -138,8 +140,8 @@ class App extends Component {
             tabBarOptions={{
               activeTintColor: "tomato",
               inactiveTintColor: "gray",
-              // keyboardHidesTabBar: true,
-              style: this.state.keyboardVisible ? { display: "none" } : {},
+              keyboardHidesTabBar: true,
+              // style: this.state.keyboardVisible ? { display: "none" } : {},
             }}
             initialRouteName="Friends"
           >
