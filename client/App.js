@@ -9,10 +9,16 @@ import { Friends, Sessions, Settings, Login, Register } from "./src/components";
 
 //bottom navigator docs: https://reactnavigation.org/docs/bottom-tab-navigator/
 //stack navigation docs: https://reactnavigation.org/docs/stack-navigator/#props
+//navigation prop docs: https://reactnavigation.org/docs/navigation-prop/
 //go to (for example) the settings component to see how to add a "stack" which also uses the navigation prop to navigate to another element
 //i didnt uninstall any packages, so after refactoring remove any extraneous ones
 //available icons for RNE and as a raw icon (seen in this file): https://icons.expo.fyi/
 //color palette: https://coolors.co/f79256-8ed5f5-f5f1ed-00b2ca
+
+//IMPORTANT NOTE: the stack navigator will save the route that you're on. for example:
+//-go to settings, then the example stack view, then away, then back, and you'll see youre still in the stacked view
+//-this is probably good behavior for our usage, but im sure theres a workaround in the nav. prop or stack nav. docs if needed
+//-for default behavior: maybe think of each "stack screen" as its own separate navigation, and the tab navigator as a means to get to that navigation.
 
 const FriendsStack = createStackNavigator();
 const SessionsStack = createStackNavigator();

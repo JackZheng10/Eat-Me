@@ -14,9 +14,6 @@ const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
 
 const styles = StyleSheet.create({
-  wrapperContainer: {
-    height: windowHeight - 45,
-  },
   mainContainer: {
     flex: 1,
     alignItems: "center",
@@ -58,7 +55,11 @@ const styles = StyleSheet.create({
     color: "black",
   },
   buttonContainerStyle: {
-    width: windowWidth - 280,
+    width: windowWidth - 250,
+    marginBottom: 20,
+  },
+  buttonContainerStyleReg: {
+    width: windowWidth - 250,
   },
   buttonStyle: {
     backgroundColor: "#F79256",
@@ -72,6 +73,9 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
     width: windowWidth,
   },
+  regText: {
+    marginTop: 20,
+  },
   // mainColumn: {
   //   flex: 1,
   //   alignItems: "center",
@@ -82,6 +86,10 @@ const styles = StyleSheet.create({
   //   fontWeight: "bold",
   //   fontSize: 50,
   //   color: "#00B2CA",
+  // },
+  // wrapperContainer: {
+  //   height: windowHeight - 45,
+  //   // flex: 1,
   // },
 });
 
@@ -153,81 +161,103 @@ class Login extends Component {
     }
   };
 
+  handleRegisterRedirect = () => {
+    this.props.navigation.navigate("Register");
+  };
+
+  handleRecoveryRedirect = () => {
+    alert("This will take you to a password recovery screen.");
+  };
+
   render() {
     return (
-      <View style={styles.wrapperContainer}>
-        {/*^^^used for making elements not shift up due to keyboard (android...)*/}
-        <View style={styles.mainContainer}>
-          {/* <Grid>
+      // <View style={styles.wrapperContainer}>
+      /*^^^used for making elements not shift up due to keyboard? works without it i think. (android...)*/
+      <View style={styles.mainContainer}>
+        {/* <Grid>
           <Col style={styles.mainColumn}>
             <Row size={10}> */}
-          <View style={styles.logoContainer}>
-            <Image source={Logo} style={styles.logo} />
-          </View>
-          {/* <Text style={styles.header}>Login</Text> */}
-          {/* </Row>
+        <View style={styles.logoContainer}>
+          <Image source={Logo} style={styles.logo} />
+        </View>
+        {/* <Text style={styles.header}>Login</Text> */}
+        {/* </Row>
             <Row size={10}>
               <Col> */}
-          <View style={styles.loginFieldContainer}>
-            <Input
-              placeholder="Phone Number"
-              leftIcon={{
-                type: "material-community",
-                name: "phone",
-                color: "#00B2CA",
-              }}
-              onChange={(event) => {
-                this.handleInputChange(event, "phone");
-              }}
-              value={this.state.phone}
-              containerStyle={styles.containerStyle}
-              inputContainerStyle={styles.inputContainerStyle}
-              inputStyle={styles.inputStyle}
-              labelStyle={styles.labelStyle}
-              placeholderTextColor="#00B2CA"
-            />
-            <Input
-              placeholder="Password"
-              leftIcon={{
-                type: "material",
-                name: "lock",
-                color: "#00B2CA",
-              }}
-              onChange={(event) => {
-                this.handleInputChange(event, "password");
-              }}
-              value={this.state.password}
-              containerStyle={styles.containerStyle}
-              inputContainerStyle={styles.inputContainerStyle}
-              inputStyle={styles.inputStyle}
-              labelStyle={styles.labelStyle}
-              placeholderTextColor="#00B2CA"
-              secureTextEntry={true}
-            />
-          </View>
-          {/* </Col>
+        <View style={styles.loginFieldContainer}>
+          <Input
+            placeholder="Phone Number"
+            leftIcon={{
+              type: "material-community",
+              name: "phone",
+              color: "#00B2CA",
+            }}
+            onChange={(event) => {
+              this.handleInputChange(event, "phone");
+            }}
+            value={this.state.phone}
+            containerStyle={styles.containerStyle}
+            inputContainerStyle={styles.inputContainerStyle}
+            inputStyle={styles.inputStyle}
+            labelStyle={styles.labelStyle}
+            placeholderTextColor="#00B2CA"
+          />
+          <Input
+            placeholder="Password"
+            leftIcon={{
+              type: "material",
+              name: "lock",
+              color: "#00B2CA",
+            }}
+            onChange={(event) => {
+              this.handleInputChange(event, "password");
+            }}
+            value={this.state.password}
+            containerStyle={styles.containerStyle}
+            inputContainerStyle={styles.inputContainerStyle}
+            inputStyle={styles.inputStyle}
+            labelStyle={styles.labelStyle}
+            placeholderTextColor="#00B2CA"
+            secureTextEntry={true}
+          />
+        </View>
+        {/* </Col>
             </Row>
             <Row size={20}>
               <Col> */}
-          <Button
-            title="Log In"
-            raised
-            onPress={this.handleLogin}
-            containerStyle={styles.buttonContainerStyle}
-            buttonStyle={styles.buttonStyle}
-            // linearGradientProps={{
-            //   colors: ["#F79256", "#F44336"],
-            //   start: [1, 0],
-            //   end: [0.2, 0],
-            // }}
-          />
-
-          {/* </Col>
+        <Button
+          title="Log In"
+          raised
+          onPress={this.handleLogin}
+          containerStyle={styles.buttonContainerStyle}
+          buttonStyle={styles.buttonStyle}
+          // linearGradientProps={{
+          //   colors: ["#F79256", "#F44336"],
+          //   start: [1, 0],
+          //   end: [0.2, 0],
+          // }}
+        />
+        <Button
+          title="Register"
+          raised
+          onPress={this.handleRegisterRedirect}
+          containerStyle={styles.buttonContainerStyleReg}
+          buttonStyle={styles.buttonStyle}
+          // linearGradientProps={{
+          //   colors: ["#F79256", "#F44336"],
+          //   start: [1, 0],
+          //   end: [0.2, 0],
+          // }}
+        />
+        <Text style={styles.regText} onPress={this.handleRecoveryRedirect}>
+          Forgot password?
+        </Text>
+        {/* </Col>
             </Row>
           </Col>
         </Grid> */}
-        </View>
       </View>
+      // </View>
     );
   }
 }
