@@ -270,6 +270,16 @@ class Register extends Component {
     //     alert("Error with registering. Please try again.");
     //   }
     // }
+
+    try {
+      const response = await axios.post(`${baseURL}/twilio/verify`, {
+        to: "9546849819",
+      });
+      alert(response.data.message);
+    } catch (error) {
+      console.log(error);
+      alert("Error with sending verification code. Please try again.");
+    }
   };
 
   handleLoginRedirect = () => {
@@ -280,8 +290,8 @@ class Register extends Component {
     return (
       <ScrollView>
         <View style={styles.mainContainer}>
-          <View>
-            <Dialog.Container visible={true}>
+          {/* <View>
+            <Dialog.Container visible={false}>
               <Dialog.Title style={{ fontWeight: "bold" }}>
                 Verification
               </Dialog.Title>
@@ -295,9 +305,9 @@ class Register extends Component {
               </Dialog.Description>
               <Dialog.Button label="Resend" color="#F79256" />
               <Dialog.Button label="Cancel" color="#F79256" />
-              <Dialog.Button label="Delete" color="#F79256" />
+              <Dialog.Button label="Verify" color="#F79256" />
             </Dialog.Container>
-          </View>
+          </View> */}
 
           <View style={styles.logoContainer}>
             <Image source={Logo} style={styles.logo} />

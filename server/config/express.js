@@ -4,6 +4,7 @@ const path = require("path"),
   morgan = require("morgan"),
   bodyParser = require("body-parser"),
   userRoutes = require("../routes/userRoutes"),
+  twilioRoutes = require("../routes/twilioRoutes"),
   simpleRoutes = require("../routes/simpleRoutes"),
   yelpRoutes = require("../routes/yelpRoutes"),
   cors = require("cors");
@@ -38,6 +39,7 @@ module.exports.init = () => {
 
   //add routers
   app.use("/api/user", userRoutes);
+  app.use("/api/twilio", twilioRoutes);
   app.use("/api/simple", simpleRoutes);
   app.use("/api/yelp", yelpRoutes);
 

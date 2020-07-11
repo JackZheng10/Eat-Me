@@ -9,5 +9,12 @@ module.exports = {
     apiKey: "", //place your yelp api key here
     clientId: "", //place your yelp client ID here
   },
-  secret: "", //secret used to sign JWT tokens
+  jwt: {
+    secret: "", //secret used to sign JWT tokens
+  },
+  twilio: {
+    accountSID: "", //twilio account SID
+    authToken: "", //twilio auth token
+    from: "", //twilio "from" number
+  },
 };
