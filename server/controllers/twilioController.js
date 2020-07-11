@@ -30,23 +30,6 @@ const verify = async (req, res) => {
       message: "Error with sending verification code. Please try again.",
     });
   }
-
-  await client.messages
-    .create({
-      body: "Your Eat Me verification code is: " + code + ".",
-      from: from,
-      to: to,
-    })
-    .then(() => {
-      //not including twilio's response
-      return res.json({
-        success: true,
-        message: code,
-      });
-    })
-    .catch((error) => {
-      return res.json({ success: false, message: error }); //this is an object, todo: return the code property and handle it (probably what we care about)
-    });
 };
 
 module.exports = { verify };

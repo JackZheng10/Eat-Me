@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#00B2CA",
     paddingLeft: 10,
+    paddingRight: 10,
   },
   inputStyle: {
     marginLeft: 5,
@@ -112,8 +113,13 @@ class Login extends Component {
   }
 
   unfocusInputs = () => {
-    this.refs["phone"].blur();
-    this.refs["password"].blur();
+    const inputs = ["phone", "password"];
+
+    inputs.forEach((input) => {
+      if (this.refs[input]) {
+        this.refs[input].blur();
+      }
+    });
   };
 
   handleInputChange = (event, property) => {
@@ -121,11 +127,11 @@ class Login extends Component {
 
     switch (property) {
       case "phone":
-        const regex = /^[0-9\b]+$/;
+        const phoneRegex = /^[0-9\b]+$/;
 
-        if (input === "" || regex.test(input)) {
+        if (input === "" || phoneRegex.test(input)) {
           if (input.length > 10) {
-            input = input.substr(0, input.length - 1);
+            input = input.substr(0, 10);
           }
           this.setState({ [property]: input });
         }

@@ -42,14 +42,17 @@ const checkDuplicatePhone = async (req, res, next) => {
           "Phone number already in use. Please enter a new one and try again.",
       });
     } else {
-      next();
+      return res.json({
+        success: true,
+        message: "Phone number not in use.",
+      });
     }
   } catch (error) {
     console.log("Error with checking duplicate phone number: " + error);
 
     return res.json({
       success: false,
-      message: "Error with registration. Please try again.",
+      message: "Error with checking duplicate phone number. Please try again.",
     });
   }
 };

@@ -23,6 +23,8 @@ import baseURL from "../../../baseURL";
 const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
 
+//todo: change alert dialogs on other screens too
+
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
@@ -62,6 +64,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#00B2CA",
     paddingLeft: 10,
+    paddingRight: 10,
   },
   inputStyle: {
     marginLeft: 5,
@@ -113,19 +116,23 @@ class Register extends Component {
     passwordErrorMsg: "",
     passwordConfirmErrorMsg: "",
     showVerifyDialog: false,
+    generatedCode: "",
+    enteredCode: "",
   };
 
   componentDidMount() {
-    //for android since inputs are still focused when exiting keyboard
+    //for android since inputs are still focused when exiting keyboard. prob. a better workaround somewhere
     Keyboard.addListener("keyboardDidHide", this.unfocusInputs);
   }
 
   unfocusInputs = () => {
-    this.refs["fName"].blur();
-    this.refs["lName"].blur();
-    this.refs["phone"].blur();
-    this.refs["password"].blur();
-    this.refs["passwordConfirm"].blur();
+    const inputs = ["fName", "lName", "phone", "password", "passwordConfirm"];
+
+    inputs.forEach((input) => {
+      if (this.refs[input]) {
+        this.refs[input].blur();
+      }
+    });
   };
 
   handleInputChange = (event, property) => {
@@ -149,7 +156,7 @@ class Register extends Component {
       case "phone":
         if (input === "" || phoneRegex.test(input)) {
           if (input.length > 10) {
-            input = input.substr(0, input.length - 1);
+            input = input.substr(0, 10);
           }
           this.setState({ [property]: input });
         }
@@ -256,46 +263,94 @@ class Register extends Component {
     return valid;
   };
 
-  handleRegister = async () => {
-    // let valid = this.handleInputValidation();
-    // if (valid) {
-    //   const { fName, lName, phone, password } = this.state;
-    //   try {
-    //     const response = await axios.post(`${baseURL}/user/register`, {
-    //       fName,
-    //       lName,
-    //       phone,
-    //       password,
-    //     });
-    //     alert(response.data.message);
-    //   } catch (error) {
-    //     console.log(error);
-    //     alert("Error with registering. Please try again.");
-    //   }
-    // }
-    // try {
-    //   const response = await axios.post(`${baseURL}/twilio/verify`, {
-    //     to: "9546849819",
-    //   });
-    //   alert(response.data.message);
-    // } catch (error) {
-    //   console.log(error);
-    //   alert("Error with sending verification code. Please try again.");
-    // }
+  handleVerification = async () => {
+    //make sure all inputs are valid
+    let validInputs = this.handleInputValidation();
 
-    this.toggleVerifyDialog();
+    if (validInputs) {
+      //check if phone number is already in use
+      try {
+        const response = await axios.post(
+          `${baseURL}/user/checkDuplicatePhone`,
+          {
+            phone: this.state.phone,
+          }
+        );
+
+        if (response.data.success) {
+          //send verification code and open up verification prompt
+          try {
+            const response = await axios.post(`${baseURL}/twilio/verify`, {
+              to: this.state.phone,
+            });
+
+            if (response.data.success) {
+              console.log("response from server: " + response.data.message);
+
+              this.setState({ generatedCode: response.data.message }, () => {
+                this.toggleVerifyDialog();
+              });
+            } else {
+              alert(response.data.message);
+            }
+          } catch (error) {
+            console.log(error);
+            alert("Error with sending verification code. Please try again.");
+          }
+        } else {
+          alert(response.data.message);
+        }
+      } catch (error) {
+        console.log(error);
+        alert("Error with checking duplicate phone number. Please try again.");
+      }
+    }
+  };
+
+  handleRegistration = async () => {
+    if (this.state.generatedCode === this.state.enteredCode) {
+      const { fName, lName, phone, password } = this.state;
+      try {
+        const response = await axios.post(`${baseURL}/user/register`, {
+          fName,
+          lName,
+          phone,
+          password,
+        });
+
+        alert(response.data.message);
+      } catch (error) {
+        console.log(error);
+        alert("Error with registering. Please try again.");
+      }
+    } else {
+      alert("Entered code is incorrect. Please try again.");
+    }
   };
 
   handleLoginRedirect = () => {
     this.props.navigation.navigate("Login");
   };
 
-  handleCodeChange = (code) => {
-    console.log("code: " + code);
+  handleEnteredCodeChange = (event) => {
+    this.setState({ enteredCode: event.nativeEvent.text });
+  };
+
+  handleResendCode = () => {
+    alert("Code will be resent");
   };
 
   toggleVerifyDialog = () => {
-    this.setState({ showVerifyDialog: !this.state.showVerifyDialog });
+    //to prevent generated code from being reset
+    if (this.state.showVerifyDialog) {
+      this.setState({
+        showVerifyDialog: !this.state.showVerifyDialog,
+        generatedCode: "",
+        enteredCode: "",
+      });
+    } else {
+      this.setState({ showVerifyDialog: !this.state.showVerifyDialog });
+    }
   };
 
   render() {
@@ -310,24 +365,29 @@ class Register extends Component {
             buttons={[
               {
                 label: "Cancel",
-                color: "red",
+                color: "#F75555",
                 onPress: this.toggleVerifyDialog,
               },
               {
                 label: "Resend",
                 color: "#F79256",
-                onPress: this.toggleVerifyDialog,
+                onPress: this.handleResendCode,
               },
               {
                 label: "Verify",
-                color: "green",
-                onPress: this.toggleVerifyDialog,
+                color: "#5DF755",
+                onPress: this.handleRegistration,
               },
             ]}
-            title="Alert"
-            description="This is a test alert."
+            input={true}
+            inputProps={{
+              placeholder: "Code",
+              onChange: this.handleEnteredCodeChange,
+              value: this.state.enteredCode,
+            }}
+            title="Verification"
+            description="Please enter the verification code we just texted you in order to complete registration."
           />
-
           <View style={styles.logoContainer}>
             <Image source={Logo} style={styles.logo} />
           </View>
@@ -435,7 +495,7 @@ class Register extends Component {
           <Button
             title="Create Account"
             raised
-            onPress={this.handleRegister}
+            onPress={this.handleVerification}
             containerStyle={styles.buttonContainerStyleReg}
             buttonStyle={styles.buttonStyle}
           />
