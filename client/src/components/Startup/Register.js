@@ -148,60 +148,106 @@ class Register extends Component {
 
   handleInputValidation = () => {
     //todo: maybe support more than 10-digit phone #, see how twilio handles that
-    const { fName, lName, phone, password, passwordConfirm } = this.state;
 
-    const whitespaceChecks = [
+    const inputs = [
       {
         name: "fName",
-        msg: "Please enter a first name.",
+        whitespaceMsg: "Please enter a first name.",
       },
       {
         name: "lName",
-        msg: "Please enter a last name.",
+        whitespaceMsg: "Please enter a last name.",
       },
       {
         name: "phone",
-        msg: "Please enter a phone number.",
+        whitespaceMsg: "Please enter a 10-digit phone number.",
       },
       {
         name: "password",
-        msg: "Please enter a password.",
+        whitespaceMsg: "Please enter a password.",
       },
       {
         name: "passwordConfirm",
-        msg: "Please confirm your password.",
+        whitespaceMsg: "Please confirm your password.",
       },
     ];
 
-    //whitespace check
-    whitespaceChecks.forEach((field) => {
-      let value = this.state[field.name];
+    for (let x = 0; x < inputs.length; x++) {
+      let input = inputs[x];
+      let value = this.state[input.name];
 
+      //whitespace checks
       if (!value.replace(/\s/g, "").length) {
-        this.setState({ [field.name + "ErrorMsg"]: field.msg });
+        this.setState({ [input.name + "ErrorMsg"]: input.whitespaceMsg });
+        continue;
+      } else {
+        this.setState({ [input.name + "ErrorMsg"]: "" });
       }
-    });
+
+      //input-specific checks
+      switch (input.name) {
+        case "phone":
+          if (value.length < 10) {
+            this.setState({
+              [input.name +
+              "ErrorMsg"]: "Please enter a 10-digit phone number.",
+            });
+          } else {
+            this.setState({ [input.name + "ErrorMsg"]: "" });
+          }
+          break;
+
+        case "password":
+          if (
+            value.length < 6 ||
+            /[A-Z]+/.test(value) === false || //to disable warning from regex:
+            /[\s~`!@#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?()\._]/g.test(value) ===
+              false //eslint-disable-line
+          ) {
+            this.setState({
+              [input.name +
+              "ErrorMsg"]: "Passwords must be at least 6 characters long, contain one capital letter, and contain one special character.",
+            });
+          } else {
+            this.setState({
+              [input.name + "ErrorMsg"]: "",
+            });
+          }
+          break;
+
+        case "passwordConfirm":
+          if (value !== this.state.password) {
+            this.setState({
+              [input.name + "ErrorMsg"]: "Passwords must match.",
+            });
+          } else {
+            this.setState({
+              [input.name + "ErrorMsg"]: "",
+            });
+          }
+          break;
+      }
+    }
   };
 
   handleRegister = async () => {
-    //validation here (no empty fields, requirements, etc.), then:
     this.handleInputValidation();
 
-    // const { fName, lName, phone, password } = this.state;
+    const { fName, lName, phone, password } = this.state;
 
-    // try {
-    //   const response = await axios.post(`${baseURL}/user/register`, {
-    //     fName,
-    //     lName,
-    //     phone,
-    //     password,
-    //   });
+    try {
+      const response = await axios.post(`${baseURL}/user/register`, {
+        fName,
+        lName,
+        phone,
+        password,
+      });
 
-    //   alert(response.data.message);
-    // } catch (error) {
-    //   console.log(error);
-    //   alert("Error with registering. Please try again.");
-    // }
+      alert(response.data.message);
+    } catch (error) {
+      console.log(error);
+      alert("Error with registering. Please try again.");
+    }
   };
 
   handleLoginRedirect = () => {
