@@ -3,7 +3,7 @@ import Dialog from "react-native-dialog";
 
 //custom-made dialog component leveraged for better reusage from react-native-dialog
 //courtesy of jack ty, might change due to janky fade out on android
-//todo: make configurations for standard dialog (no input, only title + desc + OK) and custom dialog (buttons, input, etc.)
+//might not use due to messed up fadeout animation
 
 /*
 Props:
@@ -14,6 +14,35 @@ Props:
 -onInputChange (function): called whenever the input is changed, called with a parameter of the current input (string)
 -inputProps (object): props supplied to the input component (if present)
 -buttons (array of objects): the buttons to render, each object in the array has the button name, color
+*/
+
+/*
+Example usage (if placed into Register):
+<DialogBox
+              visible={this.state.showVerifyDialog}
+              title="Verification"
+              description="Please enter the verification code we just texted you in order to complete registration."
+              input={true}
+              inputProps={{ placeholder: "Code", style: { paddingLeft: 5 } }}
+              buttons={[
+                {
+                  label: "Resend",
+                  color: "#F79256",
+                  onPress: this.toggleVerifyDialog,
+                },
+                {
+                  label: "Cancel",
+                  color: "#F79256",
+                  onPress: this.toggleVerifyDialog,
+                },
+                {
+                  label: "Verify",
+                  color: "#F79256",
+                  onPress: this.toggleVerifyDialog,
+                },
+              ]}
+              onInputChange={this.handleCodeChange}
+            />
 */
 
 class DialogBox extends Component {
@@ -38,7 +67,7 @@ class DialogBox extends Component {
     const { visible, title, description, input, inputProps } = this.props;
 
     return (
-      <Dialog.Container visible={visible} useNativeDriver={true}>
+      <Dialog.Container visible={visible} useNativeDriver={false}>
         <Dialog.Title style={{ fontWeight: "bold" }}>{title}</Dialog.Title>
         {input && (
           <Dialog.Input {...inputProps} onChange={this.handleInputChange} />

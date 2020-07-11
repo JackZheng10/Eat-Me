@@ -9,11 +9,12 @@ import {
   Keyboard,
   Alert,
 } from "react-native";
-import { Input, Button } from "react-native-elements";
+import { Input, Button, Overlay } from "react-native-elements";
 import { Col, Row, Grid } from "react-native-easy-grid";
 import { withNavigation } from "react-navigation";
 import Dialog from "react-native-dialog";
 import DialogBox from "../components/DialogBox";
+import DialogBoxV2 from "../components/DialogBoxV2";
 import Constants from "expo-constants";
 import axios from "axios";
 import Logo from "../../images/Logo.png";
@@ -301,59 +302,32 @@ class Register extends Component {
     return (
       <ScrollView>
         <View style={styles.mainContainer}>
-          <View>
-            <DialogBox
-              visible={this.state.showVerifyDialog}
-              title="Verification"
-              description="Please enter the verification code we just texted you in order to complete registration."
-              input={true}
-              inputProps={{ placeholder: "Code", style: { paddingLeft: 5 } }}
-              buttons={[
-                {
-                  label: "Resend",
-                  color: "#F79256",
-                  onPress: this.toggleVerifyDialog,
-                },
-                {
-                  label: "Cancel",
-                  color: "#F79256",
-                  onPress: this.toggleVerifyDialog,
-                },
-                {
-                  label: "Verify",
-                  color: "#F79256",
-                  onPress: this.toggleVerifyDialog,
-                },
-              ]}
-              onInputChange={this.handleCodeChange}
-            />
-            {/* <Dialog.Container visible={this.state.showVerifyDialog}>
-              <Dialog.Title style={{ fontWeight: "bold" }}>
-                Account delete
-              </Dialog.Title>
-              <Dialog.Input
-                placeholder="Code"
-                style={{
-                  borderRadius: 1,
-                  borderColor: "#00B2CA",
-                  paddingLeft: 100,
-                }}
-              />
-              <Dialog.Description>
-                Do you want to delete this account? You cannot undo this action.
-              </Dialog.Description>
-              <Dialog.Button
-                label="Cancel"
-                onPress={this.toggleVerifyDialog}
-                color="#F79256"
-              />
-              <Dialog.Button
-                label="Delete"
-                onPress={this.toggleVerifyDialog}
-                color="#F79256"
-              />
-            </Dialog.Container> */}
-          </View>
+          <DialogBoxV2
+            overlayProps={{
+              isVisible: this.state.showVerifyDialog,
+              onBackdropPress: this.toggleVerifyDialog,
+            }}
+            buttons={[
+              {
+                label: "Cancel",
+                color: "red",
+                onPress: this.toggleVerifyDialog,
+              },
+              {
+                label: "Resend",
+                color: "#F79256",
+                onPress: this.toggleVerifyDialog,
+              },
+              {
+                label: "Verify",
+                color: "green",
+                onPress: this.toggleVerifyDialog,
+              },
+            ]}
+            title="Alert"
+            description="This is a test alert."
+          />
+
           <View style={styles.logoContainer}>
             <Image source={Logo} style={styles.logo} />
           </View>
