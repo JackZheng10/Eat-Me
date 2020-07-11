@@ -13,6 +13,7 @@ import { Input, Button } from "react-native-elements";
 import { Col, Row, Grid } from "react-native-easy-grid";
 import { withNavigation } from "react-navigation";
 import Dialog from "react-native-dialog";
+import DialogBox from "../components/DialogBox";
 import Constants from "expo-constants";
 import axios from "axios";
 import Logo from "../../images/Logo.png";
@@ -110,6 +111,7 @@ class Register extends Component {
     phoneErrorMsg: "",
     passwordErrorMsg: "",
     passwordConfirmErrorMsg: "",
+    showVerifyDialog: false,
   };
 
   componentDidMount() {
@@ -270,45 +272,88 @@ class Register extends Component {
     //     alert("Error with registering. Please try again.");
     //   }
     // }
+    // try {
+    //   const response = await axios.post(`${baseURL}/twilio/verify`, {
+    //     to: "9546849819",
+    //   });
+    //   alert(response.data.message);
+    // } catch (error) {
+    //   console.log(error);
+    //   alert("Error with sending verification code. Please try again.");
+    // }
 
-    try {
-      const response = await axios.post(`${baseURL}/twilio/verify`, {
-        to: "9546849819",
-      });
-      alert(response.data.message);
-    } catch (error) {
-      console.log(error);
-      alert("Error with sending verification code. Please try again.");
-    }
+    this.toggleVerifyDialog();
   };
 
   handleLoginRedirect = () => {
     this.props.navigation.navigate("Login");
   };
 
+  handleCodeChange = (code) => {
+    console.log("code: " + code);
+  };
+
+  toggleVerifyDialog = () => {
+    this.setState({ showVerifyDialog: !this.state.showVerifyDialog });
+  };
+
   render() {
     return (
       <ScrollView>
         <View style={styles.mainContainer}>
-          {/* <View>
-            <Dialog.Container visible={false}>
+          <View>
+            <DialogBox
+              visible={this.state.showVerifyDialog}
+              title="Verification"
+              description="Please enter the verification code we just texted you in order to complete registration."
+              input={true}
+              inputProps={{ placeholder: "Code", style: { paddingLeft: 5 } }}
+              buttons={[
+                {
+                  label: "Resend",
+                  color: "#F79256",
+                  onPress: this.toggleVerifyDialog,
+                },
+                {
+                  label: "Cancel",
+                  color: "#F79256",
+                  onPress: this.toggleVerifyDialog,
+                },
+                {
+                  label: "Verify",
+                  color: "#F79256",
+                  onPress: this.toggleVerifyDialog,
+                },
+              ]}
+              onInputChange={this.handleCodeChange}
+            />
+            {/* <Dialog.Container visible={this.state.showVerifyDialog}>
               <Dialog.Title style={{ fontWeight: "bold" }}>
-                Verification
+                Account delete
               </Dialog.Title>
               <Dialog.Input
                 placeholder="Code"
-                style={styles.inputContainerStyle}
+                style={{
+                  borderRadius: 1,
+                  borderColor: "#00B2CA",
+                  paddingLeft: 100,
+                }}
               />
               <Dialog.Description>
-                Please enter the verification code we just texted you to
-                complete registration.
+                Do you want to delete this account? You cannot undo this action.
               </Dialog.Description>
-              <Dialog.Button label="Resend" color="#F79256" />
-              <Dialog.Button label="Cancel" color="#F79256" />
-              <Dialog.Button label="Verify" color="#F79256" />
-            </Dialog.Container>
-          </View> */}
-
+              <Dialog.Button
+                label="Cancel"
+                onPress={this.toggleVerifyDialog}
+                color="#F79256"
+              />
+              <Dialog.Button
+                label="Delete"
+                onPress={this.toggleVerifyDialog}
+                color="#F79256"
+              />
+            </Dialog.Container> */}
+          </View>
           <View style={styles.logoContainer}>
             <Image source={Logo} style={styles.logo} />
           </View>
