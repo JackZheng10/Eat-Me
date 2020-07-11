@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     paddingTop: Constants.statusBarHeight,
     backgroundColor: "#F5F1ED",
   },
-  fieldContainer: {
+  inputContainer: {
     width: windowWidth - 50,
     alignItems: "center",
     backgroundColor: "white",
@@ -105,7 +105,8 @@ class Register extends Component {
     fNameErrorMsg: "",
     lNameErrorMsg: "",
     phoneErrorMsg: "",
-    pwdErrorMsg: "",
+    passwordErrorMsg: "",
+    passwordConfirmErrorMsg: "",
   };
 
   handleInputChange = (event, property) => {
@@ -149,22 +150,37 @@ class Register extends Component {
     //todo: maybe support more than 10-digit phone #, see how twilio handles that
     const { fName, lName, phone, password, passwordConfirm } = this.state;
 
-    //first name
-    if (this.evaluateWhitespace(fName)) {
-      this.setState({ fNameErrorMsg: "Please enter a first name." });
-    }
+    const whitespaceChecks = [
+      {
+        name: "fName",
+        msg: "Please enter a first name.",
+      },
+      {
+        name: "lName",
+        msg: "Please enter a last name.",
+      },
+      {
+        name: "phone",
+        msg: "Please enter a phone number.",
+      },
+      {
+        name: "password",
+        msg: "Please enter a password.",
+      },
+      {
+        name: "passwordConfirm",
+        msg: "Please confirm your password.",
+      },
+    ];
 
-    if (this.evaluateWhitespace(lName)) {
-      this.setState({ lNameErrorMsg: "Please enter a last name." });
-    }
-  };
+    //whitespace check
+    whitespaceChecks.forEach((field) => {
+      let value = this.state[field.name];
 
-  evaluateWhitespace = (text) => {
-    if (!text.replace(/\s/g, "").length) {
-      return true;
-    }
-
-    return false;
+      if (!value.replace(/\s/g, "").length) {
+        this.setState({ [field.name + "ErrorMsg"]: field.msg });
+      }
+    });
   };
 
   handleRegister = async () => {
@@ -199,7 +215,7 @@ class Register extends Component {
           <View style={styles.logoContainer}>
             <Image source={Logo} style={styles.logo} />
           </View>
-          <View style={styles.fieldContainer}>
+          <View style={styles.inputContainer}>
             <View style={styles.inlineContainer}>
               <Input
                 placeholder="First Name"
@@ -266,7 +282,7 @@ class Register extends Component {
               onChange={(event) => {
                 this.handleInputChange(event, "password");
               }}
-              errorMessage={this.state.pwdErrorMsg}
+              errorMessage={this.state.passwordErrorMsg}
               value={this.state.password}
               containerStyle={styles.containerStyle}
               inputContainerStyle={styles.inputContainerStyle}
@@ -286,6 +302,7 @@ class Register extends Component {
                 this.handleInputChange(event, "passwordConfirm");
               }}
               value={this.state.passwordConfirm}
+              errorMessage={this.state.passwordConfirmErrorMsg}
               containerStyle={styles.containerStyle}
               inputContainerStyle={styles.inputContainerStyle}
               inputStyle={styles.inputStyle}

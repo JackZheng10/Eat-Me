@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     paddingTop: Constants.statusBarHeight,
     backgroundColor: "#F5F1ED",
   },
-  fieldContainer: {
+  inputContainer: {
     width: windowWidth - 50,
     alignItems: "center",
     backgroundColor: "white",
@@ -189,7 +189,7 @@ class Login extends Component {
           {/* </Row>
             <Row size={10}>
               <Col> */}
-          <View style={styles.fieldContainer}>
+          <View style={styles.inputContainer}>
             <Input
               placeholder="Phone Number"
               leftIcon={{
