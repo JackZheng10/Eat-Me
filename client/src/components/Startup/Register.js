@@ -6,6 +6,7 @@ import {
   Dimensions,
   Image,
   ScrollView,
+  Keyboard,
 } from "react-native";
 import { Input, Button } from "react-native-elements";
 import { Col, Row, Grid } from "react-native-easy-grid";
@@ -109,6 +110,19 @@ class Register extends Component {
     passwordConfirmErrorMsg: "",
   };
 
+  componentDidMount() {
+    //for android since inputs are still focused when exiting keyboard
+    Keyboard.addListener("keyboardDidHide", this.unfocusInputs);
+  }
+
+  unfocusInputs = () => {
+    this.refs["fName"].blur();
+    this.refs["lName"].blur();
+    this.refs["phone"].blur();
+    this.refs["password"].blur();
+    this.refs["passwordConfirm"].blur();
+  };
+
   handleInputChange = (event, property) => {
     let input = event.nativeEvent.text;
     const nameRegex = /^[a-zA-Z][a-zA-Z\s]*$/;
@@ -203,9 +217,9 @@ class Register extends Component {
         case "password":
           if (
             value.length < 6 ||
-            /[A-Z]+/.test(value) === false || //to disable warning from regex:
+            /[A-Z]+/.test(value) === false ||
             /[\s~`!@#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?()\._]/g.test(value) ===
-              false //eslint-disable-line
+              false
           ) {
             this.setState({
               [input.name +
@@ -233,6 +247,8 @@ class Register extends Component {
           break;
       }
     }
+
+    return valid;
   };
 
   handleRegister = async () => {
@@ -272,6 +288,7 @@ class Register extends Component {
             <View style={styles.inlineContainer}>
               <Input
                 placeholder="First Name"
+                ref="fName"
                 leftIcon={{
                   type: "material-community",
                   name: "account",
@@ -290,6 +307,7 @@ class Register extends Component {
               />
               <Input
                 placeholder="Last Name"
+                ref="lName"
                 leftIcon={{
                   type: "material-community",
                   name: "account",
@@ -309,6 +327,7 @@ class Register extends Component {
             </View>
             <Input
               placeholder="Phone Number"
+              ref="phone"
               leftIcon={{
                 type: "material-community",
                 name: "phone",
@@ -327,6 +346,7 @@ class Register extends Component {
             />
             <Input
               placeholder="Password"
+              ref="password"
               leftIcon={{
                 type: "material",
                 name: "lock",
@@ -346,6 +366,7 @@ class Register extends Component {
             />
             <Input
               placeholder="Confirm Password"
+              ref="passwordConfirm"
               leftIcon={{
                 type: "material",
                 name: "lock",

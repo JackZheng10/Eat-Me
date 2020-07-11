@@ -1,5 +1,12 @@
 import React, { Component } from "react";
-import { View, ScrollView, StyleSheet, Dimensions, Image } from "react-native";
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  Dimensions,
+  Image,
+  Keyboard,
+} from "react-native";
 import { Input, Button, Text } from "react-native-elements";
 import { Col, Row, Grid } from "react-native-easy-grid";
 import { withNavigation } from "react-navigation";
@@ -97,7 +104,17 @@ const styles = StyleSheet.create({
 });
 
 class Login extends Component {
-  state = { phone: "", password: "" };
+  state = { phone: "", password: "", phoneErrorMsg: "", passwordErrorMsg: "" };
+
+  componentDidMount() {
+    //for android since inputs are still focused when exiting keyboard
+    Keyboard.addListener("keyboardDidHide", this.unfocusInputs);
+  }
+
+  unfocusInputs = () => {
+    this.refs["phone"].blur();
+    this.refs["password"].blur();
+  };
 
   handleInputChange = (event, property) => {
     let input = event.nativeEvent.text;
@@ -121,47 +138,92 @@ class Login extends Component {
     }
   };
 
+  handleInputValidation = () => {
+    let valid = true;
+
+    const inputs = [
+      {
+        name: "phone",
+        whitespaceMsg: "Please enter a 10-digit phone number.",
+      },
+      {
+        name: "password",
+        whitespaceMsg: "Please enter a password.",
+      },
+    ];
+
+    for (let x = 0; x < inputs.length; x++) {
+      let input = inputs[x];
+      let value = this.state[input.name];
+
+      //whitespace checks
+      if (!value.replace(/\s/g, "").length) {
+        this.setState({ [input.name + "ErrorMsg"]: input.whitespaceMsg });
+        valid = false;
+        continue;
+      } else {
+        this.setState({ [input.name + "ErrorMsg"]: "" });
+      }
+
+      //input-specific checks
+      if (input.name === "phone") {
+        if (value.length < 10) {
+          this.setState({
+            [input.name + "ErrorMsg"]: "Please enter a 10-digit phone number.",
+          });
+          valid = false;
+        } else {
+          this.setState({ [input.name + "ErrorMsg"]: "" });
+        }
+      }
+    }
+
+    return valid;
+  };
+
   handleLogin = async () => {
-    //validation here, then:
+    let valid = this.handleInputValidation();
 
-    const { phone, password } = this.state;
-    //attempt to login
-    try {
-      const response = await axios.post(`${baseURL}/user/login`, {
-        phone,
-        password,
-      });
+    if (valid) {
+      const { phone, password } = this.state;
+      //attempt to login
+      try {
+        const response = await axios.post(`${baseURL}/user/login`, {
+          phone,
+          password,
+        });
 
-      //if login successful
-      if (response.data.success) {
-        try {
-          //store JWT token
-          const token = response.data.token;
-          await AsyncStorage.setItem("@token", token);
-
-          alert("Logged in successfully, see console for token info");
-
-          //demonstration of how to fetch and decode the token
+        //if login successful
+        if (response.data.success) {
           try {
-            const value = await AsyncStorage.getItem("@token");
+            //store JWT token
+            const token = response.data.token;
+            await AsyncStorage.setItem("@token", token);
 
-            if (value !== null) {
-              const data = jwtDecode(value);
-              console.log(data);
+            alert("Logged in successfully, see console for token info");
+
+            //demonstration of how to fetch and decode the token
+            try {
+              const value = await AsyncStorage.getItem("@token");
+
+              if (value !== null) {
+                const data = jwtDecode(value);
+                console.log(data);
+              }
+            } catch (error) {
+              console.log("Error with retrieving token: " + error);
             }
           } catch (error) {
-            console.log("Error with retrieving token: " + error);
+            console.log(error);
+            alert("Error with logging in. Please try again.");
           }
-        } catch (error) {
-          console.log(error);
-          alert("Error with logging in. Please try again.");
+        } else {
+          alert(response.data.message);
         }
-      } else {
-        alert(response.data.message);
+      } catch (error) {
+        console.log(error);
+        alert("Error with logging in. Please try again.");
       }
-    } catch (error) {
-      console.log(error);
-      alert("Error with logging in. Please try again.");
     }
   };
 
@@ -192,6 +254,7 @@ class Login extends Component {
           <View style={styles.inputContainer}>
             <Input
               placeholder="Phone Number"
+              ref="phone"
               leftIcon={{
                 type: "material-community",
                 name: "phone",
@@ -201,6 +264,7 @@ class Login extends Component {
                 this.handleInputChange(event, "phone");
               }}
               value={this.state.phone}
+              errorMessage={this.state.phoneErrorMsg}
               containerStyle={styles.containerStyle}
               inputContainerStyle={styles.inputContainerStyle}
               inputStyle={styles.inputStyle}
@@ -209,6 +273,7 @@ class Login extends Component {
             />
             <Input
               placeholder="Password"
+              ref="password"
               leftIcon={{
                 type: "material",
                 name: "lock",
@@ -218,6 +283,7 @@ class Login extends Component {
                 this.handleInputChange(event, "password");
               }}
               value={this.state.password}
+              errorMessage={this.state.passwordErrorMsg}
               containerStyle={styles.containerStyle}
               inputContainerStyle={styles.inputContainerStyle}
               inputStyle={styles.inputStyle}
