@@ -148,6 +148,7 @@ class Register extends Component {
 
   handleInputValidation = () => {
     //todo: maybe support more than 10-digit phone #, see how twilio handles that
+    let valid = true;
 
     const inputs = [
       {
@@ -179,6 +180,7 @@ class Register extends Component {
       //whitespace checks
       if (!value.replace(/\s/g, "").length) {
         this.setState({ [input.name + "ErrorMsg"]: input.whitespaceMsg });
+        valid = false;
         continue;
       } else {
         this.setState({ [input.name + "ErrorMsg"]: "" });
@@ -192,6 +194,7 @@ class Register extends Component {
               [input.name +
               "ErrorMsg"]: "Please enter a 10-digit phone number.",
             });
+            valid = false;
           } else {
             this.setState({ [input.name + "ErrorMsg"]: "" });
           }
@@ -208,6 +211,7 @@ class Register extends Component {
               [input.name +
               "ErrorMsg"]: "Passwords must be at least 6 characters long, contain one capital letter, and contain one special character.",
             });
+            valid = false;
           } else {
             this.setState({
               [input.name + "ErrorMsg"]: "",
@@ -220,6 +224,7 @@ class Register extends Component {
             this.setState({
               [input.name + "ErrorMsg"]: "Passwords must match.",
             });
+            valid = false;
           } else {
             this.setState({
               [input.name + "ErrorMsg"]: "",
@@ -231,22 +236,24 @@ class Register extends Component {
   };
 
   handleRegister = async () => {
-    this.handleInputValidation();
+    let valid = this.handleInputValidation();
 
-    const { fName, lName, phone, password } = this.state;
+    if (valid) {
+      const { fName, lName, phone, password } = this.state;
 
-    try {
-      const response = await axios.post(`${baseURL}/user/register`, {
-        fName,
-        lName,
-        phone,
-        password,
-      });
+      try {
+        const response = await axios.post(`${baseURL}/user/register`, {
+          fName,
+          lName,
+          phone,
+          password,
+        });
 
-      alert(response.data.message);
-    } catch (error) {
-      console.log(error);
-      alert("Error with registering. Please try again.");
+        alert(response.data.message);
+      } catch (error) {
+        console.log(error);
+        alert("Error with registering. Please try again.");
+      }
     }
   };
 
