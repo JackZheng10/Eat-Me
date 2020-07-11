@@ -7,10 +7,12 @@ import {
   Image,
   ScrollView,
   Keyboard,
+  Alert,
 } from "react-native";
 import { Input, Button } from "react-native-elements";
 import { Col, Row, Grid } from "react-native-easy-grid";
 import { withNavigation } from "react-navigation";
+import Dialog from "react-native-dialog";
 import Constants from "expo-constants";
 import axios from "axios";
 import Logo from "../../images/Logo.png";
@@ -252,25 +254,22 @@ class Register extends Component {
   };
 
   handleRegister = async () => {
-    let valid = this.handleInputValidation();
-
-    if (valid) {
-      const { fName, lName, phone, password } = this.state;
-
-      try {
-        const response = await axios.post(`${baseURL}/user/register`, {
-          fName,
-          lName,
-          phone,
-          password,
-        });
-
-        alert(response.data.message);
-      } catch (error) {
-        console.log(error);
-        alert("Error with registering. Please try again.");
-      }
-    }
+    // let valid = this.handleInputValidation();
+    // if (valid) {
+    //   const { fName, lName, phone, password } = this.state;
+    //   try {
+    //     const response = await axios.post(`${baseURL}/user/register`, {
+    //       fName,
+    //       lName,
+    //       phone,
+    //       password,
+    //     });
+    //     alert(response.data.message);
+    //   } catch (error) {
+    //     console.log(error);
+    //     alert("Error with registering. Please try again.");
+    //   }
+    // }
   };
 
   handleLoginRedirect = () => {
@@ -281,6 +280,25 @@ class Register extends Component {
     return (
       <ScrollView>
         <View style={styles.mainContainer}>
+          <View>
+            <Dialog.Container visible={true}>
+              <Dialog.Title style={{ fontWeight: "bold" }}>
+                Verification
+              </Dialog.Title>
+              <Dialog.Input
+                placeholder="Code"
+                style={styles.inputContainerStyle}
+              />
+              <Dialog.Description>
+                Please enter the verification code we just texted you to
+                complete registration.
+              </Dialog.Description>
+              <Dialog.Button label="Resend" color="#F79256" />
+              <Dialog.Button label="Cancel" color="#F79256" />
+              <Dialog.Button label="Delete" color="#F79256" />
+            </Dialog.Container>
+          </View>
+
           <View style={styles.logoContainer}>
             <Image source={Logo} style={styles.logo} />
           </View>
