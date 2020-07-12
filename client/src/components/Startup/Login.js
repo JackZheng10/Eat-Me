@@ -206,6 +206,7 @@ class Login extends Component {
             const token = response.data.token;
             await AsyncStorage.setItem("@token", token);
 
+            this.clearInputs();
             alert("Logged in successfully, see console for token info");
 
             //demonstration of how to fetch and decode the token
@@ -239,6 +240,10 @@ class Login extends Component {
 
   handleRecoveryRedirect = () => {
     alert("This will take you to a password recovery screen.");
+  };
+
+  clearInputs = () => {
+    this.setState({ phone: "", password: "" });
   };
 
   render() {

@@ -90,7 +90,7 @@ const register = async (req, res) => {
 
     return res.json({
       success: true,
-      message: "Successfully registered! Please log in.",
+      message: "Successfully registered! Please log in to continue.",
     });
   } catch (error) {
     console.log("Error with registering: " + error);

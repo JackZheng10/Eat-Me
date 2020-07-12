@@ -319,6 +319,7 @@ class Register extends Component {
 
         //handle res.data.success stuff
         if (response.data.success) {
+          this.clearInputs();
           this.toggleVerifyDialog();
           alert(response.data.message);
         } else {
@@ -343,6 +344,16 @@ class Register extends Component {
 
   handleResendCode = () => {
     alert("Code will be resent");
+  };
+
+  clearInputs = () => {
+    this.setState({
+      fName: "",
+      lName: "",
+      phone: "",
+      password: "",
+      passwordConfirm: "",
+    });
   };
 
   toggleVerifyDialog = () => {
