@@ -14,7 +14,7 @@ Required:
 
 Optional:
 -inputProps (object, REQUIRED if "input" is true): props supplied to the RNE input, ex: onChange (REQUIRED, passes in an event object to callback), 
-value (REQUIRED, controlled value of text in input) placeholder
+value (REQUIRED, controlled value of text in input), placeholder
 */
 
 const windowHeight = Dimensions.get("window").height;

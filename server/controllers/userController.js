@@ -17,7 +17,7 @@ const login = async (req, res) => {
 
       return res.json({
         success: true,
-        message: "Successfully logged in, token is attached",
+        message: "Successfully logged in, token is attached.",
         token: token,
       });
     }
@@ -88,7 +88,10 @@ const register = async (req, res) => {
       password: req.body.password,
     });
 
-    return res.json({ success: true, message: "Successfully registered!" });
+    return res.json({
+      success: true,
+      message: "Successfully registered! Please log in.",
+    });
   } catch (error) {
     console.log("Error with registering: " + error);
 

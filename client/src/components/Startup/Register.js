@@ -285,8 +285,6 @@ class Register extends Component {
             });
 
             if (response.data.success) {
-              console.log("response from server: " + response.data.message);
-
               this.setState({ generatedCode: response.data.message }, () => {
                 this.toggleVerifyDialog();
               });
@@ -310,6 +308,7 @@ class Register extends Component {
   handleRegistration = async () => {
     if (this.state.generatedCode === this.state.enteredCode) {
       const { fName, lName, phone, password } = this.state;
+
       try {
         const response = await axios.post(`${baseURL}/user/register`, {
           fName,
@@ -318,7 +317,13 @@ class Register extends Component {
           password,
         });
 
-        alert(response.data.message);
+        //handle res.data.success stuff
+        if (response.data.success) {
+          this.toggleVerifyDialog();
+          alert(response.data.message);
+        } else {
+          alert(response.data.message);
+        }
       } catch (error) {
         console.log(error);
         alert("Error with registering. Please try again.");
