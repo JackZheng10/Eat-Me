@@ -14,65 +14,70 @@ const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
 
 //cant use nav here
+//might have to move listitem into its own component since the actions need to be separate
 
 const list = [
   {
     name: "Amy Farha",
     avatar_url:
       "https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg",
-    subtitle: "Vice President",
+    subtitle: "4332343246",
   },
   {
     name: "Chris Jackson",
     avatar_url:
       "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
-    subtitle: "Vice Chairman",
+    subtitle: "4332343246",
   },
   {
     name: "Chris Jackson",
     avatar_url:
       "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
-    subtitle: "Vice Chairman",
+    subtitle: "4332343246",
   },
   {
     name: "Chris Jackson",
     avatar_url:
       "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
-    subtitle: "Vice Chairman",
+    subtitle: "4332343246",
   },
   {
     name: "Chris Jackson",
     avatar_url:
       "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
-    subtitle: "Vice Chairman",
+    subtitle: "4332343246",
   },
   {
     name: "Chris Jackson",
     avatar_url:
       "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
-    subtitle: "Vice Chairman",
+    subtitle: "4332343246",
   },
   {
     name: "Chris Jackson",
     avatar_url:
       "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
-    subtitle: "Vice Chairman",
+    subtitle: "4332343246",
   },
   {
     name: "Chris Jackson",
     avatar_url:
       "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
-    subtitle: "Vice Chairman",
+    subtitle: "4332343246",
   },
   {
     name: "Chris Jackson",
     avatar_url:
       "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
-    subtitle: "Vice Chairman",
+    subtitle: "4332343246",
   },
 ];
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  containerStyle: {
+    backgroundColor: "#F5F1ED",
+  },
+});
 
 class FriendsList extends Component {
   renderList = () => {
@@ -80,10 +85,17 @@ class FriendsList extends Component {
       return (
         <ListItem
           key={index}
-          leftAvatar={{ source: { uri: item.avatar_url } }}
+          rightIcon={{
+            type: "font-awesome",
+            name: "angle-right",
+            color: "#F79256",
+            size: 35,
+          }}
           title={item.name}
+          titleProps={{ style: { fontWeight: "bold" } }}
           subtitle={item.subtitle}
           bottomDivider
+          containerStyle={styles.containerStyle}
         />
       );
     });

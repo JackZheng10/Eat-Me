@@ -15,6 +15,8 @@ import { Friends, Sessions, Settings, Login, Register } from "./src/components";
 //i didnt uninstall any packages, so after refactoring remove any extraneous ones
 //available icons for RNE and as a raw icon (seen in this file): https://icons.expo.fyi/
 //color palette: https://coolors.co/f79256-8ed5f5-f5f1ed-00b2ca
+//probably want header and footer to be the aqua color? idk play with it
+//todo: prob clean up this code a bit (destructure styles, etc.)
 
 //IMPORTANT NOTE: the stack navigator will save the route that you're on. for example:
 //-go to settings, then the example stack view, then away, then back, and you'll see youre still in the stacked view
@@ -40,6 +42,8 @@ function FriendsStackScreen() {
       screenOptions={({ route, navigation }) => ({
         // headerShown: false,
         headerTitleAlign: "left",
+        headerStyle: { backgroundColor: "#00B2CA" },
+        headerTitleStyle: { color: "white" },
       })}
     >
       <FriendsStack.Screen name="Friends" component={Friends} />
@@ -54,6 +58,8 @@ function SessionsStackScreen() {
       screenOptions={({ route, navigation }) => ({
         // headerShown: false,
         headerTitleAlign: "left",
+        headerStyle: { backgroundColor: "#00B2CA" },
+        headerTitleStyle: { color: "white" },
       })}
     >
       <SessionsStack.Screen name="Sessions" component={Sessions} />
@@ -67,6 +73,8 @@ function SettingsStackScreen() {
       screenOptions={({ route, navigation }) => ({
         // headerShown: false,
         headerTitleAlign: "left",
+        headerStyle: { backgroundColor: "#00B2CA" },
+        headerTitleStyle: { color: "white" },
       })}
     >
       <SettingsStack.Screen name="Settings" component={Settings} />
@@ -145,9 +153,10 @@ class App extends Component {
               },
             })}
             tabBarOptions={{
-              activeTintColor: "tomato",
-              inactiveTintColor: "gray",
+              activeTintColor: "#F79256",
+              inactiveTintColor: "grey",
               keyboardHidesTabBar: true,
+              style: { backgroundColor: "white" },
               // style: this.state.keyboardVisible ? { display: "none" } : {},
             }}
             initialRouteName="Friends"
