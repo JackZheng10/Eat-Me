@@ -10,9 +10,7 @@ import { Friends, Sessions, Settings, Login, Register } from "./src/components";
 //bottom navigator docs: https://reactnavigation.org/docs/bottom-tab-navigator/
 //stack navigation docs: https://reactnavigation.org/docs/stack-navigator/#props
 //navigation prop docs: https://reactnavigation.org/docs/navigation-prop/
-//custom alerts: https://reactnative.dev/docs/alert
 //go to (for example) the settings component to see how to add a "stack" which also uses the navigation prop to navigate to another element
-//i didnt uninstall any packages, so after refactoring remove any extraneous ones
 //available icons for RNE and as a raw icon (seen in this file): https://icons.expo.fyi/
 //color palette: https://coolors.co/f79256-8ed5f5-f5f1ed-00b2ca
 //probably want header and footer to be the aqua color? idk play with it

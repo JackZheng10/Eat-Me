@@ -7,8 +7,8 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
-import { ListItem } from "react-native-elements";
 import { withNavigation } from "react-navigation";
+import ListItem from "./ListItem";
 
 const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
@@ -84,18 +84,23 @@ class FriendsList extends Component {
     return list.map((item, index) => {
       return (
         <ListItem
-          key={index}
-          rightIcon={{
-            type: "font-awesome",
-            name: "angle-right",
-            color: "#F79256",
-            size: 35,
+          listItemProps={{
+            rightIcon: {
+              type: "font-awesome",
+              name: "angle-right",
+              color: "#F79256",
+              size: 35,
+            },
+            title: item.name,
+            titleProps: { style: { fontWeight: "bold" } },
+            subtitle: item.subtitle,
+            bottomDivider: true,
+            containerStyle: styles.containerStyle,
+            onPress: () => {
+              console.log("pressed");
+            },
           }}
-          title={item.name}
-          titleProps={{ style: { fontWeight: "bold" } }}
-          subtitle={item.subtitle}
-          bottomDivider
-          containerStyle={styles.containerStyle}
+          key={index}
         />
       );
     });

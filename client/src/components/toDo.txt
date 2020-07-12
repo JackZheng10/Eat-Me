@@ -4,6 +4,8 @@
 -Clean up the server stuff. Split into proper routes/controllers
 -Organize packages into backend (root folder) and frontend (client folder)
 -For styles, use a themeprovider
+-Uninstall unused packages
+-Other bottom bar option: https://reactnavigation.org/docs/material-bottom-tab-navigator/#screenoptions
 -Example that would wrap app:
 <ThemeProvider
               theme={{

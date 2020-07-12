@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
   },
 });
 
-//todo: only part in scrollview should be friends list?
+//todo: add keyboard listener to unfocus friend search
 
 class Friends extends Component {
   state = { searchTerm: "" };
