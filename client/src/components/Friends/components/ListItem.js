@@ -11,18 +11,12 @@ const styles = StyleSheet.create({
 });
 
 class ListItem extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      tappedIconsOpacity: new Animated.Value(0),
-      tappedIconsDisplay: "none",
-      defaultIconOpacity: new Animated.Value(1),
-      defaultIconDisplay: "flex",
-      defaultIconRotate: new Animated.Value(0),
-      defaultIconRight: new Animated.Value(5),
-    };
-  }
+  state = {
+    defaultIconRotate: new Animated.Value(0),
+    defaultIconRight: new Animated.Value(-135),
+    tappedIconsRight: new Animated.Value(-150),
+    tapped: false,
+  };
 
   // state = {
   //   rightIcon: this.defaultIcon(),
@@ -40,8 +34,7 @@ class ListItem extends Component {
         <Animated.View
           style={{
             flexDirection: "row",
-            opacity: this.state.defaultIconOpacity,
-            display: this.state.defaultIconDisplay,
+
             right: this.state.defaultIconRight,
             transform: [{ rotate: rotation }],
           }}
@@ -55,24 +48,31 @@ class ListItem extends Component {
         </Animated.View>
         <Animated.View
           style={{
-            opacity: this.state.tappedIconsOpacity,
-            display: this.state.tappedIconsDisplay,
             flexDirection: "row",
+            right: this.state.tappedIconsRight,
           }}
         >
           <Icon
             name="paper-plane"
             type="entypo"
             reverse
-            color="#F79256"
+            raised
+            color="#8ED5F5"
             containerStyle={styles.iconContainerStyle}
+            onPress={() => {
+              console.log("pressed inv");
+            }}
           />
           <Icon
             name="trash-can-outline"
             type="material-community"
             reverse
+            raised
             color="#F75555"
             containerStyle={styles.iconContainerStyle}
+            onPress={() => {
+              console.log("pressed del");
+            }}
           />
         </Animated.View>
       </View>
@@ -80,27 +80,50 @@ class ListItem extends Component {
   };
 
   toggleIcons = () => {
-    this.setState({ tappedIconsDisplay: "flex" }, () => {
+    if (this.state.tapped) {
       Animated.timing(this.state.defaultIconRotate, {
-        toValue: 0.5,
+        toValue: 0,
         duration: 500,
       }).start();
 
       Animated.timing(this.state.defaultIconRight, {
-        toValue: 10,
-        duration: 1000,
+        toValue: -135,
+        duration: 500,
       }).start();
 
-      Animated.timing(this.state.tappedIconsOpacity, {
-        toValue: 1,
-        duration: 1000,
+      Animated.timing(this.state.tappedIconsRight, {
+        toValue: -150,
+        duration: 500,
       }).start();
-    });
+
+      this.setState({
+        tapped: false,
+      });
+    } else {
+      Animated.timing(this.state.defaultIconRotate, {
+        toValue: 180,
+        duration: 500,
+      }).start();
+
+      Animated.timing(this.state.defaultIconRight, {
+        toValue: 0,
+        duration: 500,
+      }).start();
+
+      Animated.timing(this.state.tappedIconsRight, {
+        toValue: -15,
+        duration: 500,
+      }).start();
+
+      this.setState({
+        tapped: true,
+      });
+    }
   };
 
   render() {
     let rotation = this.state.defaultIconRotate.interpolate({
-      inputRange: [0, 1],
+      inputRange: [0, 360],
       outputRange: ["0deg", "360deg"],
     });
 

@@ -86,8 +86,9 @@ class FriendsList extends Component {
         <ListItem
           listItemProps={{
             title: item.name,
-            titleProps: { style: { fontWeight: "bold" } },
+            titleProps: { style: { fontWeight: "bold", color: "#F79256" } },
             subtitle: item.subtitle,
+            subtitleProps: { style: { color: "black" } },
             bottomDivider: true,
             containerStyle: styles.containerStyle,
           }}

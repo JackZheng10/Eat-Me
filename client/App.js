@@ -42,16 +42,16 @@ function FriendsStackScreen() {
         headerTitleAlign: "left",
         headerStyle: { backgroundColor: "#00B2CA" },
         headerTitleStyle: { color: "white" },
-        headerRight: () => {
-          return (
-            <MaterialCommunityIcons
-              name="silverware-fork"
-              size={30}
-              color={"white"}
-              style={{ marginRight: 10 }}
-            />
-          );
-        },
+        // headerRight: () => {
+        //   return (
+        //     <MaterialCommunityIcons
+        //       name="silverware-fork"
+        //       size={30}
+        //       color={"white"}
+        //       style={{ marginRight: 10 }}
+        //     />
+        //   );
+        // },
       })}
     >
       <FriendsStack.Screen name="Friends" component={Friends} />
@@ -161,10 +161,10 @@ class App extends Component {
               },
             })}
             tabBarOptions={{
-              activeTintColor: "#F79256",
-              inactiveTintColor: "grey",
+              activeTintColor: "#F5F1ED",
+              inactiveTintColor: "#848482",
               keyboardHidesTabBar: true,
-              style: { backgroundColor: "white" },
+              style: { backgroundColor: "#00B2CA" },
               // style: this.state.keyboardVisible ? { display: "none" } : {},
             }}
             initialRouteName="Friends"
