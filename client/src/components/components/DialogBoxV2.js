@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Text, View, Dimensions, Keyboard } from "react-native";
+import { Text, View, Dimensions, Keyboard, StyleSheet } from "react-native";
 import { Overlay, Divider, Button, Input } from "react-native-elements";
 
 /*
@@ -20,6 +20,49 @@ value (REQUIRED, controlled value of text in input), placeholder
 const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
 
+const styles = StyleSheet.create({
+  buttonTitleStyle: {
+    fontSize: 15,
+    color: "white",
+  },
+  buttonContainerStyle: {
+    marginLeft: 3,
+    marginRight: 3,
+  },
+  title: {
+    fontWeight: "bold",
+    fontSize: 25,
+  },
+  mainContainer: {
+    width: windowWidth - 80,
+  },
+  description: {
+    fontSize: 15,
+    marginBottom: 10,
+  },
+  divider: {
+    backgroundColor: "#00B2CA",
+    height: 2,
+    marginBottom: 5,
+  },
+  buttonContainer: {
+    justifyContent: "flex-end",
+    flexDirection: "row",
+  },
+  inputContainerStyle: {
+    borderRadius: 40,
+    borderWidth: 1,
+    borderColor: "#00B2CA",
+    paddingLeft: 10,
+    paddingRight: 10,
+  },
+  inputStyle: {
+    fontSize: 15,
+    marginLeft: 5,
+    marginRight: 5,
+  },
+});
+
 class DialogBox extends Component {
   componentDidMount() {
     //for android since inputs are still focused when exiting keyboard. prob. a better workaround somewhere
@@ -38,15 +81,9 @@ class DialogBox extends Component {
         <Button
           title={button.label}
           raised
-          titleStyle={{ fontSize: 15, color: "white" }}
-          containerStyle={{
-            marginLeft: 3,
-            marginRight: 3,
-          }}
-          buttonStyle={{
-            backgroundColor: button.color,
-            borderRadius: 40,
-          }}
+          titleStyle={styles.buttonTitleStyle}
+          containerStyle={styles.buttonContainerStyle}
+          buttonStyle={{ borderRadius: 40, backgroundColor: button.color }}
           onPress={button.onPress}
           key={index}
         />
@@ -65,33 +102,19 @@ class DialogBox extends Component {
         width="100%"
         height="100%"
       >
-        <View style={{ width: windowWidth - 80 }}>
-          <Text style={{ fontWeight: "bold", fontSize: 25 }}>{title}</Text>
-          <Divider
-            style={{
-              backgroundColor: "#00B2CA",
-              height: 2,
-              marginBottom: 5,
-            }}
-          />
-          <Text style={{ fontSize: 15, marginBottom: 10 }}>{description}</Text>
+        <View style={styles.mainContainer}>
+          <Text style={styles.title}>{title}</Text>
+          <Divider style={styles.divider} />
+          <Text style={styles.description}>{description}</Text>
           {input && (
             <Input
-              inputStyle={{ fontSize: 15, marginLeft: 5, marginRight: 5 }}
-              inputContainerStyle={{
-                borderRadius: 40,
-                borderWidth: 1,
-                borderColor: "#00B2CA",
-                paddingLeft: 10,
-                paddingRight: 10,
-              }}
+              inputStyle={styles.inputStyle}
+              inputContainerStyle={styles.inputContainerStyle}
               ref="inputField"
               {...inputProps}
             />
           )}
-          <View style={{ justifyContent: "flex-end", flexDirection: "row" }}>
-            {this.renderButtons()}
-          </View>
+          <View style={styles.buttonContainer}>{this.renderButtons()}</View>
         </View>
       </Overlay>
     );

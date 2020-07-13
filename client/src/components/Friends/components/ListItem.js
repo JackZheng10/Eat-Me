@@ -7,13 +7,12 @@ const styles = StyleSheet.create({
     marginTop: -10,
     marginBottom: -10,
   },
-  fadingContainer: {},
 });
 
 class ListItem extends Component {
   state = {
-    defaultIconRotate: new Animated.Value(0),
-    defaultIconRight: new Animated.Value(-135),
+    arrowRotate: new Animated.Value(0),
+    arrowRight: new Animated.Value(-135),
     tappedIconsRight: new Animated.Value(-150),
     tapped: false,
   };
@@ -34,8 +33,7 @@ class ListItem extends Component {
         <Animated.View
           style={{
             flexDirection: "row",
-
-            right: this.state.defaultIconRight,
+            right: this.state.arrowRight,
             transform: [{ rotate: rotation }],
           }}
         >
@@ -81,12 +79,12 @@ class ListItem extends Component {
 
   toggleIcons = () => {
     if (this.state.tapped) {
-      Animated.timing(this.state.defaultIconRotate, {
+      Animated.timing(this.state.arrowRotate, {
         toValue: 0,
         duration: 500,
       }).start();
 
-      Animated.timing(this.state.defaultIconRight, {
+      Animated.timing(this.state.arrowRight, {
         toValue: -135,
         duration: 500,
       }).start();
@@ -100,12 +98,12 @@ class ListItem extends Component {
         tapped: false,
       });
     } else {
-      Animated.timing(this.state.defaultIconRotate, {
+      Animated.timing(this.state.arrowRotate, {
         toValue: 180,
         duration: 500,
       }).start();
 
-      Animated.timing(this.state.defaultIconRight, {
+      Animated.timing(this.state.arrowRight, {
         toValue: 0,
         duration: 500,
       }).start();
@@ -122,7 +120,7 @@ class ListItem extends Component {
   };
 
   render() {
-    let rotation = this.state.defaultIconRotate.interpolate({
+    let rotation = this.state.arrowRotate.interpolate({
       inputRange: [0, 360],
       outputRange: ["0deg", "360deg"],
     });

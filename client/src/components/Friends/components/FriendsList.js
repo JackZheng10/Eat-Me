@@ -77,6 +77,13 @@ const styles = StyleSheet.create({
   containerStyle: {
     backgroundColor: "#F5F1ED",
   },
+  titleStyle: {
+    fontWeight: "bold",
+    color: "#F79256",
+  },
+  subtitleStyle: {
+    color: "black",
+  },
 });
 
 class FriendsList extends Component {
@@ -86,9 +93,9 @@ class FriendsList extends Component {
         <ListItem
           listItemProps={{
             title: item.name,
-            titleProps: { style: { fontWeight: "bold", color: "#F79256" } },
+            titleProps: { style: styles.titleStyle },
             subtitle: item.subtitle,
-            subtitleProps: { style: { color: "black" } },
+            subtitleProps: { style: styles.subtitleStyle },
             bottomDivider: true,
             containerStyle: styles.containerStyle,
           }}

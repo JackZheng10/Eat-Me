@@ -3,8 +3,9 @@
 -Different grid system? Or figure out current one. May not even need one. See: https://github.com/react-native-elements/react-native-elements-app
 -Clean up the server stuff. Split into proper routes/controllers
 -Organize packages into backend (root folder) and frontend (client folder)
--For styles, use a themeprovider
+-For styles, use a themeprovider?
 -Uninstall unused packages
+-Standardize style naming convention + styling convention stuff
 -Other bottom bar option: https://reactnavigation.org/docs/material-bottom-tab-navigator/#screenoptions
 -Example that would wrap app:
 <ThemeProvider

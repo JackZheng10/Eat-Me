@@ -7,7 +7,7 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
-import { SearchBar } from "react-native-elements";
+import { SearchBar, Icon, Divider } from "react-native-elements";
 import { withNavigation } from "react-navigation";
 import Constants from "expo-constants";
 import FriendsList from "./components/FriendsList";
@@ -28,6 +28,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5F1ED",
     // backgroundColor: "#8ED5F5",
     // backgroundColor: "#00B2CA",
+    width: windowWidth - 60,
+    borderBottomColor: "transparent",
+    borderTopColor: "transparent",
   },
   searchInputStyle: {
     color: "black",
@@ -37,6 +40,13 @@ const styles = StyleSheet.create({
   searchInputContainerStyle: {
     backgroundColor: "white",
     borderRadius: 40,
+  },
+  floatingButton: {
+    position: "absolute",
+    right: 0,
+    top: 0,
+    flexDirection: "row",
+    justifyContent: "flex-end",
   },
 });
 
@@ -71,8 +81,21 @@ class Friends extends Component {
             onChange={this.handleSearchChange}
             onClear={this.clearSearch}
           />
+          <Divider style={{ backgroundColor: "grey", height: 0.1 }} />
         </View>
         <FriendsList />
+        <View style={styles.floatingButton}>
+          <Icon
+            name="add"
+            type="material"
+            color="#F79256"
+            raised
+            reverse
+            onPress={() => {
+              console.log("pressed floating button");
+            }}
+          />
+        </View>
       </View>
     );
   }
