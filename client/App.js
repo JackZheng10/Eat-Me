@@ -7,6 +7,10 @@ import { AppLoading } from "expo";
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Friends, Sessions, Settings, Login, Register } from "./src/components";
 
+//!!!dont hardcode positions and sizes, use windowWidth/windowHeight  (see other files for example) whenever possible
+//hardcoding should(?) be fine if youre using top/bottom/left/right tho
+//with that being said, make sure to test on different sized screens to make sure what we've done with this philosophy works properly
+
 //DOCS:
 //bottom navigator docs: https://reactnavigation.org/docs/bottom-tab-navigator/
 //stack navigation docs: https://reactnavigation.org/docs/stack-navigator/#props
@@ -22,6 +26,7 @@ import { Friends, Sessions, Settings, Login, Register } from "./src/components";
 //todo:
 //probably want header and footer to be the aqua color? idk play with it
 //dropshadow to topbar and bottombar?
+//in future will need some sort of webhook/listener for updates like friend requests and matches
 
 const FriendsStack = createStackNavigator();
 const SessionsStack = createStackNavigator();

@@ -100,7 +100,7 @@ class DialogBox extends Component {
         transparent={true}
         animationType="fade"
         width="100%"
-        height="100%"
+        height="100%" //prob dont need
       >
         <View style={styles.mainContainer}>
           <Text style={styles.title}>{title}</Text>
