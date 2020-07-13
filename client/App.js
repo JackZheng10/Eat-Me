@@ -42,6 +42,16 @@ function FriendsStackScreen() {
         headerTitleAlign: "left",
         headerStyle: { backgroundColor: "#00B2CA" },
         headerTitleStyle: { color: "white" },
+        headerRight: () => {
+          return (
+            <MaterialCommunityIcons
+              name="silverware-fork"
+              size={30}
+              color={"white"}
+              style={{ marginRight: 10 }}
+            />
+          );
+        },
       })}
     >
       <FriendsStack.Screen name="Friends" component={Friends} />

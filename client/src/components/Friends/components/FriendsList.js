@@ -85,20 +85,11 @@ class FriendsList extends Component {
       return (
         <ListItem
           listItemProps={{
-            rightIcon: {
-              type: "font-awesome",
-              name: "angle-right",
-              color: "#F79256",
-              size: 35,
-            },
             title: item.name,
             titleProps: { style: { fontWeight: "bold" } },
             subtitle: item.subtitle,
             bottomDivider: true,
             containerStyle: styles.containerStyle,
-            onPress: () => {
-              console.log("pressed");
-            },
           }}
           key={index}
         />
