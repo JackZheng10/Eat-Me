@@ -80,7 +80,7 @@ const countUsers = async (req, res, next) => {
 
 const register = async (req, res) => {
   try {
-    const registeredUser = await User.create({
+    const user = await User.create({
       ID: res.locals.count + 1,
       fName: req.body.fName,
       lName: req.body.lName,
@@ -102,4 +102,41 @@ const register = async (req, res) => {
   }
 };
 
-module.exports = { login, checkDuplicatePhone, countUsers, register };
+const findUser = async (req, res, next) => {
+  try {
+    const user = await User.findOne({ phone: req.body.phone });
+
+    if (user) {
+      res.locals.user = user;
+      next();
+    } else {
+      return res.json({
+        success: false,
+        message: "User could not be found. Please try again.",
+      });
+    }
+  } catch (error) {
+    console.log("Error with finding user: " + error);
+
+    return res.json({
+      success: false,
+      message: "Error with adding friend. Please try again.",
+    });
+  }
+};
+
+const addFriend = async (req, res) => {
+  return res.json({
+    success: true,
+    message: "This is a test message, but good job getting here.",
+  });
+};
+
+module.exports = {
+  login,
+  checkDuplicatePhone,
+  countUsers,
+  register,
+  findUser,
+  addFriend,
+};

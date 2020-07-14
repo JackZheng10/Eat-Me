@@ -9,6 +9,8 @@ import {
 } from "react-native";
 import { SearchBar, Icon, Divider } from "react-native-elements";
 import { withNavigation } from "react-navigation";
+import axios from "axios";
+import baseURL from "../../../baseURL";
 import FriendsList from "./components/FriendsList";
 import DialogBox from "../components/DialogBox";
 
@@ -51,6 +53,7 @@ const styles = StyleSheet.create({
 });
 
 //todo: add keyboard listener to unfocus friend search
+//todo: decide on 10-digit phone or not
 
 class Friends extends Component {
   state = { searchTerm: "", showAddDialog: false, addedPhone: "" };
@@ -80,8 +83,21 @@ class Friends extends Component {
     }
   };
 
-  handleAddFriend = () => {
-    alert("Adding friend");
+  handleAddFriend = async () => {
+    try {
+      const response = await axios.post(`${baseURL}/user/addFriend`, {
+        phone: this.state.addedPhone,
+      });
+
+      if (response.data.success) {
+        alert("Totally sent a friend request");
+      } else {
+        alert(response.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      alert("Error with adding friend. Please try again.");
+    }
   };
 
   render() {

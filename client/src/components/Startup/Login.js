@@ -8,7 +8,6 @@ import {
   Keyboard,
 } from "react-native";
 import { Input, Button, Text } from "react-native-elements";
-import { Col, Row, Grid } from "react-native-easy-grid";
 import { withNavigation } from "react-navigation";
 import Constants from "expo-constants";
 import AsyncStorage from "@react-native-community/async-storage";
@@ -78,7 +77,7 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     width: windowWidth,
-    margin: windowWidth - 490,
+    margin: windowWidth - 650,
   },
   logo: {
     resizeMode: "contain",

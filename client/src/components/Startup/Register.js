@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     width: windowWidth,
-    margin: windowWidth - 490,
+    margin: windowWidth - 650,
   },
   logo: {
     resizeMode: "contain",
@@ -268,7 +268,7 @@ class Register extends Component {
     if (validInputs) {
       //check if phone number is already in use
       try {
-        const response = await axios.post(
+        const response = await axios.get(
           `${baseURL}/user/checkDuplicatePhone`,
           {
             phone: this.state.phone,
