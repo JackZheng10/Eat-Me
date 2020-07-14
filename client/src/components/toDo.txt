@@ -1,6 +1,34 @@
 -Organize files for views into these folders, and use component sub-folders for them as well
 -Standardize the layout (nesting of container/view/whatever we want to use)
--I hate native base so I'm gonna use react-native-elements. Can switch back if needed
--Different grid system?
+-Different grid system? Or figure out current one. May not even need one. See: https://github.com/react-native-elements/react-native-elements-app
 -Clean up the server stuff. Split into proper routes/controllers
--Styling. It hurts so much on mobile. MUI spoils people
+-Organize packages into backend (root folder) and frontend (client folder)
+-For styles, use a themeprovider?
+-Uninstall unused packages
+-Standardize style naming convention + styling convention stuff
+-Other bottom bar option: https://reactnavigation.org/docs/material-bottom-tab-navigator/#screenoptions
+-Example that would wrap app:
+<ThemeProvider
+              theme={{
+                Input: {
+                  containerStyle: {
+                    width: SCREEN_WIDTH - 50,
+                  },
+                  inputContainerStyle: {
+                    borderRadius: 40,
+                    borderWidth: 1,
+                    borderColor: 'rgba(110, 120, 170, 1)',
+                    height: 50,
+                    marginVertical: 10,
+                  },
+                  placeholderTextColor: 'rgba(110, 120, 170, 1)',
+                  inputStyle: {
+                    marginLeft: 10,
+                    color: 'white',
+                  },
+                  keyboardAppearance: 'light',
+                  blurOnSubmit: false,
+                },
+              }}
+            >
+            //Notes: Some supplied props to each element are documented while others are not, this will require some digging around the src code.

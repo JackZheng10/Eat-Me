@@ -17,7 +17,7 @@ const login = async (req, res) => {
 
       return res.json({
         success: true,
-        message: "Successfully logged in, token is attached",
+        message: "Successfully logged in, token is attached.",
         token: token,
       });
     }
@@ -42,14 +42,17 @@ const checkDuplicatePhone = async (req, res, next) => {
           "Phone number already in use. Please enter a new one and try again.",
       });
     } else {
-      next();
+      return res.json({
+        success: true,
+        message: "Phone number not in use.",
+      });
     }
   } catch (error) {
     console.log("Error with checking duplicate phone number: " + error);
 
     return res.json({
       success: false,
-      message: "Error with registration. Please try again.",
+      message: "Error with checking duplicate phone number. Please try again.",
     });
   }
 };
@@ -85,7 +88,10 @@ const register = async (req, res) => {
       password: req.body.password,
     });
 
-    return res.json({ success: true, message: "Successfully registered!" });
+    return res.json({
+      success: true,
+      message: "Successfully registered! Please log in to continue.",
+    });
   } catch (error) {
     console.log("Error with registering: " + error);
 

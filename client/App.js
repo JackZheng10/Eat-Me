@@ -1,137 +1,195 @@
 import React, { Component } from "react";
-import {
-  Container,
-  Header,
-  Content,
-  Footer,
-  FooterTab,
-  Button,
-  Icon,
-  Text,
-} from "native-base";
-import { ActivityIndicator, StyleSheet } from "react-native";
-import { Col, Row, Grid } from "react-native-easy-grid";
-import * as Font from "expo-font";
-//import { NavigationContainer } from '@react-navigation/native';
-import Friends from "./src/components/Friends";
-import Sessions from "./src/components/Sessions";
+import { Text, View, Platform, Keyboard, StyleSheet } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { AppLoading } from "expo";
+import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Friends, Sessions, Settings, Login, Register } from "./src/components";
 import Session from "./src/components/Session";
-import Settings from "./src/components/Settings";
-import Login from "./src/components/Login";
-import Register from "./src/components/Register";
 
-const styles = StyleSheet.create({
-  mainColumn: {
-    alignItems: "center",
-  },
-  appName: {
-    fontWeight: "bold",
-    fontSize: 40,
-    color: "white",
-  },
-  header: {
-    backgroundColor: "#BB4430",
-  },
-});
+//!!!dont hardcode positions and sizes, use windowWidth/windowHeight  (see other files for example) whenever possible
+//hardcoding should(?) be fine if youre using top/bottom/left/right tho
+//with that being said, make sure to test on different sized screens to make sure what we've done with this philosophy works properly
+
+//DOCS:
+//bottom navigator docs: https://reactnavigation.org/docs/bottom-tab-navigator/
+//stack navigation docs: https://reactnavigation.org/docs/stack-navigator/#props
+//navigation prop docs: https://reactnavigation.org/docs/navigation-prop/
+//available icons for RNE and as a raw icon (seen in this file): https://icons.expo.fyi/
+//color palette: https://coolors.co/f79256-8ed5f5-f5f1ed-00b2ca
+
+//IMPORTANT NOTE: the stack navigator will save the route that you're on. for example:
+//-go to settings, then the example stack view, then away, then back, and you'll see youre still in the stacked view
+//-this is probably good behavior for our usage, but im sure theres a workaround in the nav. prop or stack nav. docs if needed
+//-for default behavior: maybe think of each "stack screen" as its own separate navigation, and the tab navigator as a means to get to that navigation.
+
+//todo:
+//probably want header and footer to be the aqua color? idk play with it
+//dropshadow to topbar and bottombar?
+//in future will need some sort of webhook/listener for updates like friend requests and matches..or firebase's firestore? firebase auth is also interesting
+
+const FriendsStack = createStackNavigator();
+const SessionsStack = createStackNavigator();
+const SettingsStack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+
+function ExampleStack() {
+	return (
+		<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+			<Text>Here's an example of how views can "stack"!</Text>
+		</View>
+	);
+}
+
+function FriendsStackScreen() {
+	return (
+		<FriendsStack.Navigator
+			screenOptions={({ route, navigation }) => ({
+				// headerShown: false,
+				headerTitleAlign: "left",
+				headerStyle: { backgroundColor: "#00B2CA" },
+				headerTitleStyle: { color: "white" },
+				// headerRight: () => {
+				//   return (
+				//     <MaterialCommunityIcons
+				//       name="silverware-fork"
+				//       size={30}
+				//       color={"white"}
+				//       style={{ marginRight: 10 }}
+				//     />
+				//   );
+				// },
+			})}
+		>
+			<FriendsStack.Screen name="Friends" component={Friends} />
+			<FriendsStack.Screen name="StackExample" component={ExampleStack} />
+		</FriendsStack.Navigator>
+	);
+}
+
+function SessionsStackScreen() {
+	return (
+		<SessionsStack.Navigator
+			screenOptions={({ route, navigation }) => ({
+				// headerShown: false,
+				headerTitleAlign: "left",
+				headerStyle: { backgroundColor: "#00B2CA" },
+				headerTitleStyle: { color: "white" },
+			})}
+		>
+			<SessionsStack.Screen name="Sessions" component={Sessions} />
+			<SessionsStack.Screen name="Session" component={Session} />
+		</SessionsStack.Navigator>
+	);
+}
+
+function SettingsStackScreen() {
+	return (
+		<SettingsStack.Navigator
+			screenOptions={({ route, navigation }) => ({
+				// headerShown: false,
+				headerTitleAlign: "left",
+				headerStyle: { backgroundColor: "#00B2CA" },
+				headerTitleStyle: { color: "white" },
+			})}
+		>
+			<SettingsStack.Screen name="Settings" component={Settings} />
+			<SettingsStack.Screen name="StackExample" component={ExampleStack} />
+		</SettingsStack.Navigator>
+	);
+}
 
 class App extends Component {
-  state = {
-    currentView: "register",
-    loading: true,
-    config: null,
-  };
+	state = { loading: true, keyboardVisible: false };
 
-  //needed on android sorry
-  componentDidMount = async () => {
-    await Font.loadAsync({
-      Roboto: require("native-base/Fonts/Roboto.ttf"),
-      Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
-    });
-    this.setState({ loading: false });
-  };
+	//for android, because android. prob still janky. with access to manifest file would be easy. figure out later.
+	componentDidMount = () => {
+		console.log(Sessions);
 
-  //Need to organize this class much better
-  renderView = () => {
-    switch (this.state.currentView) {
-      case "register":
-        return <Register />;
-      case "login":
-        return <Login />;
-      case "sessions":
-        return <Sessions switchView={this.handleSetView} />;
-      case "friends":
-        return <Friends />;
-      case "settings":
-        return <Settings />;
-      case "session":
-        return <Session sessionDetails={this.state.config} />;
-    }
-  };
+		if (Platform.OS !== "android") {
+			return;
+		}
 
-  handleSetView = (view, config) => {
-    this.setState({ currentView: view, config });
-  };
+		const keyboardDidShowListener = Keyboard.addListener(
+			"keyboardDidShow",
+			() => {
+				this.setState({ keyboardVisible: true });
+			}
+		);
+		const keyboardDidHideListener = Keyboard.addListener(
+			"keyboardDidHide",
+			() => {
+				this.setState({ keyboardVisible: false });
+			}
+		);
 
-  handleActive = (view) => {
-    return this.state.currentView === view;
-  };
+		//understand better please
+		return () => {
+			keyboardDidShowListener.remove();
+			keyboardDidHideListener.remove();
+		};
+	};
 
-  render() {
-    if (this.state.loading) {
-      return (
-        <Container>
-          <ActivityIndicator />
-        </Container>
-      );
-    } else {
-      return (
-        <Container>
-          <Header style={styles.header}>
-            <Col style={styles.mainColumn}>
-              <Row>
-                <Text style={styles.appName}>Eat Me</Text>
-              </Row>
-            </Col>
-          </Header>
-          {this.renderView()}
-          <Footer>
-            <FooterTab style={styles.header}>
-              <Button
-                active={this.handleActive("friends")}
-                onPress={() => this.handleSetView("friends")}
-              >
-                <Icon name="person" />
-              </Button>
-              <Button
-                active={this.handleActive("sessions")}
-                onPress={() => this.handleSetView("sessions")}
-              >
-                <Icon name="pie" />
-              </Button>
-              <Button
-                active={this.handleActive("settings")}
-                onPress={() => this.handleSetView("settings")}
-              >
-                <Icon name="settings" />
-              </Button>
-              <Button
-                active={this.handleActive("login")}
-                onPress={() => this.handleSetView("login")}
-              >
-                <Icon name="log-in" />
-              </Button>
-              <Button
-                active={this.handleActive("register")}
-                onPress={() => this.handleSetView("register")}
-              >
-                <Icon name="paper" />
-              </Button>
-            </FooterTab>
-          </Footer>
-        </Container>
-      );
-    }
-  }
+	render() {
+		if (!this.state.loading) {
+			return (
+				<AppLoading
+					onFinish={() => this.setState({ loading: false })}
+					onError={console.warn}
+				/>
+			);
+		} else {
+			return (
+				<NavigationContainer>
+					<Tab.Navigator
+						screenOptions={({ route }) => ({
+							tabBarIcon: ({ focused, color, size }) => {
+								switch (route.name) {
+									case "Friends":
+										return (
+											<MaterialIcons name="people" size={size} color={color} />
+										);
+
+									case "Sessions":
+										return (
+											<MaterialCommunityIcons
+												name="food"
+												size={size}
+												color={color}
+											/>
+										);
+
+									case "Settings":
+										return (
+											<MaterialIcons
+												name="settings"
+												size={size}
+												color={color}
+											/>
+										);
+								}
+							},
+						})}
+						tabBarOptions={{
+							activeTintColor: "#F5F1ED",
+							inactiveTintColor: "#848482",
+							keyboardHidesTabBar: true,
+							style: { backgroundColor: "#00B2CA" },
+							// style: this.state.keyboardVisible ? { display: "none" } : {},
+						}}
+						initialRouteName="Friends"
+					>
+						<Tab.Screen name="Friends" component={FriendsStackScreen} />
+						<Tab.Screen name="Sessions" component={SessionsStackScreen} />
+						<Tab.Screen name="Settings" component={SettingsStackScreen} />
+						<Tab.Screen name="Login" component={Login} />
+						<Tab.Screen name="Register" component={Register} />
+					</Tab.Navigator>
+				</NavigationContainer>
+			);
+		}
+	}
 }
 
 export default App;
