@@ -12,9 +12,7 @@ import {
 import { Input, Button, Overlay } from "react-native-elements";
 import { Col, Row, Grid } from "react-native-easy-grid";
 import { withNavigation } from "react-navigation";
-import Dialog from "react-native-dialog";
 import DialogBox from "../components/DialogBox";
-import DialogBoxV2 from "../components/DialogBoxV2";
 import Constants from "expo-constants";
 import axios from "axios";
 import Logo from "../../images/Logo.png";
@@ -373,7 +371,7 @@ class Register extends Component {
     return (
       <ScrollView>
         <View style={styles.mainContainer}>
-          <DialogBoxV2
+          <DialogBox
             overlayProps={{
               isVisible: this.state.showVerifyDialog,
               onBackdropPress: this.toggleVerifyDialog,
@@ -391,7 +389,7 @@ class Register extends Component {
               },
               {
                 label: "Verify",
-                color: "#5DF755",
+                color: "#8ED5F5",
                 onPress: this.handleRegistration,
               },
             ]}

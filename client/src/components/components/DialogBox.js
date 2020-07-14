@@ -1,80 +1,121 @@
 import React, { Component } from "react";
-import Dialog from "react-native-dialog";
-
-//custom-made dialog component leveraged for better reusage from react-native-dialog
-//courtesy of jack ty, might change due to janky fade out on android
-//might not use due to messed up fadeout animation
+import { Text, View, Dimensions, Keyboard, StyleSheet } from "react-native";
+import { Overlay, Divider, Button, Input } from "react-native-elements";
 
 /*
-Props:
--visible (bool): whether or not the dialog is visible
--title (string): title of the dialog
--description (string): the dialog's description/text
--input (bool): whether or not an input is present
--onInputChange (function): called whenever the input is changed, called with a parameter of the current input (string)
--inputProps (object): props supplied to the input component (if present)
--buttons (array of objects): the buttons to render, each object in the array has the button name, color
+Accepted props
+Required:
+-title (string): title of the alert
+-description (string): description of the alert
+-overlayProps (object): props supplied to the RNE overlay, ex: isVisible (REQUIRED), onBackdropPress
+-buttons (array of objects): the buttons to render, each object in the array has: label, color, and onPress
+-handler to close the dialog (can pass in via button, onBackropPress, etc.)
+-input (bool): whether or not to include an input
+
+Optional:
+-inputProps (object, REQUIRED if "input" is true): props supplied to the RNE input, ex: onChange (REQUIRED, passes in an event object to callback), 
+value (REQUIRED, controlled value of text in input), placeholder
 */
 
-/*
-Example usage (if placed into Register):
-<DialogBox
-              visible={this.state.showVerifyDialog}
-              title="Verification"
-              description="Please enter the verification code we just texted you in order to complete registration."
-              input={true}
-              inputProps={{ placeholder: "Code", style: { paddingLeft: 5 } }}
-              buttons={[
-                {
-                  label: "Resend",
-                  color: "#F79256",
-                  onPress: this.toggleVerifyDialog,
-                },
-                {
-                  label: "Cancel",
-                  color: "#F79256",
-                  onPress: this.toggleVerifyDialog,
-                },
-                {
-                  label: "Verify",
-                  color: "#F79256",
-                  onPress: this.toggleVerifyDialog,
-                },
-              ]}
-              onInputChange={this.handleCodeChange}
-            />
-*/
+const windowHeight = Dimensions.get("window").height;
+const windowWidth = Dimensions.get("window").width;
+
+const styles = StyleSheet.create({
+  buttonTitleStyle: {
+    fontSize: 15,
+    color: "white",
+  },
+  buttonContainerStyle: {
+    marginLeft: 3,
+    marginRight: 3,
+  },
+  title: {
+    fontWeight: "bold",
+    fontSize: 25,
+  },
+  mainContainer: {
+    width: windowWidth - 80,
+  },
+  description: {
+    fontSize: 15,
+    marginBottom: 10,
+  },
+  divider: {
+    backgroundColor: "#00B2CA",
+    height: 2,
+    marginBottom: 5,
+  },
+  buttonContainer: {
+    justifyContent: "flex-end",
+    flexDirection: "row",
+  },
+  inputContainerStyle: {
+    borderRadius: 40,
+    borderWidth: 1,
+    borderColor: "#00B2CA",
+    paddingLeft: 10,
+    paddingRight: 10,
+  },
+  inputStyle: {
+    fontSize: 15,
+    marginLeft: 5,
+    marginRight: 5,
+  },
+});
 
 class DialogBox extends Component {
-  handleInputChange = (event) => {
-    this.props.onInputChange(event.nativeEvent.text);
+  componentDidMount() {
+    //for android since inputs are still focused when exiting keyboard. prob. a better workaround somewhere
+    Keyboard.addListener("keyboardDidHide", this.unfocusInputs);
+  }
+
+  unfocusInputs = () => {
+    if (this.refs["inputField"]) {
+      this.refs["inputField"].blur();
+    }
   };
 
   renderButtons = () => {
     return this.props.buttons.map((button, index) => {
       return (
-        <Dialog.Button
-          label={button.label}
-          color={button.color}
-          key={index}
+        <Button
+          title={button.label}
+          raised
+          titleStyle={styles.buttonTitleStyle}
+          containerStyle={styles.buttonContainerStyle}
+          buttonStyle={{ borderRadius: 40, backgroundColor: button.color }}
           onPress={button.onPress}
+          key={index}
         />
       );
     });
   };
 
   render() {
-    const { visible, title, description, input, inputProps } = this.props;
+    const { overlayProps, title, description, input, inputProps } = this.props;
 
     return (
-      <Dialog.Container visible={visible} useNativeDriver={false}>
-        <Dialog.Title style={{ fontWeight: "bold" }}>{title}</Dialog.Title>
-        {input && (
-          <Dialog.Input {...inputProps} onChange={this.handleInputChange} />
-        )}
-        <Dialog.Description>{description}</Dialog.Description>
-        {this.renderButtons()}
-      </Dialog.Container>
+      <Overlay
+        {...overlayProps}
+        animationType="fade"
+        width="100%"
+        height="100%"
+      >
+        <View style={styles.mainContainer}>
+          <Text style={styles.title}>{title}</Text>
+          <Divider style={styles.divider} />
+          <Text style={styles.description}>{description}</Text>
+          {input && (
+            <Input
+              inputStyle={styles.inputStyle}
+              inputContainerStyle={styles.inputContainerStyle}
+              ref="inputField"
+              {...inputProps}
+            />
+          )}
+          <View style={styles.buttonContainer}>{this.renderButtons()}</View>
+        </View>
+      </Overlay>
     );
   }
 }

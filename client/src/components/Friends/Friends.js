@@ -9,8 +9,8 @@ import {
 } from "react-native";
 import { SearchBar, Icon, Divider } from "react-native-elements";
 import { withNavigation } from "react-navigation";
-import Constants from "expo-constants";
 import FriendsList from "./components/FriendsList";
+import DialogBox from "../components/DialogBox";
 
 const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
 //todo: add keyboard listener to unfocus friend search
 
 class Friends extends Component {
-  state = { searchTerm: "" };
+  state = { searchTerm: "", showAddDialog: false, addedPhone: "" };
 
   handleSearchChange = (event) => {
     this.setState({ searchTerm: event.nativeEvent.text });
@@ -63,9 +63,56 @@ class Friends extends Component {
     this.setState({ searchTerm: "" });
   };
 
+  toggleAddDialog = () => {
+    this.setState({ showAddDialog: !this.state.showAddDialog });
+  };
+
+  handleAddedPhoneChange = (event) => {
+    let input = event.nativeEvent.text;
+
+    const phoneRegex = /^[0-9\b]+$/;
+
+    if (input === "" || phoneRegex.test(input)) {
+      if (input.length > 10) {
+        input = input.substr(0, 10);
+      }
+      this.setState({ addedPhone: input });
+    }
+  };
+
+  handleAddFriend = () => {
+    alert("Adding friend");
+  };
+
   render() {
     return (
       <View style={styles.mainContainer}>
+        <DialogBox
+          overlayProps={{
+            isVisible: this.state.showAddDialog,
+            onBackdropPress: this.toggleAddDialog,
+          }}
+          buttons={[
+            {
+              label: "Cancel",
+              color: "#F75555",
+              onPress: this.toggleAddDialog,
+            },
+            {
+              label: "Add",
+              color: "#8ED5F5",
+              onPress: this.handleAddFriend,
+            },
+          ]}
+          input={true}
+          inputProps={{
+            placeholder: "Phone Number",
+            onChange: this.handleAddedPhoneChange,
+            value: this.state.addedPhone,
+          }}
+          title="Add a Friend"
+          description="Please enter your friend's phone number to send them a friend request."
+        />
         <View style={styles.searchContainer}>
           <SearchBar
             placeholder="Search for a friend by name"
@@ -91,9 +138,7 @@ class Friends extends Component {
             color="#F79256"
             raised
             reverse
-            onPress={() => {
-              console.log("pressed floating button");
-            }}
+            onPress={this.toggleAddDialog}
           />
         </View>
       </View>
