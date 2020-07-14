@@ -15,7 +15,7 @@ import {
 } from "native-base";
 import { Row } from "react-native-easy-grid";
 import CategoryButton from "./CategoryButton";
-import { CATEGORIES } from "../constants";
+import { CATEGORIES } from "../../constants";
 
 class Categories extends Component {
 	state = {

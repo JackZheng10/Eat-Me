@@ -14,9 +14,10 @@ import {
 	Content,
 	Footer,
 } from "native-base";
-import Session from "../Session.js";
+//import Session from "../Session.js";
 import baseURL from "../../../baseURL.js";
 import axios from "axios";
+import CreateSession from "../CreateSession/CreateSession";
 
 const styles = StyleSheet.create({
 	ListItem: {
@@ -41,11 +42,10 @@ const styles = StyleSheet.create({
 class Sessions extends Component {
 	state = {
 		SessionList: [],
+		modalVisible: false,
 	};
 
 	componentDidMount = async () => {
-		console.log(this.props);
-
 		//Get session List from DB, Transform Data into individual componenets
 		const Sessions = await axios.post(baseURL + "/simple/getUserSessions", {
 			ID: 1,
@@ -73,20 +73,10 @@ class Sessions extends Component {
 	};
 
 	renderSession = (sessionDetails) => {
-		/*
-    const sessionView = {
-      Title: "Sessions",
-      View: <Session sessionDetails={sessionDetails} />,
-    };
-    */
-
-		//this.props.switchView("session", sessionDetails);
-		//const currentRoute = this.props.route.name;
 		this.props.navigation.push("Session", { sessionDetails });
 	};
 
 	renderSessionListItems = () => {
-		console.log(this.state.SessionList);
 		return this.state.SessionList.map((Session) => {
 			return (
 				<ListItem
@@ -112,11 +102,30 @@ class Sessions extends Component {
 		});
 	};
 
+	createNewSession = () => {
+		this.setState({ modalVisible: true });
+	};
+
+	exitModal = () => {
+		this.setState({ modalVisible: false });
+	};
+
 	render() {
 		return (
 			<>
-				<Content>{this.setSessionsView()}</Content>
-				<Button title="New" style={styles.FloatingButton}>
+				<Content>
+					{this.setSessionsView()}
+
+					<CreateSession
+						modalVisible={this.state.modalVisible}
+						exitModal={this.exitModal}
+					/>
+				</Content>
+				<Button
+					onPress={this.createNewSession}
+					title="New"
+					style={styles.FloatingButton}
+				>
 					<Text>+</Text>
 				</Button>
 			</>

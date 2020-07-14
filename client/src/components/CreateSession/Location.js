@@ -15,7 +15,7 @@ import {
 	Input,
 } from "native-base";
 import MapView, { Marker } from "react-native-maps";
-import baseURL from "../../baseURL";
+import baseURL from "../../../baseURL";
 import axios from "axios";
 
 /* 

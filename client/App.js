@@ -5,8 +5,14 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { AppLoading } from "expo";
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Friends, Sessions, Settings, Login, Register } from "./src/components";
-import Session from "./src/components/Session";
+import {
+	Friends,
+	Sessions,
+	Session,
+	Settings,
+	Login,
+	Register,
+} from "./src/components";
 
 //!!!dont hardcode positions and sizes, use windowWidth/windowHeight  (see other files for example) whenever possible
 //hardcoding should(?) be fine if youre using top/bottom/left/right tho
