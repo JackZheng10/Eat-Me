@@ -26,7 +26,7 @@ import { Friends, Sessions, Settings, Login, Register } from "./src/components";
 //todo:
 //probably want header and footer to be the aqua color? idk play with it
 //dropshadow to topbar and bottombar?
-//in future will need some sort of webhook/listener for updates like friend requests and matches
+//in future will need some sort of webhook/listener for updates like friend requests and matches..or firebase's firestore? firebase auth is also interesting
 
 const FriendsStack = createStackNavigator();
 const SessionsStack = createStackNavigator();

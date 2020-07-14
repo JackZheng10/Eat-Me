@@ -120,12 +120,12 @@ class ListItem extends Component {
   };
 
   render() {
+    const { listItemProps } = this.props;
+
     let rotation = this.state.arrowRotate.interpolate({
       inputRange: [0, 360],
       outputRange: ["0deg", "360deg"],
     });
-
-    const { listItemProps } = this.props;
 
     return (
       <RNEListItem
