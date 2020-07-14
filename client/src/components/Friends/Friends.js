@@ -67,7 +67,15 @@ class Friends extends Component {
   };
 
   toggleAddDialog = () => {
-    this.setState({ showAddDialog: !this.state.showAddDialog });
+    //to prevent entered phone from being reset
+    if (this.state.showAddDialog) {
+      this.setState({
+        showAddDialog: !this.state.showAddDialog,
+        addedPhone: "",
+      });
+    } else {
+      this.setState({ showAddDialog: !this.state.showAddDialog });
+    }
   };
 
   handleAddedPhoneChange = (event) => {
