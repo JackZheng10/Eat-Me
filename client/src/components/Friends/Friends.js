@@ -54,6 +54,8 @@ const styles = StyleSheet.create({
 
 //todo: add keyboard listener to unfocus friend search
 //todo: decide on 10-digit phone or not
+//todo: input validation for add friend?
+//todo: format phone number differently?
 
 class Friends extends Component {
   state = {

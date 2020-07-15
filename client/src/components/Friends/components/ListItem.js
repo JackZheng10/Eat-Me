@@ -81,12 +81,13 @@ class ListItem extends Component {
           {/*friend requests list buttons*/}
           {this.props.friendReqConfig && (
             <Icon
-              name="cancel"
+              name="add"
               type="material"
               reverse
               raised
               color="#F75555"
               containerStyle={styles.iconContainerStyle}
+              iconStyle={{ transform: [{ rotate: "45deg" }] }}
               onPress={() => {
                 console.log("pressed decline");
               }}
