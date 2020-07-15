@@ -33,21 +33,27 @@ const UserSchema = new mongoose.Schema({
     required: true,
   },
   //Maybe int instead
-  Sessions: {
+  sessions: {
     type: [Number],
     unique: false,
     required: true,
     default: [],
   },
   //ForeignKey, Email or uniqueID
-  Friends: {
+  friends: {
+    type: [String],
+    unique: false,
+    required: true,
+    default: [],
+  },
+  friendRequests: {
     type: [String],
     unique: false,
     required: true,
     default: [],
   },
   //Probably need a settings schema
-  Settings: {
+  settings: {
     type: [String],
     unique: false,
     required: true,
