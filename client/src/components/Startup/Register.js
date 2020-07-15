@@ -271,7 +271,9 @@ class Register extends Component {
         const response = await axios.get(
           `${baseURL}/user/checkDuplicatePhone`,
           {
-            phone: this.state.phone,
+            params: {
+              phone: this.state.phone,
+            },
           }
         );
 
@@ -399,7 +401,9 @@ class Register extends Component {
               onChange: this.handleEnteredCodeChange,
               value: this.state.enteredCode,
             }}
+            showContent={false}
             title="Verification"
+            description={true}
             description="Please enter the verification code we just texted you in order to complete registration."
           />
           <View style={styles.logoContainer}>

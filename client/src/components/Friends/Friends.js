@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5F1ED",
     // backgroundColor: "#8ED5F5",
     // backgroundColor: "#00B2CA",
-    width: windowWidth - 60,
+    width: windowWidth - 135,
     borderBottomColor: "transparent",
     borderTopColor: "transparent",
   },
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
   },
   floatingButton: {
     position: "absolute",
-    right: 0,
+    right: 1,
     top: 0,
     flexDirection: "row",
     justifyContent: "flex-end",
@@ -56,7 +56,12 @@ const styles = StyleSheet.create({
 //todo: decide on 10-digit phone or not
 
 class Friends extends Component {
-  state = { searchTerm: "", showAddDialog: false, addedPhone: "" };
+  state = {
+    searchTerm: "",
+    showAddDialog: false,
+    addedPhone: "",
+    showInboxDialog: false,
+  };
 
   handleSearchChange = (event) => {
     this.setState({ searchTerm: event.nativeEvent.text });
@@ -108,9 +113,35 @@ class Friends extends Component {
     }
   };
 
+  toggleInboxDialog = () => {
+    this.setState({ showInboxDialog: !this.state.showInboxDialog });
+  };
+
+  renderInbox = () => {
+    return <Text>hellooo</Text>;
+  };
+
   render() {
     return (
       <View style={styles.mainContainer}>
+        <DialogBox
+          overlayProps={{
+            isVisible: this.state.showInboxDialog,
+            onBackdropPress: this.toggleInboxDialog,
+          }}
+          buttons={[
+            {
+              label: "Close",
+              color: "#F75555",
+              onPress: this.toggleInboxDialog,
+            },
+          ]}
+          input={false}
+          description={false}
+          showContent={true}
+          content={this.renderInbox()}
+          title="Inbox"
+        />
         <DialogBox
           overlayProps={{
             isVisible: this.state.showAddDialog,
@@ -134,12 +165,14 @@ class Friends extends Component {
             onChange: this.handleAddedPhoneChange,
             value: this.state.addedPhone,
           }}
+          showContent={false}
           title="Add a Friend"
+          description={true}
           description="Please enter your friend's phone number to send them a friend request."
         />
         <View style={styles.searchContainer}>
           <SearchBar
-            placeholder="Search for a friend by name"
+            placeholder="Search by name"
             platform="default"
             value={this.state.searchTerm}
             lightTheme
@@ -156,6 +189,14 @@ class Friends extends Component {
         </View>
         <FriendsList />
         <View style={styles.floatingButton}>
+          <Icon
+            name="inbox"
+            type="material"
+            color="#F79256"
+            raised
+            reverse
+            onPress={this.toggleInboxDialog}
+          />
           <Icon
             name="add"
             type="material"

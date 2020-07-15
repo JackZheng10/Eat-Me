@@ -31,9 +31,9 @@ const login = async (req, res) => {
   }
 };
 
-const checkDuplicatePhone = async (req, res, next) => {
+const checkDuplicatePhone = async (req, res) => {
   try {
-    const user = await User.findOne({ phone: req.body.phone });
+    const user = await User.findOne({ phone: req.query.phone });
 
     if (user) {
       return res.json({
@@ -43,7 +43,7 @@ const checkDuplicatePhone = async (req, res, next) => {
       });
     } else {
       return res.json({
-        success: true,
+        success: false,
         message: "Phone number not in use.",
       });
     }

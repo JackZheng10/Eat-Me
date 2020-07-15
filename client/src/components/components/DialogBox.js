@@ -6,15 +6,18 @@ import { Overlay, Divider, Button, Input } from "react-native-elements";
 Accepted props
 Required:
 -title (string): title of the alert
--description (string): description of the alert
+-description (bool): whether or not to include a description
 -overlayProps (object): props supplied to the RNE overlay, ex: isVisible (REQUIRED), onBackdropPress
 -buttons (array of objects): the buttons to render, each object in the array has: label, color, and onPress
 -handler to close the dialog (can pass in via button, onBackropPress, etc.)
 -input (bool): whether or not to include an input
+-showContent (bool): whether or not to render custom content (below input)
 
 Optional:
 -inputProps (object, REQUIRED if "input" is true): props supplied to the RNE input, ex: onChange (REQUIRED, passes in an event object to callback), 
 value (REQUIRED, controlled value of text in input), placeholder
+-content (component): custom content rendered inside
+-description (string): description of the alert
 */
 
 const windowHeight = Dimensions.get("window").height;
@@ -92,7 +95,15 @@ class DialogBox extends Component {
   };
 
   render() {
-    const { overlayProps, title, description, input, inputProps } = this.props;
+    const {
+      overlayProps,
+      title,
+      description,
+      input,
+      inputProps,
+      showContent,
+      content,
+    } = this.props;
 
     return (
       <Overlay
@@ -104,7 +115,7 @@ class DialogBox extends Component {
         <View style={styles.mainContainer}>
           <Text style={styles.title}>{title}</Text>
           <Divider style={styles.divider} />
-          <Text style={styles.description}>{description}</Text>
+          {description && <Text style={styles.description}>{description}</Text>}
           {input && (
             <Input
               inputStyle={styles.inputStyle}
@@ -113,6 +124,7 @@ class DialogBox extends Component {
               {...inputProps}
             />
           )}
+          {showContent && content}
           <View style={styles.buttonContainer}>{this.renderButtons()}</View>
         </View>
       </Overlay>
