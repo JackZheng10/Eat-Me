@@ -18,7 +18,7 @@ const windowWidth = Dimensions.get("window").width;
 Usage
 
 Props: 
--friendRequestsConfig (bool): whether or not to use the friend requests configuration for the list (if false, will use the friends one)
+-friendReqConfig (bool): whether or not to use the friend requests configuration for the list (if false, will use the friends one)
 */
 
 const testItems = [
@@ -99,25 +99,25 @@ const styles = StyleSheet.create({
 });
 
 class List extends Component {
-  renderList = (friendRequestsConfig) => {
+  renderList = (friendReqConfig) => {
     return testItems.map((item, index) => {
       return (
         <ListItem
           listItemProps={{
             title: item.name,
             titleProps: {
-              style: friendRequestsConfig
+              style: friendReqConfig
                 ? styles.friendReqTitleStyle
                 : styles.friendsTitleStyle,
             },
             subtitle: item.subtitle,
             subtitleProps: { style: styles.subtitleStyle },
             bottomDivider: true,
-            containerStyle: friendRequestsConfig
+            containerStyle: friendReqConfig
               ? styles.friendReqContainerStyle
               : styles.friendsContainerStyle,
           }}
-          friendRequestsConfig={friendRequestsConfig}
+          friendReqConfig={friendReqConfig}
           key={index}
         />
       );
@@ -125,12 +125,12 @@ class List extends Component {
   };
 
   render() {
-    const { friendRequestsConfig } = this.props;
+    const { friendReqConfig } = this.props;
 
     return (
       <ScrollView style={{ width: "100%" }}>
-        {this.renderList(friendRequestsConfig)}
-        <View style={{ height: friendRequestsConfig ? 15 : 0 }} />
+        {this.renderList(friendReqConfig)}
+        <View style={{ height: friendReqConfig ? 15 : 0 }} />
       </ScrollView>
     );
   }

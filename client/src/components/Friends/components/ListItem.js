@@ -40,7 +40,7 @@ class ListItem extends Component {
           <Icon
             name="angle-right"
             type="font-awesome"
-            color={this.props.friendRequestsConfig ? "#8ED5F5" : "#F79256"}
+            color={this.props.friendReqConfig ? "#8ED5F5" : "#F79256"}
             size={35}
           />
         </Animated.View>
@@ -51,7 +51,7 @@ class ListItem extends Component {
           }}
         >
           {/*friends list buttons*/}
-          {!this.props.friendRequestsConfig && (
+          {!this.props.friendReqConfig && (
             <Icon
               name="trash-can-outline"
               type="material-community"
@@ -64,7 +64,7 @@ class ListItem extends Component {
               }}
             />
           )}
-          {!this.props.friendRequestsConfig && (
+          {!this.props.friendReqConfig && (
             <Icon
               name="paper-plane"
               type="entypo"
@@ -79,7 +79,7 @@ class ListItem extends Component {
           )}
 
           {/*friend requests list buttons*/}
-          {this.props.friendRequestsConfig && (
+          {this.props.friendReqConfig && (
             <Icon
               name="cancel"
               type="material"
@@ -92,7 +92,7 @@ class ListItem extends Component {
               }}
             />
           )}
-          {this.props.friendRequestsConfig && (
+          {this.props.friendReqConfig && (
             <Icon
               name="check"
               type="material"

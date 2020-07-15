@@ -118,7 +118,7 @@ class Friends extends Component {
   };
 
   renderInbox = () => {
-    return <List friendRequestsConfig={true} />;
+    return <List friendReqConfig={true} />;
   };
 
   render() {
@@ -187,7 +187,7 @@ class Friends extends Component {
           />
           <Divider style={{ backgroundColor: "grey", height: 0.1 }} />
         </View>
-        <List friendRequestsConfig={false} />
+        <List friendReqConfig={false} />
         <View style={styles.floatingButton}>
           <Icon
             name="inbox"
