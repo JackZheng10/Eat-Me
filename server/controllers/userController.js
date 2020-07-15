@@ -43,7 +43,7 @@ const checkDuplicatePhone = async (req, res) => {
       });
     } else {
       return res.json({
-        success: false,
+        success: true,
         message: "Phone number not in use.",
       });
     }

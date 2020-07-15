@@ -11,7 +11,7 @@ import { SearchBar, Icon, Divider } from "react-native-elements";
 import { withNavigation } from "react-navigation";
 import axios from "axios";
 import baseURL from "../../../baseURL";
-import FriendsList from "./components/FriendsList";
+import List from "./components/List";
 import DialogBox from "../components/DialogBox";
 
 const windowHeight = Dimensions.get("window").height;
@@ -118,7 +118,7 @@ class Friends extends Component {
   };
 
   renderInbox = () => {
-    return <Text>hellooo</Text>;
+    return <List friendRequestsConfig={true} />;
   };
 
   render() {
@@ -140,7 +140,7 @@ class Friends extends Component {
           description={false}
           showContent={true}
           content={this.renderInbox()}
-          title="Inbox"
+          title="Friend Requests"
         />
         <DialogBox
           overlayProps={{
@@ -187,7 +187,7 @@ class Friends extends Component {
           />
           <Divider style={{ backgroundColor: "grey", height: 0.1 }} />
         </View>
-        <FriendsList />
+        <List friendRequestsConfig={false} />
         <View style={styles.floatingButton}>
           <Icon
             name="inbox"

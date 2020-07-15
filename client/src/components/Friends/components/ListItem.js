@@ -40,7 +40,7 @@ class ListItem extends Component {
           <Icon
             name="angle-right"
             type="font-awesome"
-            color="#F79256"
+            color={this.props.friendRequestsConfig ? "#8ED5F5" : "#F79256"}
             size={35}
           />
         </Animated.View>
@@ -50,28 +50,61 @@ class ListItem extends Component {
             right: this.state.tappedIconsRight,
           }}
         >
-          <Icon
-            name="paper-plane"
-            type="entypo"
-            reverse
-            raised
-            color="#8ED5F5"
-            containerStyle={styles.iconContainerStyle}
-            onPress={() => {
-              console.log("pressed inv");
-            }}
-          />
-          <Icon
-            name="trash-can-outline"
-            type="material-community"
-            reverse
-            raised
-            color="#F75555"
-            containerStyle={styles.iconContainerStyle}
-            onPress={() => {
-              console.log("pressed del");
-            }}
-          />
+          {/*friends list buttons*/}
+          {!this.props.friendRequestsConfig && (
+            <Icon
+              name="trash-can-outline"
+              type="material-community"
+              reverse
+              raised
+              color="#F75555"
+              containerStyle={styles.iconContainerStyle}
+              onPress={() => {
+                console.log("pressed delete");
+              }}
+            />
+          )}
+          {!this.props.friendRequestsConfig && (
+            <Icon
+              name="paper-plane"
+              type="entypo"
+              reverse
+              raised
+              color="#8ED5F5"
+              containerStyle={styles.iconContainerStyle}
+              onPress={() => {
+                console.log("pressed invite");
+              }}
+            />
+          )}
+
+          {/*friend requests list buttons*/}
+          {this.props.friendRequestsConfig && (
+            <Icon
+              name="cancel"
+              type="material"
+              reverse
+              raised
+              color="#F75555"
+              containerStyle={styles.iconContainerStyle}
+              onPress={() => {
+                console.log("pressed decline");
+              }}
+            />
+          )}
+          {this.props.friendRequestsConfig && (
+            <Icon
+              name="check"
+              type="material"
+              reverse
+              raised
+              color="#55F78B"
+              containerStyle={styles.iconContainerStyle}
+              onPress={() => {
+                console.log("pressed accept");
+              }}
+            />
+          )}
         </Animated.View>
       </View>
     );

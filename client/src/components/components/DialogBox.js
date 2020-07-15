@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     width: windowWidth - 80,
+    maxHeight: windowHeight - 180,
   },
   description: {
     fontSize: 15,
