@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const User = require("../models/User");
+const Pusher = require("pusher");
 const signToken = require("../helpers/auth").signToken;
 
 const pusherAppID =
@@ -11,10 +12,7 @@ const pusherSecret =
 const pusherCluster =
   process.env.PUSHER_CLUSTER || require("../config/config").pusher.cluster;
 
-//pusher testing
-var Pusher = require("pusher");
-
-var pusher = new Pusher({
+const pusher = new Pusher({
   appId: pusherAppID,
   key: pusherKey,
   secret: pusherSecret,
@@ -146,10 +144,23 @@ const findUser = async (req, res, next) => {
 };
 
 const addFriend = async (req, res) => {
-  //normal pusher
-  // pusher.trigger("testChannel", "testEvent", {
-  //   message: "hello world",
-  // });
+  if (req.body.phone === req.body.from) {
+    return res.json({
+      success: false,
+      message:
+        "You cannot send a friend request to yourself. Please try again.",
+    });
+  }
+
+  //for now, trigger on the from so that you can see it sent todo: in real, change to req.body.phone (who it's going to)
+  pusher.trigger(req.body.from, "incomingFriendRequest", {
+    message: "Sent friend request",
+    to: req.body.phone,
+    from: req.body.from,
+  });
+
+  // console.log("request to: " + req.body.phone);
+  // console.log("from: " + req.body.from);
 
   return res.json({
     success: true,

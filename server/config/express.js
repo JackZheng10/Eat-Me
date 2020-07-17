@@ -35,11 +35,12 @@ module.exports.init = () => {
   connection.once("open", () => {
     console.log("MongoDB database connected");
 
-    console.log("Setting change streams");
-    const userChangeStream = connection.collection("users").watch();
-    userChangeStream.on("change", (change) => {
-      console.log(change);
-    });
+    //prob will not use in favor of regular pusher events
+    // console.log("Setting change streams");
+    // const userChangeStream = connection.collection("users").watch();
+    // userChangeStream.on("change", (change) => {
+    //   console.log(change);
+    // });
   });
   connection.on("error", (error) => console.log("Error: " + error));
 

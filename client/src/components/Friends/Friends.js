@@ -6,24 +6,21 @@ import {
   StyleSheet,
   ScrollView,
   Dimensions,
+  YellowBox,
 } from "react-native";
 import { SearchBar, Icon, Divider } from "react-native-elements";
 import { withNavigation } from "react-navigation";
+import { getCurrentUser } from "../../helpers/session";
 import Pusher from "pusher-js/react-native";
 import axios from "axios";
 import baseURL from "../../../baseURL";
 import List from "./components/List";
 import DialogBox from "../components/DialogBox";
 
-//pusher testing
-// Enable pusher logging - don't include this in production
-// Pusher.logToConsole = true;
-
-// var pusher = new Pusher("23a41214b0b8450e03cf", {
-//   cluster: "us2",
-// });
-
-// var channel = pusher.subscribe("testChannel");
+const pusherKey =
+  process.env.PUSHER_KEY || require("../../../config").pusher.key;
+const pusherCluster =
+  process.env.PUSHER_CLUSTER || require("../../../config").pusher.cluster;
 
 const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
@@ -67,6 +64,7 @@ const styles = StyleSheet.create({
 //todo: decide on 10-digit phone or not
 //todo: input validation for add friend?
 //todo: format phone number differently?
+//todo: get rid of stupid timer warning
 
 class Friends extends Component {
   state = {
@@ -76,11 +74,24 @@ class Friends extends Component {
     showInboxDialog: false,
   };
 
-  componentDidMount = () => {
-    //normal pusher
-    // channel.bind("testEvent", function (data) {
-    //   console.log(JSON.stringify(data));
-    // });
+  componentDidMount = async () => {
+    // Enable pusher logging - don't include this in production
+    Pusher.logToConsole = true;
+
+    this.pusher = new Pusher(pusherKey, {
+      cluster: pusherCluster,
+    });
+
+    let currentUser = await getCurrentUser();
+
+    //subscribe this component to the current user's events
+    //todo: figure out how to reset this if they change phone numbers
+    let channel = this.pusher.subscribe(currentUser.phone);
+
+    //listen for the event associated with the phone number's channel
+    channel.bind("incomingFriendRequest", function (data) {
+      console.log(JSON.stringify(data));
+    });
   };
 
   handleSearchChange = (event) => {
@@ -117,9 +128,12 @@ class Friends extends Component {
   };
 
   handleAddFriend = async () => {
+    let currentUser = await getCurrentUser();
+
     try {
       const response = await axios.post(`${baseURL}/user/addFriend`, {
         phone: this.state.addedPhone,
+        from: currentUser.phone,
       });
 
       if (response.data.success) {
