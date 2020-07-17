@@ -2,6 +2,26 @@ const mongoose = require("mongoose");
 const User = require("../models/User");
 const signToken = require("../helpers/auth").signToken;
 
+const pusherAppID =
+  process.env.PUSHER_APP_ID || require("../config/config").pusher.appID;
+const pusherKey =
+  process.env.PUSHER_KEY || require("../config/config").pusher.key;
+const pusherSecret =
+  process.env.PUSHER_SECRET || require("../config/config").pusher.secret;
+const pusherCluster =
+  process.env.PUSHER_CLUSTER || require("../config/config").pusher.cluster;
+
+//pusher testing
+var Pusher = require("pusher");
+
+var pusher = new Pusher({
+  appId: pusherAppID,
+  key: pusherKey,
+  secret: pusherSecret,
+  cluster: pusherCluster,
+  useTLS: true,
+});
+
 const login = async (req, res) => {
   try {
     const user = await User.findOne({ phone: req.body.phone });
@@ -126,6 +146,11 @@ const findUser = async (req, res, next) => {
 };
 
 const addFriend = async (req, res) => {
+  //normal pusher
+  // pusher.trigger("testChannel", "testEvent", {
+  //   message: "hello world",
+  // });
+
   return res.json({
     success: true,
     message: "This is a test message, but good job getting here.",

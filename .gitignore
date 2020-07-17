@@ -55,3 +55,4 @@ yarn-error.log*
 
 # User-specific stuff
 .idea/*
+client/config.js

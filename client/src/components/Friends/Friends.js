@@ -9,10 +9,21 @@ import {
 } from "react-native";
 import { SearchBar, Icon, Divider } from "react-native-elements";
 import { withNavigation } from "react-navigation";
+import Pusher from "pusher-js/react-native";
 import axios from "axios";
 import baseURL from "../../../baseURL";
 import List from "./components/List";
 import DialogBox from "../components/DialogBox";
+
+//pusher testing
+// Enable pusher logging - don't include this in production
+// Pusher.logToConsole = true;
+
+// var pusher = new Pusher("23a41214b0b8450e03cf", {
+//   cluster: "us2",
+// });
+
+// var channel = pusher.subscribe("testChannel");
 
 const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
@@ -63,6 +74,13 @@ class Friends extends Component {
     showAddDialog: false,
     addedPhone: "",
     showInboxDialog: false,
+  };
+
+  componentDidMount = () => {
+    //normal pusher
+    // channel.bind("testEvent", function (data) {
+    //   console.log(JSON.stringify(data));
+    // });
   };
 
   handleSearchChange = (event) => {
