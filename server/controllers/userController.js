@@ -193,7 +193,7 @@ const updateToken = async (req, res) => {
 
       return res.json({
         success: true,
-        message: "Successfully logged in, token is attached.",
+        message: "Token is attached.",
         token: token,
       });
     } else {

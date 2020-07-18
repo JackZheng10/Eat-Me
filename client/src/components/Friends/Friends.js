@@ -80,6 +80,8 @@ const testItems = [
 //todo: input validation for add friend?
 //todo: format phone number differently?
 //todo: get rid of stupid timer warning
+//todo: code refactoring, maybe ugly in places
+//todo: disable multiple requests to same person, but what if the sender changes phone number...? maybe disable phone # change in first place.
 
 class Friends extends Component {
   constructor(props) {
@@ -101,9 +103,6 @@ class Friends extends Component {
   componentDidMount = async () => {
     // Enable pusher logging - don't include this in production. ping and pong msgs are annoying.
     // Pusher.logToConsole = true;
-    this.pusher = new Pusher(pusherKey, {
-      cluster: pusherCluster,
-    });
 
     let currentUser = await getCurrentUser();
 
