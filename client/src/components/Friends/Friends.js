@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { SearchBar, Icon, Divider, Badge } from "react-native-elements";
 import { withNavigation } from "react-navigation";
-import { getCurrentUser } from "../../helpers/session";
+import { getCurrentUser, updateToken } from "../../helpers/session";
 import Pusher from "pusher-js/react-native";
 import axios from "axios";
 import baseURL from "../../../baseURL";
@@ -67,6 +67,14 @@ const styles = StyleSheet.create({
   },
 });
 
+const testItems = [
+  {
+    fName: "Amy",
+    lName: "Hurha",
+    phone: "9322343245",
+  },
+];
+
 //todo: add keyboard listener to unfocus friend search
 //todo: decide on 10-digit phone or not
 //todo: input validation for add friend?
@@ -74,17 +82,25 @@ const styles = StyleSheet.create({
 //todo: get rid of stupid timer warning
 
 class Friends extends Component {
-  state = {
-    searchTerm: "",
-    showAddDialog: false,
-    addedPhone: "",
-    showInboxDialog: false,
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      searchTerm: "",
+      showAddDialog: false,
+      addedPhone: "",
+      showInboxDialog: false,
+      friendRequests: [],
+    };
+
+    this.pusher = new Pusher(pusherKey, {
+      cluster: pusherCluster,
+    });
+  }
 
   componentDidMount = async () => {
     // Enable pusher logging - don't include this in production. ping and pong msgs are annoying.
     // Pusher.logToConsole = true;
-
     this.pusher = new Pusher(pusherKey, {
       cluster: pusherCluster,
     });
@@ -96,9 +112,27 @@ class Friends extends Component {
     let channel = this.pusher.subscribe(currentUser.phone);
 
     //listen for the event associated with the phone number's channel
-    channel.bind("incomingFriendRequest", function (data) {
-      console.log(JSON.stringify(data));
+    channel.bind("incomingFriendRequest", async () => {
+      let currentUser = await getCurrentUser();
+
+      if (await updateToken(currentUser.phone)) {
+        this.fetchFriendRequests();
+      } else {
+        alert("Error with receiving friend request. Please contact us.");
+      }
     });
+
+    this.fetchFriendRequests();
+  };
+
+  componentWillUnmount = () => {
+    this.pusher.disconnect();
+  };
+
+  fetchFriendRequests = async () => {
+    let currentUser = await getCurrentUser();
+
+    this.setState({ friendRequests: currentUser.friendRequests });
   };
 
   handleSearchChange = (event) => {
@@ -141,10 +175,12 @@ class Friends extends Component {
       const response = await axios.post(`${baseURL}/user/addFriend`, {
         phone: this.state.addedPhone,
         from: currentUser.phone,
+        fName: currentUser.fName,
+        lName: currentUser.lName,
       });
 
       if (response.data.success) {
-        alert("Totally sent a friend request");
+        alert(response.data.message);
       } else {
         alert(response.data.message);
       }
@@ -159,7 +195,7 @@ class Friends extends Component {
   };
 
   renderInbox = () => {
-    return <List friendReqConfig={true} />;
+    return <List friendReqConfig={true} items={this.state.friendRequests} />;
   };
 
   render() {
@@ -228,7 +264,7 @@ class Friends extends Component {
           />
           <Divider style={{ backgroundColor: "grey", height: 0.1 }} />
         </View>
-        <List friendReqConfig={false} />
+        <List friendReqConfig={false} items={testItems} />
         <View style={styles.floatingButton}>
           <Icon
             name="inbox"
@@ -248,7 +284,13 @@ class Friends extends Component {
           />
         </View>
         <View style={styles.floatingBadge}>
-          <Badge status="success" value={3} />
+          <Badge
+            status="success"
+            value={this.state.friendRequests.length}
+            containerStyle={{
+              display: this.state.friendRequests.length >= 1 ? "flex" : "none",
+            }}
+          />
         </View>
       </View>
     );

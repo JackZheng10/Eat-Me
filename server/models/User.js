@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt-nodejs");
+const FriendRequestSchema = require("./FriendRequest");
 
 const UserSchema = new mongoose.Schema({
   ID: {
@@ -47,7 +48,7 @@ const UserSchema = new mongoose.Schema({
     default: [],
   },
   friendRequests: {
-    type: [String],
+    type: [FriendRequestSchema],
     unique: false,
     required: true,
     default: [],

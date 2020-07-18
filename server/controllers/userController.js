@@ -152,20 +152,65 @@ const addFriend = async (req, res) => {
     });
   }
 
-  //for now, trigger on the from so that you can see it sent todo: in real, change to req.body.phone (who it's going to)
-  pusher.trigger(req.body.from, "incomingFriendRequest", {
-    message: "Sent friend request",
-    to: req.body.phone,
-    from: req.body.from,
-  });
+  const friendRequest = {
+    phone: req.body.from,
+    fName: req.body.fName,
+    lName: req.body.lName,
+  };
 
-  // console.log("request to: " + req.body.phone);
-  // console.log("from: " + req.body.from);
+  try {
+    let recipient = res.locals.user;
 
-  return res.json({
-    success: true,
-    message: "This is a test message, but good job getting here.",
-  });
+    recipient.friendRequests.push(friendRequest);
+    recipient.save();
+
+    pusher.trigger(req.body.phone, "incomingFriendRequest", {
+      message: "Friend request received",
+      from: req.body.from,
+    });
+
+    return res.json({
+      success: true,
+      message: "Friend request successfully sent.",
+    });
+  } catch (error) {
+    console.log("Error with assigning friend request: " + error);
+
+    return res.json({
+      success: false,
+      message:
+        "There was an error with sending a friend request. Please try again.",
+    });
+  }
+};
+
+const updateToken = async (req, res) => {
+  try {
+    const user = await User.findOne({ phone: req.query.phone });
+
+    if (user) {
+      const token = await signToken(user);
+
+      return res.json({
+        success: true,
+        message: "Successfully logged in, token is attached.",
+        token: token,
+      });
+    } else {
+      return res.json({
+        success: false,
+        message:
+          "Error with updating token: user could not be found. Please try again.",
+      });
+    }
+  } catch (error) {
+    console.log("Error with updating token: " + error);
+
+    return res.json({
+      success: false,
+      message: "Error with updating token. Please try again.",
+    });
+  }
 };
 
 module.exports = {
@@ -175,4 +220,5 @@ module.exports = {
   register,
   findUser,
   addFriend,
+  updateToken,
 };

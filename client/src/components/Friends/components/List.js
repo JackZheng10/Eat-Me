@@ -21,63 +21,6 @@ Props:
 -friendReqConfig (bool): whether or not to use the friend requests configuration for the list (if false, will use the friends one)
 */
 
-const testItems = [
-  {
-    name: "Amy Farha",
-    avatar_url:
-      "https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg",
-    subtitle: "4332343246",
-  },
-  {
-    name: "Chris Jackson",
-    avatar_url:
-      "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
-    subtitle: "4332343246",
-  },
-  {
-    name: "Chris Jackson",
-    avatar_url:
-      "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
-    subtitle: "4332343246",
-  },
-  {
-    name: "Chris Jackson",
-    avatar_url:
-      "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
-    subtitle: "4332343246",
-  },
-  {
-    name: "Chris Jackson",
-    avatar_url:
-      "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
-    subtitle: "4332343246",
-  },
-  {
-    name: "Chris Jackson",
-    avatar_url:
-      "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
-    subtitle: "4332343246",
-  },
-  {
-    name: "Chris Jackson",
-    avatar_url:
-      "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
-    subtitle: "4332343246",
-  },
-  {
-    name: "Chris Jackson",
-    avatar_url:
-      "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
-    subtitle: "4332343246",
-  },
-  {
-    name: "Chris Jackson",
-    avatar_url:
-      "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
-    subtitle: "4332343246",
-  },
-];
-
 const styles = StyleSheet.create({
   friendsContainerStyle: {
     backgroundColor: "#F5F1ED",
@@ -100,17 +43,17 @@ const styles = StyleSheet.create({
 
 class List extends Component {
   renderList = (friendReqConfig) => {
-    return testItems.map((item, index) => {
+    return this.props.items.map((item, index) => {
       return (
         <ListItem
           listItemProps={{
-            title: item.name,
+            title: `${item.fName} ${item.lName}`,
             titleProps: {
               style: friendReqConfig
                 ? styles.friendReqTitleStyle
                 : styles.friendsTitleStyle,
             },
-            subtitle: item.subtitle,
+            subtitle: item.phone,
             subtitleProps: { style: styles.subtitleStyle },
             bottomDivider: true,
             containerStyle: friendReqConfig
