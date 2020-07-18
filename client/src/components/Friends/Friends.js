@@ -8,7 +8,7 @@ import {
   Dimensions,
   YellowBox,
 } from "react-native";
-import { SearchBar, Icon, Divider } from "react-native-elements";
+import { SearchBar, Icon, Divider, Badge } from "react-native-elements";
 import { withNavigation } from "react-navigation";
 import { getCurrentUser } from "../../helpers/session";
 import Pusher from "pusher-js/react-native";
@@ -57,6 +57,13 @@ const styles = StyleSheet.create({
     top: 0,
     flexDirection: "row",
     justifyContent: "flex-end",
+    zIndex: 1,
+  },
+  floatingBadge: {
+    position: "absolute",
+    right: 72,
+    top: 5,
+    zIndex: 2,
   },
 });
 
@@ -75,8 +82,8 @@ class Friends extends Component {
   };
 
   componentDidMount = async () => {
-    // Enable pusher logging - don't include this in production
-    Pusher.logToConsole = true;
+    // Enable pusher logging - don't include this in production. ping and pong msgs are annoying.
+    // Pusher.logToConsole = true;
 
     this.pusher = new Pusher(pusherKey, {
       cluster: pusherCluster,
@@ -239,6 +246,9 @@ class Friends extends Component {
             reverse
             onPress={this.toggleAddDialog}
           />
+        </View>
+        <View style={styles.floatingBadge}>
+          <Badge status="success" value={3} />
         </View>
       </View>
     );
