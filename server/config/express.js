@@ -1,5 +1,4 @@
-const path = require("path"),
-  express = require("express"),
+const express = require("express"),
   mongoose = require("mongoose"),
   morgan = require("morgan"),
   bodyParser = require("body-parser"),
@@ -34,13 +33,6 @@ module.exports.init = () => {
   const connection = mongoose.connection;
   connection.once("open", () => {
     console.log("MongoDB database connected");
-
-    //prob will not use in favor of regular pusher events
-    // console.log("Setting change streams");
-    // const userChangeStream = connection.collection("users").watch();
-    // userChangeStream.on("change", (change) => {
-    //   console.log(change);
-    // });
   });
   connection.on("error", (error) => console.log("Error: " + error));
 
@@ -51,16 +43,10 @@ module.exports.init = () => {
   app.use("/api/yelp", yelpRoutes);
   app.use("/api/google", googleRoutes);
 
-  //for production build
-  if (process.env.NODE_ENV === "production") {
-    //Serve any static files
-    app.use(express.static(path.join(__dirname, "../../client/build")));
-
-    //Handle React routing, return all requests to React app
-    app.get("*", function (req, res) {
-      res.sendFile(path.join(__dirname, "../../client/build", "index.html"));
-    });
-  }
+  //add socket.io connection
+  const server = require("http").createServer(app);
+  const { initializeSocket } = require("./socket");
+  initializeSocket(server);
 
   return app;
 };
