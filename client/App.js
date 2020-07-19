@@ -31,6 +31,7 @@ import {
 //navigation prop docs: https://reactnavigation.org/docs/navigation-prop/
 //available icons for RNE and as a raw icon (seen in this file): https://icons.expo.fyi/
 //color palette: https://coolors.co/f79256-8ed5f5-f5f1ed-00b2ca
+//socket.io basics: https://medium.com/@rloperena/quick-guide-to-socket-io-basics-59b07c39c6ec
 
 //IMPORTANT NOTE: the stack navigator will save the route that you're on. for example:
 //-go to settings, then the example stack view, then away, then back, and you'll see youre still in the stacked view

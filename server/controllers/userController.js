@@ -150,6 +150,7 @@ const addFriend = async (req, res) => {
     //why does this work and the const at the top imports doesnt?
     const SIO = require("../server").SIO;
 
+    //send event to recipient's socket room
     SIO.of("/api/socket").to(req.body.phone).emit("incomingFriendRequest");
 
     return res.json({

@@ -94,8 +94,10 @@ class Friends extends Component {
   componentDidMount = async () => {
     let currentUser = await getCurrentUser();
 
+    //establish a socket connection with backend, joining the proper room
     this.socket = io(`${baseURL}/socket?phone=${currentUser.phone}`);
 
+    //listen for an incoming friend request event, sent in the user's room
     this.socket.on("incomingFriendRequest", async () => {
       if (await updateToken(currentUser.phone)) {
         this.fetchFriendRequests();

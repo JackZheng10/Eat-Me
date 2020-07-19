@@ -15,6 +15,7 @@ io.of("/api/socket").on("connection", (socket) => {
     console.log("socket.io: User disconnected: " + socket.id);
   });
 
+  //connect client to proper room
   let room = socket.handshake.query.phone;
 
   if (!room) {
