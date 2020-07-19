@@ -43,10 +43,5 @@ module.exports.init = () => {
   app.use("/api/yelp", yelpRoutes);
   app.use("/api/google", googleRoutes);
 
-  //add socket.io connection
-  const server = require("http").createServer(app);
-  const { initializeSocket } = require("./socket");
-  initializeSocket(server);
-
   return app;
 };

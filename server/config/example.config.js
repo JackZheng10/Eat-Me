@@ -17,10 +17,4 @@ module.exports = {
     authToken: "", //twilio auth token
     from: "", //twilio "from" number
   },
-  pusher: {
-    appID: "", //pusher app id
-    key: "", //pusher key
-    secret: "", //pusher secret
-    cluster: "", //pusher cluster
-  },
 };

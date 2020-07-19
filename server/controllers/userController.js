@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const User = require("../models/User");
 const signToken = require("../helpers/auth").signToken;
+// const SIO = require("../server").SIO;
 
 const login = async (req, res) => {
   try {
@@ -145,6 +146,11 @@ const addFriend = async (req, res) => {
 
     recipient.friendRequests.push(friendRequest);
     recipient.save();
+
+    //why does this work and the const at the top imports doesnt?
+    const SIO = require("../server").SIO;
+
+    SIO.of("/api/socket").to(req.body.phone).emit("incomingFriendRequest");
 
     return res.json({
       success: true,

@@ -17,8 +17,6 @@ import baseURL from "../../../baseURL";
 import List from "./components/List";
 import DialogBox from "../components/DialogBox";
 
-const socket = io("http://10.0.0.232:6000/");
-
 const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
 
@@ -94,6 +92,18 @@ class Friends extends Component {
   }
 
   componentDidMount = async () => {
+    let currentUser = await getCurrentUser();
+
+    this.socket = io(`${baseURL}/socket?phone=${currentUser.phone}`);
+
+    this.socket.on("incomingFriendRequest", async () => {
+      if (await updateToken(currentUser.phone)) {
+        this.fetchFriendRequests();
+      } else {
+        alert("Error with receiving friend request. Please contact us.");
+      }
+    });
+
     this.fetchFriendRequests();
   };
 
