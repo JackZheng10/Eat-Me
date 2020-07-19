@@ -11,16 +11,11 @@ import {
 import { SearchBar, Icon, Divider, Badge } from "react-native-elements";
 import { withNavigation } from "react-navigation";
 import { getCurrentUser, updateToken } from "../../helpers/session";
-import Pusher from "pusher-js/react-native";
+import io from "socket.io-client";
 import axios from "axios";
 import baseURL from "../../../baseURL";
 import List from "./components/List";
 import DialogBox from "../components/DialogBox";
-
-const pusherKey =
-  process.env.PUSHER_KEY || require("../../../config").pusher.key;
-const pusherCluster =
-  process.env.PUSHER_CLUSTER || require("../../../config").pusher.cluster;
 
 const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
@@ -94,26 +89,14 @@ class Friends extends Component {
       showInboxDialog: false,
       friendRequests: [],
     };
-
-    this.pusher = new Pusher(pusherKey, {
-      cluster: pusherCluster,
-    });
   }
 
   componentDidMount = async () => {
-    // Enable pusher logging - don't include this in production. ping and pong msgs are annoying.
-    // Pusher.logToConsole = true;
-
     let currentUser = await getCurrentUser();
 
-    //subscribe this component to the current user's events
-    //todo: figure out how to reset this if they change phone numbers
-    let channel = this.pusher.subscribe(currentUser.phone);
+    this.socket = io(`${baseURL}/socket?phone=${currentUser.phone}`);
 
-    //listen for the event associated with the phone number's channel
-    channel.bind("incomingFriendRequest", async () => {
-      let currentUser = await getCurrentUser();
-
+    this.socket.on("incomingFriendRequest", async () => {
       if (await updateToken(currentUser.phone)) {
         this.fetchFriendRequests();
       } else {
@@ -122,10 +105,6 @@ class Friends extends Component {
     });
 
     this.fetchFriendRequests();
-  };
-
-  componentWillUnmount = () => {
-    this.pusher.disconnect();
   };
 
   fetchFriendRequests = async () => {

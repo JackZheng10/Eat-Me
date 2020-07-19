@@ -1,24 +1,7 @@
 const mongoose = require("mongoose");
 const User = require("../models/User");
-const Pusher = require("pusher");
 const signToken = require("../helpers/auth").signToken;
-
-const pusherAppID =
-  process.env.PUSHER_APP_ID || require("../config/config").pusher.appID;
-const pusherKey =
-  process.env.PUSHER_KEY || require("../config/config").pusher.key;
-const pusherSecret =
-  process.env.PUSHER_SECRET || require("../config/config").pusher.secret;
-const pusherCluster =
-  process.env.PUSHER_CLUSTER || require("../config/config").pusher.cluster;
-
-const pusher = new Pusher({
-  appId: pusherAppID,
-  key: pusherKey,
-  secret: pusherSecret,
-  cluster: pusherCluster,
-  useTLS: true,
-});
+// const SIO = require("../server").SIO;
 
 const login = async (req, res) => {
   try {
@@ -164,10 +147,10 @@ const addFriend = async (req, res) => {
     recipient.friendRequests.push(friendRequest);
     recipient.save();
 
-    pusher.trigger(req.body.phone, "incomingFriendRequest", {
-      message: "Friend request received",
-      from: req.body.from,
-    });
+    //why does this work and the const at the top imports doesnt?
+    const SIO = require("../server").SIO;
+
+    SIO.of("/api/socket").to(req.body.phone).emit("incomingFriendRequest");
 
     return res.json({
       success: true,
