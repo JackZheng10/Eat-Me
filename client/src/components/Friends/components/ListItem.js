@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, StyleSheet, Animated, Text } from "react-native";
+import { View, StyleSheet, Animated, Text, Alert } from "react-native";
 import { ListItem as RNEListItem, Icon } from "react-native-elements";
 import { getCurrentUser, updateToken } from "../../../helpers/session";
 import axios from "axios";
@@ -135,19 +135,36 @@ class ListItem extends Component {
   };
 
   handleDeleteFriend = async () => {
-    let currentUser = await getCurrentUser();
+    Alert.alert(
+      "Confirmation",
+      "Are you sure you want to remove this friend?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: async () => {
+            //todo: maybe move this in another function or keep it in this onpress
+            let currentUser = await getCurrentUser();
 
-    try {
-      const response = await axios.put(`${baseURL}/user/deleteFriend`, {
-        phone: currentUser.phone,
-        ID: this.props.user.ID,
-      });
+            try {
+              const response = await axios.put(`${baseURL}/user/deleteFriend`, {
+                phone: currentUser.phone,
+                ID: this.props.user.ID,
+              });
 
-      alert(response.data.message);
-    } catch (error) {
-      console.log("Error with deleting friend: " + error);
-      alert("Error with deleting friend. Please try again.");
-    }
+              alert(response.data.message);
+            } catch (error) {
+              console.log("Error with deleting friend: " + error);
+              alert("Error with deleting friend. Please try again.");
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
   toggleIcons = () => {

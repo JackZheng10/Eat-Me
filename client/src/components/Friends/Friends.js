@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
 //todo: get rid of stupid timer warning
 //todo: code refactoring, maybe ugly in places
 //todo: disable multiple requests to same person, but what if the sender changes phone number...? maybe disable phone # change in first place.
+//todo: ^ this prob solved just today. also add confirmation alert for deleting/declining?
 
 class Friends extends Component {
   constructor(props) {
