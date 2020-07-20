@@ -101,10 +101,18 @@ class Friends extends Component {
       }
     });
 
-    this.socket.on("acceptedFriendRequest", async () => {
+    this.socket.on("acceptedFriend", async () => {
       if (await updateToken(currentUser.phone)) {
         this.fetchFriends();
         this.fetchFriendRequests();
+      } else {
+        alert("Error with accepting friend. Please contact us.");
+      }
+    });
+
+    this.socket.on("incomingFriend", async () => {
+      if (await updateToken(currentUser.phone)) {
+        this.fetchFriends();
       } else {
         alert("Error with accepting friend. Please contact us.");
       }
@@ -155,23 +163,23 @@ class Friends extends Component {
     }
   };
 
-  handleSearchChange = (event) => {
-    this.setState({ searchTerm: event.nativeEvent.text });
-  };
+  handleAddFriend = async () => {
+    let currentUser = await getCurrentUser();
 
-  clearSearch = () => {
-    this.setState({ searchTerm: "" });
-  };
-
-  toggleAddDialog = () => {
-    //to prevent entered phone from being reset
-    if (this.state.showAddDialog) {
-      this.setState({
-        showAddDialog: !this.state.showAddDialog,
-        addedPhone: "",
+    try {
+      const response = await axios.put(`${baseURL}/user/addFriend`, {
+        phone: this.state.addedPhone,
+        senderFriendRequests: currentUser.friendRequests,
+        senderID: currentUser.ID,
       });
-    } else {
-      this.setState({ showAddDialog: !this.state.showAddDialog });
+
+      alert(response.data.message);
+      if (response.data.success) {
+        this.toggleAddDialog();
+      }
+    } catch (error) {
+      console.log(error);
+      alert("Error with adding friend. Please try again.");
     }
   };
 
@@ -188,25 +196,28 @@ class Friends extends Component {
     }
   };
 
-  handleAddFriend = async () => {
-    let currentUser = await getCurrentUser();
+  toggleInboxDialog = () => {
+    this.setState({ showInboxDialog: !this.state.showInboxDialog });
+  };
 
-    try {
-      const response = await axios.put(`${baseURL}/user/addFriend`, {
-        phone: this.state.addedPhone,
-        senderFriendRequests: currentUser.friendRequests,
-        senderID: currentUser.ID,
+  toggleAddDialog = () => {
+    //to prevent entered phone from being reset
+    if (this.state.showAddDialog) {
+      this.setState({
+        showAddDialog: !this.state.showAddDialog,
+        addedPhone: "",
       });
-
-      alert(response.data.message);
-    } catch (error) {
-      console.log(error);
-      alert("Error with adding friend. Please try again.");
+    } else {
+      this.setState({ showAddDialog: !this.state.showAddDialog });
     }
   };
 
-  toggleInboxDialog = () => {
-    this.setState({ showInboxDialog: !this.state.showInboxDialog });
+  handleSearchChange = (event) => {
+    this.setState({ searchTerm: event.nativeEvent.text });
+  };
+
+  clearSearch = () => {
+    this.setState({ searchTerm: "" });
   };
 
   renderInbox = () => {

@@ -130,6 +130,7 @@ const findUser = async (req, res, next) => {
 const checkExistingRequests = async (req, res, next) => {
   let recipient = res.locals.user;
   let recipientRequests = recipient.friendRequests;
+  let recipientFriends = recipient.friends;
   let senderRequests = req.body.senderFriendRequests;
 
   for (let x = 0; x < recipientRequests.length; x++) {
@@ -151,6 +152,15 @@ const checkExistingRequests = async (req, res, next) => {
     }
   }
 
+  for (let x = 0; x < recipientFriends.length; x++) {
+    if (recipientFriends[x] === req.body.senderID) {
+      return res.json({
+        success: false,
+        message: "You are already friends with this user.",
+      });
+    }
+  }
+
   next();
 };
 
@@ -167,7 +177,7 @@ const addFriend = async (req, res) => {
 
   try {
     recipient.friendRequests.push(req.body.senderID);
-    recipient.save();
+    await recipient.save();
 
     //why does this work and the const at the top imports doesnt?
     const SIO = require("../server").SIO;
@@ -219,20 +229,26 @@ const updateToken = async (req, res) => {
   }
 };
 
-const acceptFriend = (req, res) => {
+const acceptFriend = async (req, res) => {
   try {
-    let recipient = res.locals.user;
+    const sender = await User.findOne({ ID: req.body.ID });
+    const recipient = res.locals.user;
 
     recipient.friends.push(req.body.ID);
     recipient.friendRequests = recipient.friendRequests.filter((item) => {
       item !== req.body.ID;
     });
-    recipient.save();
+
+    sender.friends.push(recipient.ID);
+
+    await recipient.save();
+    await sender.save();
 
     const SIO = require("../server").SIO;
 
     //send event to recipient's socket room
-    SIO.of("/api/socket").to(recipient.phone).emit("acceptedFriendRequest");
+    SIO.of("/api/socket").to(recipient.phone).emit("acceptedFriend");
+    SIO.of("/api/socket").to(sender.phone).emit("incomingFriend");
 
     return res.json({
       success: true,
