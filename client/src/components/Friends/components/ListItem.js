@@ -56,9 +56,7 @@ class ListItem extends Component {
               raised
               color="#F75555"
               containerStyle={styles.iconContainerStyle}
-              onPress={() => {
-                console.log("pressed delete");
-              }}
+              onPress={this.handleDeleteFriend}
             />
           )}
           {!this.props.friendReqConfig && (
@@ -133,6 +131,22 @@ class ListItem extends Component {
     } catch (error) {
       console.log("Error with accepting friend request: " + error);
       alert("Error with accepting friend request. Please try again.");
+    }
+  };
+
+  handleDeleteFriend = async () => {
+    let currentUser = await getCurrentUser();
+
+    try {
+      const response = await axios.put(`${baseURL}/user/deleteFriend`, {
+        phone: currentUser.phone,
+        ID: this.props.user.ID,
+      });
+
+      alert(response.data.message);
+    } catch (error) {
+      console.log("Error with deleting friend: " + error);
+      alert("Error with deleting friend. Please try again.");
     }
   };
 

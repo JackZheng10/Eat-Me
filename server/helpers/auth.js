@@ -2,6 +2,8 @@ const jwt = require("jsonwebtoken"),
   User = require("../models/User.js"),
   jwt_secret = process.env.secret || require("../config/config.js").jwt.secret;
 
+//todo: oauth/passport/auth0/firebase...
+
 // function to create tokens, access time is 24 hrs by default
 const signToken = (user) => {
   const userData = user.toObject();

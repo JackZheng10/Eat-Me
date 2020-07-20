@@ -291,6 +291,40 @@ const declineFriend = async (req, res) => {
   }
 };
 
+const deleteFriend = async (req, res) => {
+  try {
+    const sender = await User.findOne({ ID: req.body.ID });
+    const recipient = res.locals.user;
+
+    sender.friends = sender.friends.filter((item) => {
+      item !== recipient.ID;
+    });
+    recipient.friends = recipient.friends.filter((item) => {
+      item !== req.body.ID;
+    });
+
+    await sender.save();
+    await recipient.save();
+
+    const SIO = require("../server").SIO;
+
+    //send event to recipient's socket room
+    SIO.of("/api/socket").to(sender.phone).emit("deletedFriend");
+    SIO.of("/api/socket").to(recipient.phone).emit("deletedFriend");
+
+    return res.json({
+      success: true,
+      message: "Friend removed.",
+    });
+  } catch (error) {
+    console.log("Error with accepting friend request: " + error);
+    return res.json({
+      success: false,
+      message: "Error with accepting friend request. Please try again.",
+    });
+  }
+};
+
 const getUsersByID = async (req, res) => {
   try {
     const users = await User.find()
@@ -329,6 +363,7 @@ module.exports = {
   addFriend,
   updateToken,
   acceptFriend,
+  deleteFriend,
   declineFriend,
   getUsersByID,
 };
