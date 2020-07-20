@@ -3,7 +3,7 @@ const express = require("./config/express.js");
 // Use env port or default
 const port = process.env.PORT || 5000;
 
-//start the server and socket io connection
+//start the server and socket.io connection
 const app = express.init();
 const server = require("http").createServer(app);
 const io = require("socket.io")(server);
@@ -15,7 +15,7 @@ io.of("/api/socket").on("connection", (socket) => {
     console.log("socket.io: User disconnected: " + socket.id);
   });
 
-  //connect client to proper room
+  //connect client's socket to proper room
   let room = socket.handshake.query.phone;
 
   if (!room) {

@@ -126,6 +126,21 @@ const findUser = async (req, res, next) => {
   }
 };
 
+const checkExistingRequests = async (req, res, next) => {
+  let recipientRequests = res.locals.user.friendRequests;
+
+  for (let x = 0; x < recipientRequests.length; x++) {
+    if (recipientRequests[x].phone === req.body.from) {
+      return res.json({
+        success: false,
+        message: "You already have a pending friend request to this user.",
+      });
+    }
+  }
+
+  next();
+};
+
 const addFriend = async (req, res) => {
   if (req.body.phone === req.body.from) {
     return res.json({
@@ -203,6 +218,7 @@ module.exports = {
   countUsers,
   register,
   findUser,
+  checkExistingRequests,
   addFriend,
   updateToken,
 };

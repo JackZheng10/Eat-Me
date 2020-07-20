@@ -92,6 +92,7 @@ class Friends extends Component {
   }
 
   componentDidMount = async () => {
+    //todo: prob want to update token here too in case they close the app and reopen? depends when the component dies
     let currentUser = await getCurrentUser();
 
     //establish a socket connection with backend, joining the proper room
