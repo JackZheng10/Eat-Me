@@ -7,6 +7,8 @@ const {
     addFriend,
     updateToken,
     checkExistingRequests,
+    acceptFriend,
+    getUsersByID,
   } = require("../controllers/userController"),
   express = require("express"),
   router = express.Router();
@@ -14,7 +16,9 @@ const {
 router.post("/login", login);
 router.get("/checkDuplicatePhone", checkDuplicatePhone);
 router.post("/register", countUsers, register);
-router.post("/addFriend", findUser, checkExistingRequests, addFriend);
+router.put("/addFriend", findUser, checkExistingRequests, addFriend);
 router.get("/updateToken", updateToken);
+router.put("/acceptFriend", findUser, acceptFriend);
+router.get("/getUsersByID", getUsersByID);
 
 module.exports = router;

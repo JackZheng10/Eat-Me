@@ -43,17 +43,17 @@ const styles = StyleSheet.create({
 
 class List extends Component {
   renderList = (friendReqConfig) => {
-    return this.props.items.map((item, index) => {
+    return this.props.users.map((user, index) => {
       return (
         <ListItem
           listItemProps={{
-            title: `${item.fName} ${item.lName}`,
+            title: `${user.fName} ${user.lName}`,
             titleProps: {
               style: friendReqConfig
                 ? styles.friendReqTitleStyle
                 : styles.friendsTitleStyle,
             },
-            subtitle: item.phone,
+            subtitle: user.phone,
             subtitleProps: { style: styles.subtitleStyle },
             bottomDivider: true,
             containerStyle: friendReqConfig
@@ -62,6 +62,7 @@ class List extends Component {
           }}
           friendReqConfig={friendReqConfig}
           key={index}
+          user={user}
         />
       );
     });

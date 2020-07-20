@@ -88,6 +88,7 @@ class Friends extends Component {
       addedPhone: "",
       showInboxDialog: false,
       friendRequests: [],
+      friends: [],
     };
   }
 
@@ -107,13 +108,36 @@ class Friends extends Component {
       }
     });
 
+    this.socket.on("acceptedFriendRequest", async () => {
+      if (await updateToken(currentUser.phone)) {
+        // this.fetchFriends();
+      } else {
+        alert("Error with accepting friend. Please contact us.");
+      }
+    });
+
     this.fetchFriendRequests();
+    // this.fetchFriends();
   };
 
   fetchFriendRequests = async () => {
     let currentUser = await getCurrentUser();
 
     this.setState({ friendRequests: currentUser.friendRequests });
+  };
+
+  fetchFriends = async () => {
+    let currentUser = await getCurrentUser();
+
+    this.setState({ friends: currentUser.friends });
+  };
+
+  getUsersByID = async (list) => {
+    const response = await axios.get(`${baseURL}/user/getUsersByID`, {
+      list,
+    });
+
+    console.log(response);
   };
 
   handleSearchChange = (event) => {
@@ -152,22 +176,11 @@ class Friends extends Component {
   handleAddFriend = async () => {
     let currentUser = await getCurrentUser();
 
-    let senderRequests = currentUser.friendRequests;
-
-    for (let x = 0; x < senderRequests.length; x++) {
-      if (senderRequests[x].phone === this.state.addedPhone) {
-        return alert(
-          "This user has already sent you a friend request. Please accept theirs."
-        );
-      }
-    }
-
     try {
-      const response = await axios.post(`${baseURL}/user/addFriend`, {
+      const response = await axios.put(`${baseURL}/user/addFriend`, {
         phone: this.state.addedPhone,
-        from: currentUser.phone,
-        fName: currentUser.fName,
-        lName: currentUser.lName,
+        senderFriendRequests: this.state.friendRequests,
+        senderID: currentUser.ID,
       });
 
       alert(response.data.message);
@@ -182,7 +195,7 @@ class Friends extends Component {
   };
 
   renderInbox = () => {
-    return <List friendReqConfig={true} items={this.state.friendRequests} />;
+    return <List friendReqConfig={true} users={this.state.friendRequests} />;
   };
 
   render() {
@@ -251,7 +264,7 @@ class Friends extends Component {
           />
           <Divider style={{ backgroundColor: "grey", height: 0.1 }} />
         </View>
-        <List friendReqConfig={false} items={testItems} />
+        <List friendReqConfig={false} users={this.state.friends} />
         <View style={styles.floatingButton}>
           <Icon
             name="inbox"

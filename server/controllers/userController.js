@@ -103,6 +103,7 @@ const register = async (req, res) => {
   }
 };
 
+//req.body.phone should be the user being operated on
 const findUser = async (req, res, next) => {
   try {
     const user = await User.findOne({ phone: req.body.phone });
@@ -121,19 +122,31 @@ const findUser = async (req, res, next) => {
 
     return res.json({
       success: false,
-      message: "Error with adding friend. Please try again.",
+      message: "Error with finding user. Please try again.",
     });
   }
 };
 
 const checkExistingRequests = async (req, res, next) => {
-  let recipientRequests = res.locals.user.friendRequests;
+  let recipient = res.locals.user;
+  let recipientRequests = recipient.friendRequests;
+  let senderRequests = req.body.senderFriendRequests;
 
   for (let x = 0; x < recipientRequests.length; x++) {
-    if (recipientRequests[x].phone === req.body.from) {
+    if (recipientRequests[x] === req.body.senderID) {
       return res.json({
         success: false,
         message: "You already have a pending friend request to this user.",
+      });
+    }
+  }
+
+  for (let x = 0; x < senderRequests.length; x++) {
+    if (senderRequests[x] === recipient.ID) {
+      return res.json({
+        success: false,
+        message:
+          "This user has already sent you a friend request. Please accept theirs.",
       });
     }
   }
@@ -142,7 +155,9 @@ const checkExistingRequests = async (req, res, next) => {
 };
 
 const addFriend = async (req, res) => {
-  if (req.body.phone === req.body.from) {
+  let recipient = res.locals.user;
+
+  if (recipient.ID === req.body.senderID) {
     return res.json({
       success: false,
       message:
@@ -150,16 +165,8 @@ const addFriend = async (req, res) => {
     });
   }
 
-  const friendRequest = {
-    phone: req.body.from,
-    fName: req.body.fName,
-    lName: req.body.lName,
-  };
-
   try {
-    let recipient = res.locals.user;
-
-    recipient.friendRequests.push(friendRequest);
+    recipient.friendRequests.push(req.body.senderID);
     recipient.save();
 
     //why does this work and the const at the top imports doesnt?
@@ -170,7 +177,7 @@ const addFriend = async (req, res) => {
 
     return res.json({
       success: true,
-      message: "Friend request successfully sent.",
+      message: "Friend request sent.",
     });
   } catch (error) {
     console.log("Error with assigning friend request: " + error);
@@ -212,6 +219,38 @@ const updateToken = async (req, res) => {
   }
 };
 
+const acceptFriend = (req, res) => {
+  try {
+    let recipient = res.locals.user;
+
+    recipient.friends.push(req.body.ID);
+    recipient.save();
+
+    const SIO = require("../server").SIO;
+
+    //send event to recipient's socket room
+    SIO.of("/api/socket").to(req.body.phone).emit("acceptedFriendRequest");
+
+    return res.json({
+      success: true,
+      message: "Friend request accepted.",
+    });
+  } catch (error) {
+    console.log("Error with accepting friend request: " + error);
+    return res.json({
+      success: false,
+      message: "Error with accepting friend request. Please try again.",
+    });
+  }
+};
+
+getUsersByID = (req, res) => {
+  return res.json({
+    success: true,
+    message: "Good",
+  });
+};
+
 module.exports = {
   login,
   checkDuplicatePhone,
@@ -221,4 +260,6 @@ module.exports = {
   checkExistingRequests,
   addFriend,
   updateToken,
+  acceptFriend,
+  getUsersByID,
 };

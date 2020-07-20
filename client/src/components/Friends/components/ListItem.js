@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 import { View, StyleSheet, Animated, Text } from "react-native";
 import { ListItem as RNEListItem, Icon } from "react-native-elements";
+import { getCurrentUser, updateToken } from "../../../helpers/session";
+import axios from "axios";
+import baseURL from "../../../../baseURL";
 
 const styles = StyleSheet.create({
   iconContainerStyle: {
@@ -16,12 +19,6 @@ class ListItem extends Component {
     tappedIconsRight: new Animated.Value(-150),
     tapped: false,
   };
-
-  // state = {
-  //   rightIcon: this.defaultIcon(),
-  //   default: true,
-  //   fadeAnim: new Animated.Value(0),
-  // };
 
   renderIcons = (rotation) => {
     return (
@@ -88,9 +85,7 @@ class ListItem extends Component {
               color="#F75555"
               containerStyle={styles.iconContainerStyle}
               iconStyle={{ transform: [{ rotate: "45deg" }] }}
-              onPress={() => {
-                console.log("pressed decline");
-              }}
+              onPress={this.handleDecline}
             />
           )}
           {this.props.friendReqConfig && (
@@ -101,14 +96,30 @@ class ListItem extends Component {
               raised
               color="#55F78B"
               containerStyle={styles.iconContainerStyle}
-              onPress={() => {
-                console.log("pressed accept");
-              }}
+              onPress={this.handleAccept}
             />
           )}
         </Animated.View>
       </View>
     );
+  };
+
+  handleDecline = () => {};
+
+  handleAccept = async () => {
+    let currentUser = await getCurrentUser();
+
+    try {
+      const response = await axios.put(`${baseURL}/user/acceptFriend`, {
+        phone: currentUser.phone,
+        ID: this.props.user,
+      });
+
+      alert(response.data.message);
+    } catch (error) {
+      console.log("Error with accepting friend request: " + error);
+      alert("Error with accepting friend request. Please try again.");
+    }
   };
 
   toggleIcons = () => {

@@ -42,13 +42,13 @@ const UserSchema = new mongoose.Schema({
   },
   //ForeignKey, Email or uniqueID
   friends: {
-    type: [String],
+    type: [Number],
     unique: false,
     required: true,
     default: [],
   },
   friendRequests: {
-    type: [FriendRequestSchema],
+    type: [Number],
     unique: false,
     required: true,
     default: [],

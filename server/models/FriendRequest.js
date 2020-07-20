@@ -16,6 +16,11 @@ const FriendRequestSchema = new mongoose.Schema({
     unique: false,
     required: true,
   },
+  ID: {
+    type: Number,
+    unique: false,
+    required: true,
+  },
 });
 
 module.exports = FriendRequestSchema;
