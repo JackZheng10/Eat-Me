@@ -1,22 +1,11 @@
 import React, { Component } from "react";
-import {
-	Container,
-	Header,
-	Content,
-	Footer,
-	Button,
-	Text,
-	Left,
-	Icon,
-	Body,
-	Title,
-	Right,
-	Item,
-	Input,
-} from "native-base";
+import { StyleSheet, View } from "react-native";
+
+import { Header, Icon, Button, Input, SearchBar } from "react-native-elements";
 import MapView, { Marker } from "react-native-maps";
 import baseURL from "../../../baseURL";
 import axios from "axios";
+import ModalStyles from "./styles/ModalStyles";
 
 /* 
     Native Module cannot be null 
@@ -25,7 +14,19 @@ import axios from "axios";
 */
 //import Geolocation from "react-native-geolocation-service";
 
-import { Row, Grid } from "react-native-easy-grid";
+const styles = StyleSheet.create({
+	locationInputView: {
+		position: "absolute",
+		top: 20,
+		width: "100%",
+	},
+	locationInputContainer: {
+		borderRadius: 50,
+		borderColor: "black",
+		borderWidth: 1,
+		backgroundColor: "white",
+	},
+});
 
 class Location extends Component {
 	state = {
@@ -120,6 +121,7 @@ class Location extends Component {
 	};
 
 	renderMap = () => {
+		console.log("Hey Mappy");
 		const {
 			locationLatitude,
 			locationLongitude,
@@ -154,56 +156,61 @@ class Location extends Component {
 		);
 	};
 
+	renderLocationHeadLeft = () => {
+		return <Icon onPress={this.props.goBack} name="arrow-back" color="#FFF" />;
+	};
+
+	renderLocationHeadRight = () => {
+		//Consider Screen sizes for these elements
+		return <Icon name="clear" onPress={this.props.exit} color="#FFF" />;
+	};
+
+	setRightIcon = () => {
+		return (
+			<Button
+				title="Find"
+				buttonStyle={{ borderRadius: 50, backgroundColor: "#00B2CA" }}
+				onPress={this.submitSearchTerm}
+			/>
+		);
+	};
+
 	render() {
 		return (
-			<Container>
-				<Header>
-					<Left>
-						<Button transparent onPress={() => this.props.goBack()}>
-							<Icon name="arrow-back" />
-						</Button>
-					</Left>
-					<Body>
-						<Title>Location</Title>
-					</Body>
-					<Right>
-						<Button hasText transparent>
-							<Text>Cancel</Text>
-						</Button>
-					</Right>
-				</Header>
-				<Content contentContainerStyle={{ flex: 1 }}>
-					<Grid>
-						<Row size={1}>
-							<Item searchBar rounded style={{ width: "100%" }}>
-								<Icon name="search" />
-								<Input
-									onEndEditing={this.submitSearchTerm}
-									placeholder="Search here"
-									onChange={this.updateSearchTerm}
-								/>
-								<Button onPress={this.submitSearchTerm}>
-									<Text>Find</Text>
-								</Button>
-							</Item>
-						</Row>
-						<Row size={9}>{this.renderMap()}</Row>
-					</Grid>
-				</Content>
-				<Footer>
-					<Left>
-						<Text>
-							Latitude: {this.state.locationLatitude}, Longitude:{" "}
-							{this.state.locationLongitude}
-						</Text>
-					</Left>
-					<Right>
-						<Button onPress={this.addLocationToSession}>
-							<Text>Add Location</Text>
-						</Button>
-					</Right>
-				</Footer>
-			</Container>
+			<View style={{ flex: 1 }}>
+				<View style={{ flex: 1 }}>
+					<Header
+						containerStyle={{ backgroundColor: "#00B2CA" }}
+						leftComponent={this.renderLocationHeadLeft}
+						centerComponent={{
+							text: "Choose your location",
+							style: ModalStyles.headerCenterText,
+						}}
+						rightComponent={this.renderLocationHeadRight}
+					/>
+				</View>
+				<View style={ModalStyles.content}>
+					<View style={{ flex: 1 }}>
+						{this.renderMap()}
+						<View style={styles.locationInputView}>
+							<Input
+								onChange={this.updateSearchTerm}
+								placeholder="Search"
+								leftIcon={{ name: "search" }}
+								rightIcon={this.setRightIcon}
+								inputContainerStyle={styles.locationInputContainer}
+							/>
+						</View>
+					</View>
+				</View>
+				<View style={ModalStyles.footer}>
+					<Button
+						onPress={this.addLocationToSession}
+						buttonStyle={ModalStyles.updateSessionButton}
+						title="Add Location"
+					/>
+				</View>
+			</View>
 		);
 	}
 }

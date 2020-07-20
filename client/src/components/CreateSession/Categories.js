@@ -1,21 +1,21 @@
 import React, { Component } from "react";
-import {
-	Container,
-	Header,
-	Content,
-	Footer,
-	Button,
-	Text,
-	Col,
-	Left,
-	Icon,
-	Body,
-	Title,
-	Right,
-} from "native-base";
-import { Row } from "react-native-easy-grid";
+import { StyleSheet, View } from "react-native";
+import { Header, Icon, Button } from "react-native-elements";
 import CategoryButton from "./CategoryButton";
 import { CATEGORIES } from "../../constants";
+import ModalStyles from "./styles/ModalStyles";
+
+const styles = StyleSheet.create({
+	categoriesRow: {
+		flex: 1,
+		backgroundColor: "#F5F1ED",
+	},
+	categoryView: {
+		margin: 10,
+		flexDirection: "row",
+		justifyContent: "space-around",
+	},
+});
 
 class Categories extends Component {
 	state = {
@@ -54,62 +54,59 @@ class Categories extends Component {
 			return categories.slice(i * 4, i * 4 + 4);
 		});
 
-		return categoriesByRow.map((categoryRow, i) => {
-			return (
-				<Row style={{ margin: 10 }}>
-					{categoryRow.map((category) => {
-						return (
-							<Col>
-								<CategoryButton
-									category={category}
-									onSelect={this.onCategorySelect}
-								/>
-							</Col>
-						);
-					})}
-				</Row>
-			);
-		});
+		return (
+			<View style={styles.categoriesRow}>
+				{categoriesByRow.map((categoryRow, i) => {
+					return (
+						<View key={i} style={styles.categoryView}>
+							{categoryRow.map((category) => {
+								return (
+									<CategoryButton
+										key={category}
+										category={category}
+										onSelect={this.onCategorySelect}
+									/>
+								);
+							})}
+						</View>
+					);
+				})}
+			</View>
+		);
 	};
 
-	renderSelectedCategories = () => {
-		return (
-			<Text>
-				{this.state.selectedCategories.map((selectedCategory) => {
-					return `${selectedCategory}, `;
-				})}
-			</Text>
-		);
+	renderCategoryHeadLeft = () => {
+		return <Icon onPress={this.props.goBack} name="arrow-back" color="#FFF" />;
+	};
+
+	renderCategoryHeadRight = () => {
+		//Consider Screen sizes for these elements
+		return <Icon name="clear" onPress={this.props.exit} color="#FFF" />;
 	};
 
 	render() {
 		return (
-			<Container>
-				<Header>
-					<Left>
-						<Button transparent onPress={() => this.props.goBack()}>
-							<Icon name="arrow-back" />
-						</Button>
-					</Left>
-					<Body>
-						<Title>Categories</Title>
-					</Body>
-					<Right>
-						<Button hasText transparent>
-							<Text>Cancel</Text>
-						</Button>
-					</Right>
-				</Header>
-				<Content>{this.renderCategories()}</Content>
-				<Footer>
-					<Left>{this.renderSelectedCategories()}</Left>
-					<Right>
-						<Button onPress={this.addCategoriesToSession}>
-							<Text>Add Categories</Text>
-						</Button>
-					</Right>
-				</Footer>
-			</Container>
+			<View style={{ flex: 1 }}>
+				<View style={{ flex: 1 }}>
+					<Header
+						containerStyle={{ backgroundColor: "#00B2CA" }}
+						leftComponent={this.renderCategoryHeadLeft}
+						centerComponent={{
+							text: "Select Categories",
+							style: ModalStyles.headerCenterText,
+						}}
+						rightComponent={this.renderCategoryHeadRight}
+					/>
+				</View>
+				<View style={ModalStyles.content}>{this.renderCategories()}</View>
+				<View style={ModalStyles.footer}>
+					<Button
+						onPress={this.addCategoriesToSession}
+						buttonStyle={ModalStyles.updateSessionButton}
+						title="Add Categories"
+					/>
+				</View>
+			</View>
 		);
 	}
 }

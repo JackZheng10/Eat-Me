@@ -1,7 +1,7 @@
 import React, { Component } from "react";
+import { View, Text, Button } from "react-native";
 import { withNavigation } from "react-navigation";
-import { Content } from "native-base";
-import { Row, Grid } from "react-native-easy-grid";
+
 import Swiper from "react-native-deck-swiper";
 import RestaurantCard from "./RestaurantCard";
 import baseURL from "../../../baseURL";
@@ -46,7 +46,7 @@ class Session extends Component {
 
 	componentDidUpdate = () => {
 		if (this.state.needMoreRestaurants) {
-			this.fetchRestaurants();
+			//this.fetchRestaurants();
 		}
 	};
 
@@ -104,6 +104,8 @@ class Session extends Component {
 			this.state.restaurants.length > 0 &&
 			this.state.currentRestaurant !== null
 		) {
+			//return <Button title="ggg" />;
+
 			return (
 				<Swiper
 					cards={this.state.restaurants}
@@ -113,6 +115,7 @@ class Session extends Component {
 					onSwipedRight={this.onSwipedRight}
 					onSwipedLeft={this.onSwipedLeft}
 					cardIndex={this.state.restaurantIndex}
+					backgroundColor="#F5F1ED"
 				></Swiper>
 			);
 		}
@@ -120,13 +123,13 @@ class Session extends Component {
 
 	render() {
 		return (
-			<Content contentContainerStyle={{ flex: 1 }}>
-				<Grid>
-					<Row size={1} style={{ backgroundColor: "#635DB7" }}>
-						{this.renderSwiper()}
-					</Row>
-				</Grid>
-			</Content>
+			<View
+				style={{
+					flex: 1,
+				}}
+			>
+				{this.renderSwiper()}
+			</View>
 		);
 	}
 }

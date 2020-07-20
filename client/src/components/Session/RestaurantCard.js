@@ -1,11 +1,12 @@
 import React, { Component } from "react";
-import { Image, TouchableWithoutFeedback, StyleSheet } from "react-native";
-import { Content, Text, Card, CardItem } from "native-base";
+import { TouchableWithoutFeedback, StyleSheet } from "react-native";
+import { Card } from "react-native-elements";
 
 const styles = StyleSheet.create({
 	restaurantCard: {
 		alignItems: "center",
 		paddingBottom: 20,
+		backgroundColor: "#fcfbfa",
 	},
 	restaurantImage: {
 		width: 300,
@@ -14,14 +15,11 @@ const styles = StyleSheet.create({
 });
 
 class RestaurantCard extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			currentImage: this.props.images[0],
-			imageIndex: 0,
-		};
-	}
+	state = {
+		imageIndex: 0,
+	};
 
+	//Maybe have a left-right tap through of images
 	onPress = (event) => {
 		let imageIndex = this.state.imageIndex;
 		if (imageIndex < this.props.images.length - 1) {
@@ -30,29 +28,22 @@ class RestaurantCard extends Component {
 			imageIndex = 0;
 		}
 
-		this.setState({
-			currentImage: this.props.images[imageIndex],
-			imageIndex,
-		});
+		this.setState({ imageIndex });
 	};
 
 	//ContentContainerStyle to get appropriate height for box
 	render() {
+		const currentImage = this.props.images[this.state.imageIndex];
 		return (
 			<TouchableWithoutFeedback onPress={(event) => this.onPress(event)}>
-				<Card style={styles.restaurantCard}>
-					<CardItem header>
-						<Text>{this.props.restaurant.name}</Text>
-					</CardItem>
-					<CardItem cardBody>
-						<Image
-							style={styles.restaurantImage}
-							source={{
-								uri: this.state.currentImage,
-							}}
-						/>
-					</CardItem>
-				</Card>
+				<Card
+					title={this.props.restaurant.name}
+					containerStyle={styles.restaurantCard}
+					image={{
+						uri: currentImage,
+					}}
+					imageStyle={styles.restaurantImage}
+				></Card>
 			</TouchableWithoutFeedback>
 		);
 	}

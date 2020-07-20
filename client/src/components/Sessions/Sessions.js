@@ -1,41 +1,46 @@
-import { Text, View, Button, StyleSheet } from "react-native";
+import React, { Component } from "react";
+import { View, StyleSheet, Dimensions, ScrollView } from "react-native";
 import { withNavigation } from "react-navigation";
 
-import React, { Component } from "react";
-import {
-	List,
-	ListItem,
-	Icon,
-	Thumbnail,
-	Left,
-	Right,
-	Body,
-	Container,
-	Content,
-	Footer,
-} from "native-base";
-//import Session from "../Session.js";
 import baseURL from "../../../baseURL.js";
 import axios from "axios";
 import CreateSession from "../CreateSession/CreateSession";
+import { ListItem, Text, Icon } from "react-native-elements";
 
 const styles = StyleSheet.create({
 	ListItem: {
-		flex: 1,
-		paddingLeft: 5,
 		margin: 10,
+		borderStyle: "solid",
+		borderColor: "#00B2CA",
 		borderWidth: 2,
+		borderRadius: 50,
 	},
-	FloatingButton: {
-		//Here is the trick
-		position: "absolute",
-		width: 50,
-		height: 50,
-		alignItems: "center",
+	containerStyle: {
+		backgroundColor: "#fcfbfa",
+		borderStyle: "solid",
+		borderColor: "#F79256",
+		borderRadius: 50,
+	},
+	titleStyle: {
+		fontWeight: "bold",
+		color: "#F79256",
+	},
+	subtitleStyle: {
+		color: "black",
+	},
+	emptySession: {
+		flex: 1,
 		justifyContent: "center",
+		alignItems: "center",
+	},
+	addSessionContainer: {
+		position: "absolute",
+		bottom: 25,
 		right: 50,
-		bottom: 150,
-		backgroundColor: "#A0F",
+	},
+	sessionsContainer: {
+		flex: 1,
+		backgroundColor: "#F5F1ED",
 	},
 });
 
@@ -56,50 +61,70 @@ class Sessions extends Component {
 	setSessionsView = () => {
 		if (this.state.SessionList.length == 0)
 			return this.renderEmptySessionsView();
-		else return this.renderSessions();
+		else {
+			return <ScrollView>{this.renderSessions()}</ScrollView>;
+		}
 	};
 
 	renderEmptySessionsView = () => {
 		return (
-			<Text>
-				No Sessions right now :( {"\n"}
-				Create a new Session!!
-			</Text>
+			<View style={styles.emptySession}>
+				<Text h3 style={{ color: "#F79256" }}>
+					Create a New Session!
+				</Text>
+			</View>
 		);
-	};
-
-	renderSessions = () => {
-		return <List>{this.renderSessionListItems()}</List>;
 	};
 
 	renderSession = (sessionDetails) => {
 		this.props.navigation.push("Session", { sessionDetails });
 	};
 
-	renderSessionListItems = () => {
+	renderSessions = () => {
 		return this.state.SessionList.map((Session) => {
 			return (
 				<ListItem
 					onPress={() => this.renderSession(Session)}
 					key={Session._id}
-					style={styles.ListItem}
+					leftElement={this.renderSessionMembers}
+					title={"Session.Members"}
+					titleStyle={styles.titleStyle}
+					subtitle={Session.Status}
+					subtitleStyle={styles.subtitleStyle}
 					avatar
-				>
-					<Left>
-						<Icon name="person" />
-					</Left>
-					<Body>
-						<Text>{Session.Members}</Text>
-						<Text numberOfLines={1} note>
-							{Session.ID}
-						</Text>
-					</Body>
-					<Right>
-						<Text note>{Session.Status}</Text>
-					</Right>
-				</ListItem>
+					style={styles.ListItem}
+					containerStyle={styles.containerStyle}
+					rightIcon={this.renderSessionStatus(Session.Status)}
+				/>
 			);
 		});
+	};
+
+	renderSessionMembers = () => {
+		//Idea - Return circular picture of all friends in session. Small though,
+		return <Icon name="person" />;
+	};
+
+	renderSessionStatus = (sessionStatus) => {
+		let sessionIcon;
+		switch (sessionStatus) {
+			case "No Match": {
+				sessionIcon = "check";
+				break;
+			}
+			case "No Progress": {
+				sessionIcon = "hourglass-empty";
+				break;
+			}
+			case "Match": {
+				sessionIcon = "check";
+				break;
+			}
+		}
+
+		return (
+			<Icon name={sessionIcon} color="#F79256" style={{ marginRight: 10 }} />
+		);
 	};
 
 	createNewSession = () => {
@@ -112,23 +137,25 @@ class Sessions extends Component {
 
 	render() {
 		return (
-			<>
-				<Content>
-					{this.setSessionsView()}
+			<View style={styles.sessionsContainer}>
+				{this.setSessionsView()}
 
-					<CreateSession
-						modalVisible={this.state.modalVisible}
-						exitModal={this.exitModal}
+				<CreateSession
+					modalVisible={this.state.modalVisible}
+					exitModal={this.exitModal}
+				/>
+
+				<View style={styles.addSessionContainer}>
+					<Icon
+						onPress={this.createNewSession}
+						name="add"
+						type="material"
+						color="#F79256"
+						raised
+						reverse
 					/>
-				</Content>
-				<Button
-					onPress={this.createNewSession}
-					title="New"
-					style={styles.FloatingButton}
-				>
-					<Text>+</Text>
-				</Button>
-			</>
+				</View>
+			</View>
 		);
 	}
 }
