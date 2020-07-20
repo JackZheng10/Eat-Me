@@ -152,6 +152,16 @@ class Friends extends Component {
   handleAddFriend = async () => {
     let currentUser = await getCurrentUser();
 
+    let senderRequests = currentUser.friendRequests;
+
+    for (let x = 0; x < senderRequests.length; x++) {
+      if (senderRequests[x].phone === this.state.addedPhone) {
+        return alert(
+          "This user has already sent you a friend request. Please accept theirs."
+        );
+      }
+    }
+
     try {
       const response = await axios.post(`${baseURL}/user/addFriend`, {
         phone: this.state.addedPhone,
@@ -160,11 +170,7 @@ class Friends extends Component {
         lName: currentUser.lName,
       });
 
-      if (response.data.success) {
-        alert(response.data.message);
-      } else {
-        alert(response.data.message);
-      }
+      alert(response.data.message);
     } catch (error) {
       console.log(error);
       alert("Error with adding friend. Please try again.");
