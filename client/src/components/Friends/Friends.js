@@ -86,12 +86,27 @@ class Friends extends Component {
   }
 
   componentDidMount = async () => {
-    //todo: prob want to update token here too in case they close the app and reopen? depends when the component dies
     let currentUser = await getCurrentUser();
 
     //establish a socket connection with backend, joining the proper room
     this.socket = io(`${baseURL}/socket?phone=${currentUser.phone}`);
 
+    await this.addSocketListeners(currentUser);
+
+    //in case user had app closed, update their token and relevant info
+    if (await updateToken(currentUser.phone)) {
+      //todo: await on these? prob not so they fire both at once
+      this.fetchFriendRequests();
+      this.fetchFriends();
+    }
+  };
+
+  componentWillUnmount = () => {
+    //maybe unecessary
+    this.socket.disconnect();
+  };
+
+  addSocketListeners = async (currentUser) => {
     //listen for an incoming friend request event, sent in the user's room
     this.socket.on("incomingFriendRequest", async () => {
       if (await updateToken(currentUser.phone)) {
@@ -134,15 +149,12 @@ class Friends extends Component {
         alert("Error with declining friend. Please contact us.");
       }
     });
-
-    this.fetchFriendRequests();
-    this.fetchFriends();
   };
 
   fetchFriendRequests = async () => {
     let currentUser = await getCurrentUser();
 
-    const users = await this.getUsersByID(currentUser.friendRequests);
+    const users = await this.fetchUsersByID(currentUser.friendRequests);
 
     if (users.success) {
       this.setState({ friendRequests: users.message });
@@ -154,7 +166,7 @@ class Friends extends Component {
   fetchFriends = async () => {
     let currentUser = await getCurrentUser();
 
-    const users = await this.getUsersByID(currentUser.friends);
+    const users = await this.fetchUsersByID(currentUser.friends);
 
     if (users.success) {
       this.setState({ friends: users.message });
@@ -164,9 +176,9 @@ class Friends extends Component {
   };
 
   //todo: move to helper function
-  getUsersByID = async (list) => {
+  fetchUsersByID = async (list) => {
     try {
-      const response = await axios.post(`${baseURL}/user/getUsersByID`, {
+      const response = await axios.post(`${baseURL}/user/fetchUsersByID`, {
         list,
       });
 

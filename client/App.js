@@ -192,7 +192,8 @@ class App extends Component {
               style: { backgroundColor: "#00B2CA" },
               // style: this.state.keyboardVisible ? { display: "none" } : {},
             }}
-            initialRouteName="Friends"
+            initialRouteName="Settings"
+            lazy={false} //all tabs rendered on initial app load, but maybe not their stack views. if this is too slow, think of a workaround
           >
             <Tab.Screen name="Friends" component={FriendsStackScreen} />
             <Tab.Screen name="Sessions" component={SessionsStackScreen} />

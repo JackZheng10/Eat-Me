@@ -321,7 +321,7 @@ const deleteFriend = async (req, res) => {
   }
 };
 
-const getUsersByID = async (req, res) => {
+const fetchUsersByID = async (req, res) => {
   try {
     const users = await User.find()
       .where("ID")
@@ -361,5 +361,5 @@ module.exports = {
   acceptFriend,
   deleteFriend,
   declineFriend,
-  getUsersByID,
+  fetchUsersByID,
 };
