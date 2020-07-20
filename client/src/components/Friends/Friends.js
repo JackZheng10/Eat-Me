@@ -118,6 +118,14 @@ class Friends extends Component {
       }
     });
 
+    this.socket.on("declinedFriend", async () => {
+      if (await updateToken(currentUser.phone)) {
+        this.fetchFriendRequests();
+      } else {
+        alert("Error with declining friend. Please contact us.");
+      }
+    });
+
     this.fetchFriendRequests();
     this.fetchFriends();
   };

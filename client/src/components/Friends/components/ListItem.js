@@ -85,7 +85,7 @@ class ListItem extends Component {
               color="#F75555"
               containerStyle={styles.iconContainerStyle}
               iconStyle={{ transform: [{ rotate: "45deg" }] }}
-              onPress={this.handleDecline}
+              onPress={this.handleDeclineFriend}
             />
           )}
           {this.props.friendReqConfig && (
@@ -104,7 +104,21 @@ class ListItem extends Component {
     );
   };
 
-  handleDecline = () => {};
+  handleDeclineFriend = async () => {
+    let currentUser = await getCurrentUser();
+
+    try {
+      const response = await axios.put(`${baseURL}/user/declineFriend`, {
+        phone: currentUser.phone,
+        ID: this.props.user.ID,
+      });
+
+      alert(response.data.message);
+    } catch (error) {
+      console.log("Error with declining friend request: " + error);
+      alert("Error with declining friend request. Please try again.");
+    }
+  };
 
   handleAcceptFriend = async () => {
     let currentUser = await getCurrentUser();

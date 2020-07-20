@@ -103,7 +103,7 @@ const register = async (req, res) => {
   }
 };
 
-//req.body.phone should be the user being operated on
+//req.body.phone should be the user being operated on, dictated as recipient = res.locals.user when used later on
 const findUser = async (req, res, next) => {
   try {
     const user = await User.findOne({ phone: req.body.phone });
@@ -263,6 +263,34 @@ const acceptFriend = async (req, res) => {
   }
 };
 
+const declineFriend = async (req, res) => {
+  try {
+    const recipient = res.locals.user;
+
+    recipient.friendRequests = recipient.friendRequests.filter((item) => {
+      item !== req.body.ID;
+    });
+
+    await recipient.save();
+
+    const SIO = require("../server").SIO;
+
+    //send event to recipient's socket room
+    SIO.of("/api/socket").to(recipient.phone).emit("declinedFriend");
+
+    return res.json({
+      success: true,
+      message: "Friend request declined.",
+    });
+  } catch (error) {
+    console.log("Error with accepting friend request: " + error);
+    return res.json({
+      success: false,
+      message: "Error with accepting friend request. Please try again.",
+    });
+  }
+};
+
 const getUsersByID = async (req, res) => {
   try {
     const users = await User.find()
@@ -301,5 +329,6 @@ module.exports = {
   addFriend,
   updateToken,
   acceptFriend,
+  declineFriend,
   getUsersByID,
 };
