@@ -232,6 +232,34 @@ class Friends extends Component {
     this.setState({ searchTerm: event.nativeEvent.text });
   };
 
+  //todo: fully test pls
+  handleFilteredFriends = () => {
+    return this.state.friends.filter((item) => {
+      const escapeRegExp = (string) => {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      };
+
+      if (this.state.searchTerm.trim() !== "") {
+        const regexp = new RegExp(
+          escapeRegExp(this.state.searchTerm.trim().toLowerCase())
+        );
+
+        if (item) {
+          const result = `${item.fName} ${item.lName}`
+            .trim()
+            .toLowerCase()
+            .match(regexp);
+
+          return result && result.length > 0;
+        } else {
+          return false;
+        }
+      } else {
+        return true;
+      }
+    });
+  };
+
   clearSearch = () => {
     this.setState({ searchTerm: "" });
   };
@@ -306,7 +334,7 @@ class Friends extends Component {
           />
           <Divider style={{ backgroundColor: "grey", height: 0.1 }} />
         </View>
-        <List friendReqConfig={false} users={this.state.friends} />
+        <List friendReqConfig={false} users={this.handleFilteredFriends()} />
         <View style={styles.floatingButton}>
           <Icon
             name="inbox"

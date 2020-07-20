@@ -182,7 +182,6 @@ const addFriend = async (req, res) => {
     //why does this work and the const at the top imports doesnt?
     const SIO = require("../server").SIO;
 
-    //send event to recipient's socket room
     SIO.of("/api/socket").to(recipient.phone).emit("incomingFriendRequest");
 
     return res.json({
@@ -246,7 +245,6 @@ const acceptFriend = async (req, res) => {
 
     const SIO = require("../server").SIO;
 
-    //send event to recipient's socket room
     SIO.of("/api/socket").to(recipient.phone).emit("acceptedFriend");
     SIO.of("/api/socket").to(sender.phone).emit("incomingFriend");
 
@@ -275,7 +273,6 @@ const declineFriend = async (req, res) => {
 
     const SIO = require("../server").SIO;
 
-    //send event to recipient's socket room
     SIO.of("/api/socket").to(recipient.phone).emit("declinedFriend");
 
     return res.json({
@@ -308,7 +305,6 @@ const deleteFriend = async (req, res) => {
 
     const SIO = require("../server").SIO;
 
-    //send event to recipient's socket room
     SIO.of("/api/socket").to(sender.phone).emit("deletedFriend");
     SIO.of("/api/socket").to(recipient.phone).emit("deletedFriend");
 
