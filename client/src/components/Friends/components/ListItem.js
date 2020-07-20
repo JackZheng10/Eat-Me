@@ -96,7 +96,7 @@ class ListItem extends Component {
               raised
               color="#55F78B"
               containerStyle={styles.iconContainerStyle}
-              onPress={this.handleAccept}
+              onPress={this.handleAcceptFriend}
             />
           )}
         </Animated.View>
@@ -106,13 +106,13 @@ class ListItem extends Component {
 
   handleDecline = () => {};
 
-  handleAccept = async () => {
+  handleAcceptFriend = async () => {
     let currentUser = await getCurrentUser();
 
     try {
       const response = await axios.put(`${baseURL}/user/acceptFriend`, {
         phone: currentUser.phone,
-        ID: this.props.user,
+        ID: this.props.user.ID,
       });
 
       alert(response.data.message);

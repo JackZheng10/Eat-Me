@@ -173,7 +173,7 @@ const addFriend = async (req, res) => {
     const SIO = require("../server").SIO;
 
     //send event to recipient's socket room
-    SIO.of("/api/socket").to(req.body.phone).emit("incomingFriendRequest");
+    SIO.of("/api/socket").to(recipient.phone).emit("incomingFriendRequest");
 
     return res.json({
       success: true,
@@ -224,12 +224,15 @@ const acceptFriend = (req, res) => {
     let recipient = res.locals.user;
 
     recipient.friends.push(req.body.ID);
+    recipient.friendRequests = recipient.friendRequests.filter((item) => {
+      item !== req.body.ID;
+    });
     recipient.save();
 
     const SIO = require("../server").SIO;
 
     //send event to recipient's socket room
-    SIO.of("/api/socket").to(req.body.phone).emit("acceptedFriendRequest");
+    SIO.of("/api/socket").to(recipient.phone).emit("acceptedFriendRequest");
 
     return res.json({
       success: true,
@@ -244,11 +247,32 @@ const acceptFriend = (req, res) => {
   }
 };
 
-getUsersByID = (req, res) => {
-  return res.json({
-    success: true,
-    message: "Good",
-  });
+const getUsersByID = async (req, res) => {
+  try {
+    const users = await User.find()
+      .where("ID")
+      .in(req.body.list)
+      .select([
+        "-_id",
+        "-sessions",
+        "-friends",
+        "-friendRequests",
+        "-settings",
+        "-password",
+        "-__v",
+      ]);
+
+    return res.json({
+      success: true,
+      message: users,
+    });
+  } catch (error) {
+    console.log("Error with getting user list from IDs: " + error);
+    return res.json({
+      success: false,
+      message: "Error with getting user list from IDs. Please contact us.",
+    });
+  }
 };
 
 module.exports = {

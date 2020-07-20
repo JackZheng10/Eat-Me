@@ -62,14 +62,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const testItems = [
-  {
-    fName: "Amy",
-    lName: "Hurha",
-    phone: "9322343245",
-  },
-];
-
 //todo: add keyboard listener to unfocus friend search
 //todo: decide on 10-digit phone or not
 //todo: input validation for add friend?
@@ -102,6 +94,7 @@ class Friends extends Component {
     //listen for an incoming friend request event, sent in the user's room
     this.socket.on("incomingFriendRequest", async () => {
       if (await updateToken(currentUser.phone)) {
+        //await on this? eh
         this.fetchFriendRequests();
       } else {
         alert("Error with receiving friend request. Please contact us.");
@@ -110,34 +103,56 @@ class Friends extends Component {
 
     this.socket.on("acceptedFriendRequest", async () => {
       if (await updateToken(currentUser.phone)) {
-        // this.fetchFriends();
+        this.fetchFriends();
+        this.fetchFriendRequests();
       } else {
         alert("Error with accepting friend. Please contact us.");
       }
     });
 
     this.fetchFriendRequests();
-    // this.fetchFriends();
+    this.fetchFriends();
   };
 
   fetchFriendRequests = async () => {
     let currentUser = await getCurrentUser();
 
-    this.setState({ friendRequests: currentUser.friendRequests });
+    const users = await this.getUsersByID(currentUser.friendRequests);
+
+    if (users.success) {
+      this.setState({ friendRequests: users.message });
+    } else {
+      alert(users.message);
+    }
   };
 
   fetchFriends = async () => {
     let currentUser = await getCurrentUser();
 
-    this.setState({ friends: currentUser.friends });
+    const users = await this.getUsersByID(currentUser.friends);
+
+    if (users.success) {
+      this.setState({ friends: users.message });
+    } else {
+      alert(users.message);
+    }
   };
 
+  //todo: move to helper function
   getUsersByID = async (list) => {
-    const response = await axios.get(`${baseURL}/user/getUsersByID`, {
-      list,
-    });
+    try {
+      const response = await axios.post(`${baseURL}/user/getUsersByID`, {
+        list,
+      });
 
-    console.log(response);
+      return { success: response.data.success, message: response.data.message };
+    } catch (error) {
+      console.log("Error with getting user list from IDs: " + error);
+      return {
+        success: false,
+        message: "Error with getting user list from IDs. Please contact us.",
+      };
+    }
   };
 
   handleSearchChange = (event) => {
@@ -179,7 +194,7 @@ class Friends extends Component {
     try {
       const response = await axios.put(`${baseURL}/user/addFriend`, {
         phone: this.state.addedPhone,
-        senderFriendRequests: this.state.friendRequests,
+        senderFriendRequests: currentUser.friendRequests,
         senderID: currentUser.ID,
       });
 

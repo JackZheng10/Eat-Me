@@ -19,6 +19,6 @@ router.post("/register", countUsers, register);
 router.put("/addFriend", findUser, checkExistingRequests, addFriend);
 router.get("/updateToken", updateToken);
 router.put("/acceptFriend", findUser, acceptFriend);
-router.get("/getUsersByID", getUsersByID);
+router.post("/getUsersByID", getUsersByID);
 
 module.exports = router;
