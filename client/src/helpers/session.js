@@ -11,6 +11,7 @@ export const getCurrentUser = async () => {
       const data = jwtDecode(value);
       return data;
     } else {
+      alert("Error with retrieving current user. Please relog and try again.");
       return null;
     }
   } catch (error) {

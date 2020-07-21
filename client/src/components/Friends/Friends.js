@@ -11,6 +11,10 @@ import {
 import { SearchBar, Icon, Divider, Badge } from "react-native-elements";
 import { withNavigation } from "react-navigation";
 import { getCurrentUser, updateToken } from "../../helpers/session";
+import { Notifications } from "expo";
+// import { Expo } from "expo-server-sdk";
+import Constants from "expo-constants";
+import * as Permissions from "expo-permissions";
 import io from "socket.io-client";
 import axios from "axios";
 import baseURL from "../../../baseURL";
@@ -82,6 +86,7 @@ class Friends extends Component {
       showInboxDialog: false,
       friendRequests: [],
       friends: [],
+      expoPushToken: "",
     };
   }
 
@@ -89,6 +94,7 @@ class Friends extends Component {
     let currentUser = await getCurrentUser();
 
     //establish a socket connection with backend, joining the proper room
+    //todo: figure out how to move this to app.js and export for use
     this.socket = io(`${baseURL}/socket?phone=${currentUser.phone}`);
 
     await this.addSocketListeners(currentUser);
@@ -99,11 +105,54 @@ class Friends extends Component {
       this.fetchFriendRequests();
       this.fetchFriends();
     }
+
+    //push notification testing
+    this.registerForPushNotifications();
   };
 
   componentWillUnmount = () => {
     //maybe unecessary
     this.socket.disconnect();
+  };
+
+  registerForPushNotifications = async () => {
+    if (Constants.isDevice) {
+      const { status: existingStatus } = await Permissions.getAsync(
+        Permissions.NOTIFICATIONS
+      );
+
+      let finalStatus = existingStatus;
+
+      if (existingStatus !== "granted") {
+        const { status } = await Permissions.askAsync(
+          Permissions.NOTIFICATIONS
+        );
+        finalStatus = status;
+      }
+
+      if (finalStatus !== "granted") {
+        alert("Failed to get push token for push notification.");
+        return;
+      }
+
+      const token = await Notifications.getExpoPushTokenAsync();
+      console.log("Push notifications token: ", token);
+
+      this.setState({ expoPushToken: token });
+    } else {
+      alert(
+        "Must use physical device for push notifications. Emulators are not allowed."
+      );
+    }
+
+    if (Platform.OS === "android") {
+      Notifications.createChannelAndroidAsync("default", {
+        name: "default",
+        sound: true,
+        priority: "max",
+        vibrate: [0, 250, 250, 250],
+      });
+    }
   };
 
   addSocketListeners = async (currentUser) => {

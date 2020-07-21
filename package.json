@@ -12,6 +12,7 @@
     "cors": "^2.8.5",
     "crypto-random-string": "^3.2.0",
     "expo-constants": "^9.1.1",
+    "expo-server-sdk": "^3.5.1",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.13",

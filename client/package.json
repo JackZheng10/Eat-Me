@@ -17,6 +17,8 @@
     "axios": "^0.19.2",
     "expo": "~37.0.3",
     "expo-font": "~8.1.0",
+    "expo-notifications": "~0.1.1",
+    "expo-permissions": "~8.1.0",
     "jwt-decode": "^2.2.0",
     "native-base": "^2.13.12",
     "react": "~16.9.0",

@@ -42,6 +42,7 @@ import {
 //probably want header and footer to be the aqua color? idk play with it
 //dropshadow to topbar and bottombar?
 //in future will need some sort of webhook/listener for updates like friend requests and matches..or firebase's firestore? firebase auth is also interesting
+//run expo install for any packages needed to ensure compatability
 
 const FriendsStack = createStackNavigator();
 const SessionsStack = createStackNavigator();
@@ -192,7 +193,7 @@ class App extends Component {
               style: { backgroundColor: "#00B2CA" },
               // style: this.state.keyboardVisible ? { display: "none" } : {},
             }}
-            initialRouteName="Settings"
+            initialRouteName="Friends"
             lazy={false} //all tabs rendered on initial app load, but maybe not their stack views. if this is too slow, think of a workaround
           >
             <Tab.Screen name="Friends" component={FriendsStackScreen} />
