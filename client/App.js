@@ -21,9 +21,11 @@ import {
   Login,
   Register,
 } from "./src/components";
+import { getCurrentUser, updateToken } from "./src/helpers/session";
+import axios from "axios";
 import Constants from "expo-constants";
 import * as Permissions from "expo-permissions";
-import { ThemeColors } from "react-navigation";
+import baseURL from "./baseURL";
 
 //!!!dont hardcode positions and sizes, use windowWidth/windowHeight  (see other files for example) whenever possible
 //hardcoding should(?) be fine if youre using top/bottom/left/right tho
@@ -130,8 +132,8 @@ class App extends Component {
 
   handlePushNotifications = async () => {
     //check/setup their permissions
-    if (this.hasNotificationPermission()) {
-      //set up notification channel
+    if (await this.hasNotificationPermission()) {
+      //set up notification channel for android
       if (Platform.OS === "android") {
         Notifications.createChannelAndroidAsync("default", {
           name: "default",
@@ -143,9 +145,28 @@ class App extends Component {
 
       //retrieve the token
       const token = await Notifications.getExpoPushTokenAsync();
-      console.log("Push notifications token: ", token);
 
       //update the token in db if needed
+      let currentUser = await getCurrentUser();
+
+      try {
+        const response = await axios.put(`${baseURL}/user/updatePushToken`, {
+          phone: currentUser.phone,
+          pushToken: token,
+        });
+
+        //if updated, update the token stored (JWT)
+        if (response.data.success) {
+          if (response.data.message === "updated") {
+            await updateToken(currentUser.phone);
+          }
+        } else {
+          alert(response.data.message);
+        }
+      } catch (error) {
+        console.log("Error with updating push token: " + error);
+        alert("Error with updating push token. Please try again later.");
+      }
     }
   };
 
@@ -166,7 +187,7 @@ class App extends Component {
           finalStatus = status;
         }
 
-        //if perms are granted, exit
+        //if perms are granted already or after asking for them, exit
         if (finalStatus === "granted") {
           return true;
         }
@@ -191,7 +212,6 @@ class App extends Component {
             ],
             { cancelable: true }
           );
-
           return false;
         }
       } else {

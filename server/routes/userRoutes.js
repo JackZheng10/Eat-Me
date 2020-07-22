@@ -11,6 +11,7 @@ const {
     declineFriend,
     deleteFriend,
     fetchUsersByID,
+    updatePushToken,
   } = require("../controllers/userController"),
   express = require("express"),
   router = express.Router();
@@ -28,5 +29,6 @@ router.put("/acceptFriend", findUser, acceptFriend);
 router.put("/declineFriend", findUser, declineFriend);
 router.put("/deleteFriend", findUser, deleteFriend);
 router.post("/fetchUsersByID", fetchUsersByID);
+router.put("/updatePushToken", findUser, updatePushToken);
 
 module.exports = router;

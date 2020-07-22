@@ -18,11 +18,6 @@ const UserSchema = new mongoose.Schema({
     unique: false,
     required: true,
   },
-  // email: {
-  //   type: String,
-  //   unique: true,
-  //   required: true,
-  // },
   phone: {
     type: String,
     unique: true,
@@ -33,14 +28,18 @@ const UserSchema = new mongoose.Schema({
     unique: false,
     required: true,
   },
-  //Maybe int instead
+  pushToken: {
+    type: String,
+    unique: false,
+    required: true,
+    default: "N/A",
+  },
   sessions: {
     type: [Number],
     unique: false,
     required: true,
     default: [],
   },
-  //ForeignKey, Email or uniqueID
   friends: {
     type: [Number],
     unique: false,

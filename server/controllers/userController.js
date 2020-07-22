@@ -117,7 +117,7 @@ const findUser = async (req, res, next) => {
     } else {
       return res.json({
         success: false,
-        message: "User could not be found. Please try again.",
+        message: "User could not be found. Please relog try again.",
       });
     }
   } catch (error) {
@@ -378,11 +378,33 @@ const fetchUsersByID = async (req, res) => {
   }
 };
 
-const updatePushToken = () => {
-  return res.json({
-    success: true,
-    message: "Good job",
-  });
+const updatePushToken = async (req, res) => {
+  try {
+    const recipient = res.locals.user;
+    const token = req.body.pushToken;
+
+    //if the token is different, update it
+    if (recipient.pushToken !== token) {
+      recipient.pushToken = token;
+      await recipient.save();
+
+      return res.json({
+        success: true,
+        message: "updated",
+      });
+    } else {
+      return res.json({
+        success: true,
+        message: "unchanged",
+      });
+    }
+  } catch (error) {
+    return res.json({
+      success: false,
+      message:
+        "Error with updating push notification token. Please try again later.",
+    });
+  }
 };
 
 module.exports = {
@@ -398,4 +420,5 @@ module.exports = {
   deleteFriend,
   declineFriend,
   fetchUsersByID,
+  updatePushToken,
 };

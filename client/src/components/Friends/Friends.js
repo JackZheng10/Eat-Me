@@ -73,8 +73,10 @@ const styles = StyleSheet.create({
 //todo: code refactoring, maybe ugly in places
 //todo: disable multiple requests to same person, but what if the sender changes phone number...? maybe disable phone # change in first place.
 //todo: ^ this prob solved just today. also add confirmation alert for deleting/declining?
-//TODO: move current user fetch to app.js UNLESS we decide to lazy load all the other pages
+//TODO: move current user fetch to app.js UNLESS we decide to lazy load all the other pages? or maybe we need to call getcurrentuser every time the token/user info updates
 //TODO: prob use contextprovider for currentuser and push token, also maybe SIO frontend client
+//todo: sort out when to use updatetoken and getcurrentuser
+//todo: maybe one upate token in app.js to replace any in componentdidmount of other pages
 
 class Friends extends Component {
   constructor(props) {
@@ -163,8 +165,6 @@ class Friends extends Component {
       if (await updateToken(currentUser.phone)) {
         //await on this? eh
         this.fetchFriendRequests();
-      } else {
-        alert("Error with receiving friend request. Please contact us.");
       }
     });
 
@@ -172,32 +172,24 @@ class Friends extends Component {
       if (await updateToken(currentUser.phone)) {
         this.fetchFriends();
         this.fetchFriendRequests();
-      } else {
-        alert("Error with accepting friend. Please contact us.");
       }
     });
 
     this.socket.on("incomingFriend", async () => {
       if (await updateToken(currentUser.phone)) {
         this.fetchFriends();
-      } else {
-        alert("Error with accepting friend. Please contact us.");
       }
     });
 
     this.socket.on("deletedFriend", async () => {
       if (await updateToken(currentUser.phone)) {
         this.fetchFriends();
-      } else {
-        alert("Error with deleting friend. Please contact us.");
       }
     });
 
     this.socket.on("declinedFriend", async () => {
       if (await updateToken(currentUser.phone)) {
         this.fetchFriendRequests();
-      } else {
-        alert("Error with declining friend. Please contact us.");
       }
     });
   };
