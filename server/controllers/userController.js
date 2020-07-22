@@ -1,10 +1,6 @@
-const { Expo } = require("expo-server-sdk");
 const User = require("../models/User");
 const signToken = require("../helpers/auth").signToken;
 // const SIO = require("../server").SIO;
-
-// Create a new Expo SDK client
-const expo = new Expo();
 
 const login = async (req, res) => {
   try {
@@ -187,31 +183,6 @@ const addFriend = async (req, res) => {
     const SIO = require("../server").SIO;
 
     SIO.of("/api/socket").to(recipient.phone).emit("incomingFriendRequest");
-
-    //push notification testing, hardcoded
-    let messages = [
-      {
-        to: "ExponentPushToken[OJV4D2DPkWt5QLLco_YzJ4]", //hardcode token
-        sound: "default",
-        body: "This is a test notification",
-        data: { withSome: "data" },
-      },
-    ];
-
-    let chunks = expo.chunkPushNotifications(messages);
-    for (let chunk of chunks) {
-      try {
-        let ticketChunk = await expo.sendPushNotificationsAsync(chunk);
-        console.log(ticketChunk);
-        // tickets.push(...ticketChunk);
-        // NOTE: If a ticket contains an error code in ticket.details.error, you
-        // must handle it appropriately. The error codes are listed in the Expo
-        // documentation:
-        // https://docs.expo.io/push-notifications/sending-notifications/#individual-errors
-      } catch (error) {
-        console.error(error);
-      }
-    }
 
     return res.json({
       success: true,
