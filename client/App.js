@@ -6,11 +6,12 @@ import {
   Keyboard,
   StyleSheet,
   YellowBox,
+  Alert,
 } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { AppLoading } from "expo";
+import { AppLoading, Notifications } from "expo";
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import {
   Friends,
@@ -20,6 +21,9 @@ import {
   Login,
   Register,
 } from "./src/components";
+import Constants from "expo-constants";
+import * as Permissions from "expo-permissions";
+import { ThemeColors } from "react-navigation";
 
 //!!!dont hardcode positions and sizes, use windowWidth/windowHeight  (see other files for example) whenever possible
 //hardcoding should(?) be fine if youre using top/bottom/left/right tho
@@ -49,15 +53,15 @@ const SessionsStack = createStackNavigator();
 const SettingsStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-function ExampleStack() {
+const ExampleStack = () => {
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <Text>Here's an example of how views can "stack"!</Text>
     </View>
   );
-}
+};
 
-function FriendsStackScreen() {
+const FriendsStackScreen = () => {
   return (
     <FriendsStack.Navigator
       screenOptions={({ route, navigation }) => ({
@@ -81,9 +85,9 @@ function FriendsStackScreen() {
       <FriendsStack.Screen name="StackExample" component={ExampleStack} />
     </FriendsStack.Navigator>
   );
-}
+};
 
-function SessionsStackScreen() {
+const SessionsStackScreen = () => {
   return (
     <SessionsStack.Navigator
       screenOptions={({ route, navigation }) => ({
@@ -97,9 +101,9 @@ function SessionsStackScreen() {
       <SessionsStack.Screen name="Session" component={Session} />
     </SessionsStack.Navigator>
   );
-}
+};
 
-function SettingsStackScreen() {
+const SettingsStackScreen = () => {
   return (
     <SettingsStack.Navigator
       screenOptions={({ route, navigation }) => ({
@@ -113,7 +117,7 @@ function SettingsStackScreen() {
       <SettingsStack.Screen name="StackExample" component={ExampleStack} />
     </SettingsStack.Navigator>
   );
-}
+};
 
 class App extends Component {
   state = { loading: true, keyboardVisible: false };
@@ -121,29 +125,88 @@ class App extends Component {
   //for android, because android. prob still janky. with access to manifest file would be easy. figure out later.
   componentDidMount = () => {
     console.log(Sessions);
+    this.handlePushNotifications();
+  };
 
-    if (Platform.OS !== "android") {
-      return;
+  handlePushNotifications = async () => {
+    //check/setup their permissions
+    if (this.hasNotificationPermission()) {
+      //set up notification channel
+      if (Platform.OS === "android") {
+        Notifications.createChannelAndroidAsync("default", {
+          name: "default",
+          sound: true,
+          priority: "max",
+          vibrate: [0, 250, 250, 250],
+        });
+      }
+
+      //retrieve the token
+      const token = await Notifications.getExpoPushTokenAsync();
+      console.log("Push notifications token: ", token);
+
+      //update the token in db if needed
     }
+  };
 
-    const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow",
-      () => {
-        this.setState({ keyboardVisible: true });
-      }
-    );
-    const keyboardDidHideListener = Keyboard.addListener(
-      "keyboardDidHide",
-      () => {
-        this.setState({ keyboardVisible: false });
-      }
-    );
+  hasNotificationPermission = async () => {
+    try {
+      if (Constants.isDevice) {
+        const { status: existingStatus } = await Permissions.getAsync(
+          Permissions.NOTIFICATIONS
+        );
 
-    //understand better please
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    };
+        let finalStatus = existingStatus;
+
+        //if perms not granted already, ask for it
+        if (finalStatus !== "granted") {
+          const { status } = await Permissions.askAsync(
+            Permissions.NOTIFICATIONS
+          );
+          finalStatus = status;
+        }
+
+        //if perms are granted, exit
+        if (finalStatus === "granted") {
+          return true;
+        }
+
+        //if still not granted, they can open up settings for it
+        if (finalStatus !== "granted") {
+          Alert.alert(
+            "Alert",
+            "Push notifications are not enabled. Please go to your settings and enable them for Eat Me if you'd like to receive them.",
+            [
+              {
+                text: "Cancel",
+                style: "cancel",
+              },
+              {
+                text: "Settings",
+                onPress: () =>
+                  Platform.OS === "ios"
+                    ? Linking.openURL("app-settings:")
+                    : Linking.openSettings(),
+              },
+            ],
+            { cancelable: true }
+          );
+
+          return false;
+        }
+      } else {
+        alert(
+          "Must use physical device for push notifications. Emulators will not work."
+        );
+        return false;
+      }
+    } catch (error) {
+      console.log("Error with setting up push notifications: " + error);
+      alert(
+        "Something went wrong with setting up push notifications. Please try again later."
+      );
+      return false;
+    }
   };
 
   render() {

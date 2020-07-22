@@ -70,10 +70,11 @@ const styles = StyleSheet.create({
 //todo: decide on 10-digit phone or not
 //todo: input validation for add friend?
 //todo: format phone number differently?
-//todo: get rid of stupid timer warning
 //todo: code refactoring, maybe ugly in places
 //todo: disable multiple requests to same person, but what if the sender changes phone number...? maybe disable phone # change in first place.
 //todo: ^ this prob solved just today. also add confirmation alert for deleting/declining?
+//TODO: move current user fetch to app.js UNLESS we decide to lazy load all the other pages
+//TODO: prob use contextprovider for currentuser and push token, also maybe SIO frontend client
 
 class Friends extends Component {
   constructor(props) {
@@ -107,7 +108,7 @@ class Friends extends Component {
     }
 
     //push notification testing
-    this.registerForPushNotifications();
+    // this.registerForPushNotifications();
   };
 
   componentWillUnmount = () => {
@@ -115,6 +116,7 @@ class Friends extends Component {
     this.socket.disconnect();
   };
 
+  //todo: figure out how to move this to app.js, token will change if reinstalled or data cleared..figure out how to store or maybe just send to backend
   registerForPushNotifications = async () => {
     if (Constants.isDevice) {
       const { status: existingStatus } = await Permissions.getAsync(

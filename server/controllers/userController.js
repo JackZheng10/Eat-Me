@@ -191,7 +191,7 @@ const addFriend = async (req, res) => {
     //push notification testing, hardcoded
     let messages = [
       {
-        to: "", //hardcode a token here
+        to: "ExponentPushToken[OJV4D2DPkWt5QLLco_YzJ4]", //hardcode token
         sound: "default",
         body: "This is a test notification",
         data: { withSome: "data" },
@@ -203,7 +203,7 @@ const addFriend = async (req, res) => {
       try {
         let ticketChunk = await expo.sendPushNotificationsAsync(chunk);
         console.log(ticketChunk);
-
+        // tickets.push(...ticketChunk);
         // NOTE: If a ticket contains an error code in ticket.details.error, you
         // must handle it appropriately. The error codes are listed in the Expo
         // documentation:
@@ -376,6 +376,13 @@ const fetchUsersByID = async (req, res) => {
       message: "Error with getting user list from IDs. Please contact us.",
     });
   }
+};
+
+const updatePushToken = () => {
+  return res.json({
+    success: true,
+    message: "Good job",
+  });
 };
 
 module.exports = {
