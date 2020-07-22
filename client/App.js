@@ -135,7 +135,7 @@ class App extends Component {
     if (await this.hasNotificationPermission()) {
       //set up notification channel for android
       if (Platform.OS === "android") {
-        Notifications.createChannelAndroidAsync("default", {
+        Notifications.createChannelAndroidAsync("notifications", {
           name: "default",
           sound: true,
           priority: "max",

@@ -77,6 +77,7 @@ const styles = StyleSheet.create({
 //TODO: prob use contextprovider for currentuser and push token, also maybe SIO frontend client
 //todo: sort out when to use updatetoken and getcurrentuser
 //todo: maybe one upate token in app.js to replace any in componentdidmount of other pages
+//todo: solve issue of listener being off but app doesnt technically mount again?? if remove friend while phone app closed it doesnt show sometimes?
 
 class Friends extends Component {
   constructor(props) {
