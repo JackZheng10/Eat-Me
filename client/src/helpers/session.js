@@ -37,7 +37,7 @@ export const updateToken = async (userPhone) => {
 
         return true;
       } catch (error) {
-        console.log("Error with setting updated token: " + error);
+        console.log("Error with setting updated token: ", error);
         alert("Error with setting updated token. Please relog and try again.");
         return false;
       }
@@ -47,7 +47,7 @@ export const updateToken = async (userPhone) => {
       return false;
     }
   } catch (error) {
-    console.log("Error with retrieving updated token: " + error);
+    console.log("Error with retrieving updated token: ", error);
     alert("Error with retrieving updated token. Please relog and try again.");
     return false;
   }

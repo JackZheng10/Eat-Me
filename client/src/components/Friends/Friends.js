@@ -94,6 +94,8 @@ class Friends extends Component {
   }
 
   componentDidMount = async () => {
+    //todo: probably separate actual app and log + reg into 2 components, since dont want this to fire
+    //on initial app load since theyre not necessarily logged in yet
     let currentUser = await getCurrentUser();
 
     //establish a socket connection with backend, joining the proper room
@@ -161,6 +163,7 @@ class Friends extends Component {
 
   addSocketListeners = async (currentUser) => {
     //listen for an incoming friend request event, sent in the user's room
+    //todo: maybe change these names/config
     this.socket.on("incomingFriendRequest", async () => {
       if (await updateToken(currentUser.phone)) {
         //await on this? eh
@@ -227,7 +230,7 @@ class Friends extends Component {
 
       return { success: response.data.success, message: response.data.message };
     } catch (error) {
-      console.log("Error with getting user list from IDs: " + error);
+      console.log("Error with getting user list from IDs: ", error);
       return {
         success: false,
         message: "Error with getting user list from IDs. Please contact us.",
@@ -243,6 +246,7 @@ class Friends extends Component {
         phone: this.state.addedPhone,
         senderFriendRequests: currentUser.friendRequests,
         senderID: currentUser.ID,
+        senderName: `${currentUser.fName} ${currentUser.lName}`,
       });
 
       alert(response.data.message);
@@ -250,7 +254,7 @@ class Friends extends Component {
         this.toggleAddDialog();
       }
     } catch (error) {
-      console.log(error);
+      console.log("Error with adding friend: ", error);
       alert("Error with adding friend. Please try again.");
     }
   };

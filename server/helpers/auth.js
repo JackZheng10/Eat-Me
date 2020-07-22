@@ -44,7 +44,7 @@ const verifyToken = async (req, res, next) => {
         next();
       }
     } catch (error) {
-      console.log("Error with finding user associated with token: " + error);
+      console.log("Error with finding user associated with token: ", error);
       return res.json({
         success: false,
         message: "Error with token. Please relog and try again.",

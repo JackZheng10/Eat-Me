@@ -34,7 +34,9 @@ module.exports.init = () => {
   connection.once("open", () => {
     console.log("MongoDB database connected");
   });
-  connection.on("error", (error) => console.log("Error: " + error));
+  connection.on("error", (error) =>
+    console.log("Error with connecting to MongoDB database: ", error)
+  );
 
   //add routers
   app.use("/api/user", userRoutes);

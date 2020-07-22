@@ -292,14 +292,14 @@ class Register extends Component {
               alert(response.data.message);
             }
           } catch (error) {
-            console.log(error);
+            console.log("Error with sending verification code: ", error);
             alert("Error with sending verification code. Please try again.");
           }
         } else {
           alert(response.data.message);
         }
       } catch (error) {
-        console.log(error);
+        console.log("Error with checking duplicate phone number: ", error);
         alert("Error with checking duplicate phone number. Please try again.");
       }
     }
@@ -326,7 +326,7 @@ class Register extends Component {
           alert(response.data.message);
         }
       } catch (error) {
-        console.log(error);
+        console.log("Error with registering: ", error);
         alert("Error with registering. Please try again.");
       }
     } else {

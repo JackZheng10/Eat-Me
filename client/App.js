@@ -131,7 +131,7 @@ class App extends Component {
   };
 
   handlePushNotifications = async () => {
-    //check/setup their permissions
+    //check/setup their permissions. this will be something moved to main app component (vs log/reg when separating)
     if (await this.hasNotificationPermission()) {
       //set up notification channel for android
       if (Platform.OS === "android") {
@@ -164,7 +164,7 @@ class App extends Component {
           alert(response.data.message);
         }
       } catch (error) {
-        console.log("Error with updating push token: " + error);
+        console.log("Error with updating push token: ", error);
         alert("Error with updating push token. Please try again later.");
       }
     }
@@ -221,7 +221,7 @@ class App extends Component {
         return false;
       }
     } catch (error) {
-      console.log("Error with setting up push notifications: " + error);
+      console.log("Error with setting up push notifications: ", error);
       alert(
         "Something went wrong with setting up push notifications. Please try again later."
       );

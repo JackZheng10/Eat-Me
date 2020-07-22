@@ -113,7 +113,7 @@ class ListItem extends Component {
 
       alert(response.data.message);
     } catch (error) {
-      console.log("Error with declining friend request: " + error);
+      console.log("Error with declining friend request: ", error);
       alert("Error with declining friend request. Please try again.");
     }
   };
@@ -129,7 +129,7 @@ class ListItem extends Component {
 
       alert(response.data.message);
     } catch (error) {
-      console.log("Error with accepting friend request: " + error);
+      console.log("Error with accepting friend request: ", error);
       alert("Error with accepting friend request. Please try again.");
     }
   };
@@ -157,7 +157,7 @@ class ListItem extends Component {
 
               alert(response.data.message);
             } catch (error) {
-              console.log("Error with deleting friend: " + error);
+              console.log("Error with deleting friend: ", error);
               alert("Error with deleting friend. Please try again.");
             }
           },

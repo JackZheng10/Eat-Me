@@ -13,7 +13,7 @@ const verify = async (req, res) => {
 
   try {
     await client.messages.create({
-      body: "Your Eat Me verification code is: " + code,
+      body: `Your Eat Me verification code is: ${code}`,
       from: from,
       to: to,
     });
@@ -23,7 +23,7 @@ const verify = async (req, res) => {
       message: code,
     });
   } catch (error) {
-    console.log("Error with sending verification code: " + error);
+    console.log("Error with sending verification code: ", error);
 
     return res.json({
       success: false,

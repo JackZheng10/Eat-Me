@@ -1,6 +1,10 @@
 const User = require("../models/User");
 const signToken = require("../helpers/auth").signToken;
+const sendPushNotification = require("../helpers/pushNotifications")
+  .sendPushNotification;
 // const SIO = require("../server").SIO;
+
+//todo: maybe separate some of these into another controller - session controller?
 
 const login = async (req, res) => {
   try {
@@ -22,7 +26,7 @@ const login = async (req, res) => {
       });
     }
   } catch (error) {
-    console.log("Error with logging in: " + error);
+    console.log("Error with logging in: ", error);
 
     return res.json({
       success: false,
@@ -48,7 +52,7 @@ const checkDuplicatePhone = async (req, res) => {
       });
     }
   } catch (error) {
-    console.log("Error with checking duplicate phone number: " + error);
+    console.log("Error with checking duplicate phone number: ", error);
 
     return res.json({
       success: false,
@@ -69,7 +73,7 @@ const countUsers = async (req, res, next) => {
 
     next();
   } catch (error) {
-    console.log("Error with counting users: " + error);
+    console.log("Error with counting users: ", error);
 
     return res.json({
       success: false,
@@ -93,7 +97,7 @@ const register = async (req, res) => {
       message: "Successfully registered! Please log in to continue.",
     });
   } catch (error) {
-    console.log("Error with registering: " + error);
+    console.log("Error with registering: ", error);
 
     return res.json({
       success: false,
@@ -113,11 +117,11 @@ const findUser = async (req, res, next) => {
     } else {
       return res.json({
         success: false,
-        message: "User could not be found. Please relog try again.",
+        message: "User could not be found. Please try again.",
       });
     }
   } catch (error) {
-    console.log("Error with finding user: " + error);
+    console.log("Error with finding user: ", error);
 
     return res.json({
       success: false,
@@ -184,12 +188,17 @@ const addFriend = async (req, res) => {
 
     SIO.of("/api/socket").to(recipient.phone).emit("incomingFriendRequest");
 
+    sendPushNotification(
+      recipient.pushToken,
+      `You've received a friend request from ${req.body.senderName}`
+    );
+
     return res.json({
       success: true,
       message: "Friend request sent.",
     });
   } catch (error) {
-    console.log("Error with assigning friend request: " + error);
+    console.log("Error with assigning friend request: ", error);
 
     return res.json({
       success: false,
@@ -219,7 +228,7 @@ const updateToken = async (req, res) => {
       });
     }
   } catch (error) {
-    console.log("Error with updating token: " + error);
+    console.log("Error with updating token: ", error);
 
     return res.json({
       success: false,
@@ -233,27 +242,32 @@ const acceptFriend = async (req, res) => {
     const sender = await User.findOne({ ID: req.body.ID });
     const recipient = res.locals.user;
 
+    sender.friends.push(recipient.ID);
+
     recipient.friends.push(req.body.ID);
     recipient.friendRequests = recipient.friendRequests.filter((item) => {
       item !== req.body.ID;
     });
 
-    sender.friends.push(recipient.ID);
-
-    await recipient.save();
     await sender.save();
+    await recipient.save();
 
     const SIO = require("../server").SIO;
 
     SIO.of("/api/socket").to(recipient.phone).emit("acceptedFriend");
     SIO.of("/api/socket").to(sender.phone).emit("incomingFriend");
 
+    sendPushNotification(
+      sender.pushToken,
+      `You're now friends with ${recipient.fName} ${recipient.lName}`
+    );
+
     return res.json({
       success: true,
       message: "Friend request accepted.",
     });
   } catch (error) {
-    console.log("Error with accepting friend request: " + error);
+    console.log("Error with accepting friend request: ", error);
     return res.json({
       success: false,
       message: "Error with accepting friend request. Please try again.",
@@ -280,7 +294,7 @@ const declineFriend = async (req, res) => {
       message: "Friend request declined.",
     });
   } catch (error) {
-    console.log("Error with accepting friend request: " + error);
+    console.log("Error with accepting friend request: ", error);
     return res.json({
       success: false,
       message: "Error with accepting friend request. Please try again.",
@@ -313,7 +327,7 @@ const deleteFriend = async (req, res) => {
       message: "Friend removed.",
     });
   } catch (error) {
-    console.log("Error with accepting friend request: " + error);
+    console.log("Error with accepting friend request: ", error);
     return res.json({
       success: false,
       message: "Error with accepting friend request. Please try again.",
@@ -341,7 +355,7 @@ const fetchUsersByID = async (req, res) => {
       message: users,
     });
   } catch (error) {
-    console.log("Error with getting user list from IDs: " + error);
+    console.log("Error with getting user list from IDs: ", error);
     return res.json({
       success: false,
       message: "Error with getting user list from IDs. Please contact us.",

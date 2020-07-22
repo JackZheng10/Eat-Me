@@ -217,17 +217,17 @@ class Login extends Component {
                 console.log(data);
               }
             } catch (error) {
-              console.log("Error with retrieving token: " + error);
+              console.log("Error with retrieving token: ", error);
             }
           } catch (error) {
-            console.log(error);
+            console.log("Error with logging in: ", error);
             alert("Error with logging in. Please try again.");
           }
         } else {
           alert(response.data.message);
         }
       } catch (error) {
-        console.log(error);
+        console.log("Error with logging in: ", error);
         alert("Error with logging in. Please try again.");
       }
     }

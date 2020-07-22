@@ -9,10 +9,10 @@ const server = require("http").createServer(app);
 const io = require("socket.io")(server);
 
 io.of("/api/socket").on("connection", (socket) => {
-  console.log("socket.io: User connected: " + socket.id);
+  console.log("socket.io: User connected: ", socket.id);
 
   socket.on("disconnect", () => {
-    console.log("socket.io: User disconnected: " + socket.id);
+    console.log("socket.io: User disconnected: ", socket.id);
   });
 
   //connect client's socket to proper room
@@ -24,7 +24,7 @@ io.of("/api/socket").on("connection", (socket) => {
     );
   } else {
     socket.join(room);
-    console.log("socket.io: User joined room " + room);
+    console.log("socket.io: User joined room ", room);
   }
 });
 
