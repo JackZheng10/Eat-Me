@@ -1,43 +1,14 @@
 import React, { Component } from "react";
-import { Container, Header, Content, Footer, Button, Text } from "native-base";
 import { Modal } from "react-native";
-import Categories from "./Categories";
-import Location from "./Location";
-import SessionSave from "./SessionSave";
+import Categories from "./components/Categories";
+import Location from "./components/Location";
+import SessionSave from "./components/SessionSave";
+import SelectFriends from "./components/SelectFriends";
+import baseURL from "../../../../baseURL";
+import axios from "axios";
 import { createStackNavigator } from "@react-navigation/stack";
 
 const CreateSessionStack = createStackNavigator();
-
-/*
-const CreateSessionStack = createStackNavigator();
-
-function CreateSessionStackScreen(){
-	return(
-		<CreateSessionStack.Navigator
-			screenOptions={({ route, navigation }) => ({
-			// headerShown: false,
-			headerTitleAlign: "left",
-			headerStyle: { backgroundColor: "#00B2CA" },
-			headerTitleStyle: { color: "white" },
-			// headerRight: () => {
-			//   return (
-			//     <MaterialCommunityIcons
-			//       name="silverware-fork"
-			//       size={30}
-			//       color={"white"}
-			//       style={{ marginRight: 10 }}
-			//     />
-			//   );
-			// },>
-		})}
-	>
-			<CreateSessionStack.Screen name="Categories" component={Categories}/>
-			<CreateSessionStack.Screen name="Location" component={Location}/>
-			<CreateSessionStack.Screen name="Create Session" component={} />
-		</CreateSessionStack.Navigator>
-	);
-}
-*/
 
 class CreateSession extends Component {
   state = {
@@ -50,44 +21,87 @@ class CreateSession extends Component {
       },
       sessionFriends: [],
     },
-    createSessionStack: null,
+		navigation: null,
   };
 
   componentDidMount = () => {};
 
-  componentDidUpdate = () => {};
+	componentDidUpdate = (prevProps, prevState, snapshot) => {
+		if (prevState.sessionLevel != this.state.sessionLevel) {
+			this.renderSessionConfigurables();
+		}
+	};
+
+	renderStackNavigation = () => {
+		return (
+			<CreateSessionStack.Navigator initialRouteName="Categories">
+				<CreateSessionStack.Screen
+					name="Categories"
+					component={this.renderCategories}
+				/>
+				<CreateSessionStack.Screen
+					name="Location"
+					component={this.renderLocation}
+				/>
+				<CreateSessionStack.Screen
+					name="Friends"
+					component={this.renderFriends}
+				/>
+				<CreateSessionStack.Screen
+					name="Save"
+					component={this.renderSessionSave}
+				/>
+			</CreateSessionStack.Navigator>
+		);
+	};
 
   renderSessionConfigurables = () => {
     const { sessionLevel } = this.state;
 
     if (sessionLevel === 0) {
-      return this.renderCategories();
+			this.navigation.navigate("Categories");
     } else if (sessionLevel === 1) {
-      return this.renderLocation();
+			this.navigation.navigate("Location");
     } else if (sessionLevel === 2) {
-      //Friends Selection View
-      return this.renderSessionSave();
+			this.navigation.navigate("Friends");
     } else {
-      return this.renderSessionSave();
+			this.navigation.navigate("Save");
     }
   };
 
-  renderCategories = () => {
+	renderCategories = ({ navigation }) => {
+		//HACK - Since first Screen in Modal Stack is Categories, this is where we grap a reference to our navigation object
+		this.navigation = navigation;
+
     return (
       <Categories
         updateSessionConfigurable={this.updateSessionConfigurable}
         goBack={this.renderPreviousSessionLevel}
         exit={this.onModalClose}
+				selectedCategories={this.state.sessionConfigurables.sessionCategories}
       />
     );
   };
 
   renderLocation = () => {
+		console.log("Get Navigation");
     return (
       <Location
         updateSessionConfigurable={this.updateSessionConfigurable}
         goBack={this.renderPreviousSessionLevel}
         exit={this.onModalClose}
+				selectedLocation={this.state.sessionConfigurables.sessionLocation}
+			/>
+		);
+	};
+
+	renderFriends = () => {
+		return (
+			<SelectFriends
+				updateSessionConfigurable={this.updateSessionConfigurable}
+				goBack={this.renderPreviousSessionLevel}
+				exit={this.onModalClose}
+				selectedFriends={this.state.sessionConfigurables.sessionFriends}
       />
     );
   };
@@ -106,8 +120,17 @@ class CreateSession extends Component {
     );
   };
 
-  createSession = () => {
+	//Needs updating, needs UserID and such
+	createSession = async () => {
     console.log("Save Session");
+		const { sessionConfigurables } = this.state;
+		const newSession = await axios.post(
+			baseURL + "/user/createSession",
+			sessionConfigurables
+		);
+		console.log(newSession.data);
+		//Add newSession to list, prop function
+		//Close Modal
   };
 
   updateSessionConfigurable = (sessionConfigurable) => {
@@ -133,13 +156,11 @@ class CreateSession extends Component {
         sessionLevel: sessionLevel - 1,
       });
     } else {
-      //Clean Modal too
       this.onModalClose();
     }
   };
 
   onModalClose = () => {
-    console.log("Modal Closing");
     this.props.exitModal();
   };
 
@@ -152,7 +173,7 @@ class CreateSession extends Component {
         visible={modalVisible}
         onRequestClose={this.onModalClose}
       >
-        {this.renderSessionConfigurables()}
+				{this.renderStackNavigation()}
       </Modal>
     );
   }

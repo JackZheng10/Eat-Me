@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import { StyleSheet, View } from "react-native";
 import { Header, Icon, Button } from "react-native-elements";
 import CategoryButton from "./CategoryButton";
-import { CATEGORIES } from "../../constants";
-import ModalStyles from "./styles/ModalStyles";
+import { CATEGORIES } from "../../../../constants";
+import ModalStyles from "../styles/ModalStyles";
 
 const styles = StyleSheet.create({
 	categoriesRow: {
@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
 
 class Categories extends Component {
 	state = {
-		selectedCategories: [],
+		selectedCategories: [...this.props.selectedCategories],
 	};
 
 	componentDidMount = () => {};
@@ -60,11 +60,13 @@ class Categories extends Component {
 					return (
 						<View key={i} style={styles.categoryView}>
 							{categoryRow.map((category) => {
+								const selected = this.determineSelectedStatus(category);
 								return (
 									<CategoryButton
 										key={category}
 										category={category}
 										onSelect={this.onCategorySelect}
+										selected={selected}
 									/>
 								);
 							})}
@@ -73,6 +75,10 @@ class Categories extends Component {
 				})}
 			</View>
 		);
+	};
+
+	determineSelectedStatus = (category) => {
+		return this.state.selectedCategories.includes(category);
 	};
 
 	renderCategoryHeadLeft = () => {

@@ -3,7 +3,7 @@ import { Button } from "react-native-elements";
 
 class CategoryButton extends Component {
 	state = {
-		selected: false,
+		selected: this.props.selected,
 	};
 
 	componentDidMount = () => {};
@@ -33,7 +33,6 @@ class CategoryButton extends Component {
 		const { category } = this.props;
 		return (
 			<Button
-				key={category}
 				onPress={this.selectCategory}
 				title={category}
 				buttonStyle={this.setButtonStyle()}

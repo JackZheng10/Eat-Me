@@ -3,9 +3,9 @@ import { StyleSheet, View } from "react-native";
 
 import { Header, Icon, Button, Input, SearchBar } from "react-native-elements";
 import MapView, { Marker } from "react-native-maps";
-import baseURL from "../../../baseURL";
+import baseURL from "../../../../../baseURL";
 import axios from "axios";
-import ModalStyles from "./styles/ModalStyles";
+import ModalStyles from "../styles/ModalStyles";
 
 /* 
     Native Module cannot be null 
@@ -38,7 +38,17 @@ class Location extends Component {
 	};
 
 	componentDidMount = () => {
-		navigator.geolocation.getCurrentPosition(this.setCurrentPosition);
+		if (this.props.selectedLocation.latitude !== 0) {
+			const selectedPostion = {
+				coords: {
+					latitude: this.props.selectedLocation.latitude,
+					longitude: this.props.selectedLocation.longitude,
+				},
+			};
+			this.setCurrentPosition(selectedPostion);
+		} else {
+			navigator.geolocation.getCurrentPosition(this.setCurrentPosition);
+		}
 	};
 
 	setCurrentPosition = (currentPosition) => {
@@ -65,6 +75,7 @@ class Location extends Component {
 		});
 	};
 
+	//Add name of Address to location object
 	addLocationToSession = () => {
 		const location = {
 			latitude: this.state.locationLatitude,
@@ -121,7 +132,6 @@ class Location extends Component {
 	};
 
 	renderMap = () => {
-		console.log("Hey Mappy");
 		const {
 			locationLatitude,
 			locationLongitude,

@@ -3,8 +3,8 @@ import { View, Text, Button } from "react-native";
 import { withNavigation } from "react-navigation";
 
 import Swiper from "react-native-deck-swiper";
-import RestaurantCard from "./RestaurantCard";
-import baseURL from "../../../baseURL";
+import RestaurantCard from "./components/RestaurantCard";
+import baseURL from "../../../../baseURL";
 import axios from "axios";
 
 class Session extends Component {

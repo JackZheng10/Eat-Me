@@ -4,7 +4,7 @@ import { withNavigation } from "react-navigation";
 
 import baseURL from "../../../baseURL.js";
 import axios from "axios";
-import CreateSession from "../CreateSession/CreateSession";
+import CreateSession from "./CreateSession/CreateSession";
 import { ListItem, Text, Icon } from "react-native-elements";
 
 const styles = StyleSheet.create({
@@ -46,14 +46,16 @@ const styles = StyleSheet.create({
 
 class Sessions extends Component {
 	state = {
+		key: 0,
 		SessionList: [],
 		modalVisible: false,
 	};
 
 	componentDidMount = async () => {
-		//Get session List from DB, Transform Data into individual componenets
+		//Get session List from DB, Transform Data into individual componenets, Get actual User ID
+		console.log("Sessions Mounting");
 		const Sessions = await axios.post(baseURL + "/simple/getUserSessions", {
-			ID: 1,
+			ID: 3,
 		});
 		this.setState({ SessionList: Sessions.data.Sessions });
 	};
@@ -128,11 +130,24 @@ class Sessions extends Component {
 	};
 
 	createNewSession = () => {
+		console.log("Hey New Sesh");
 		this.setState({ modalVisible: true });
 	};
 
 	exitModal = () => {
-		this.setState({ modalVisible: false });
+		//Key is used to reset Modal compoent when
+		this.setState({
+			modalVisible: false,
+			key: this.state.key + 1,
+		});
+	};
+
+	addSessionToSessionList = (newSession) => {
+		/*
+		this.setState({
+			SessionList: [...this.state.SessionList, newSession]
+		});
+		*/
 	};
 
 	render() {
@@ -141,8 +156,10 @@ class Sessions extends Component {
 				{this.setSessionsView()}
 
 				<CreateSession
+					key={this.state.key}
 					modalVisible={this.state.modalVisible}
 					exitModal={this.exitModal}
+					addSession={this.addSessionToSessionList}
 				/>
 
 				<View style={styles.addSessionContainer}>
