@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { View, Text, Button } from "react-native";
 import { withNavigation } from "react-navigation";
 import Swiper from "react-native-deck-swiper";
-import RestaurantCard from "./RestaurantCard";
+import RestaurantCard from "./components/RestaurantCard";
 import baseURL from "../../../../../../../baseURL";
 import axios from "axios";
 

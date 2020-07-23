@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { View, StyleSheet, Dimensions, ScrollView } from "react-native";
 import { withNavigation } from "react-navigation";
+import { getCurrentUser } from "../../../../helpers/session";
 import baseURL from "../../../../../baseURL";
 import axios from "axios";
 import CreateSession from "./components/CreateSession/CreateSession";
@@ -45,15 +46,19 @@ const styles = StyleSheet.create({
 
 class Sessions extends Component {
   state = {
+    key: 0,
     SessionList: [],
     modalVisible: false,
   };
 
   componentDidMount = async () => {
-    //Get session List from DB, Transform Data into individual componenets
+    //Get session List from DB, Transform Data into individual componenets, Get actual User ID
+    const currentUser = await getCurrentUser();
+
     const Sessions = await axios.post(baseURL + "/simple/getUserSessions", {
-      ID: 1,
+      ID: currentUser.ID,
     });
+    //console.log(Sessions.data.Sessions);
     this.setState({ SessionList: Sessions.data.Sessions });
   };
 
@@ -86,7 +91,7 @@ class Sessions extends Component {
           onPress={() => this.renderSession(Session)}
           key={Session._id}
           leftElement={this.renderSessionMembers}
-          title={"Session.Members"}
+          title={Session.Members.toString()}
           titleStyle={styles.titleStyle}
           subtitle={Session.Status}
           subtitleStyle={styles.subtitleStyle}
@@ -131,7 +136,17 @@ class Sessions extends Component {
   };
 
   exitModal = () => {
-    this.setState({ modalVisible: false });
+    //Key is used to reset Modal compoent when
+    this.setState({
+      modalVisible: false,
+      key: this.state.key + 1,
+    });
+  };
+
+  addSessionToSessionList = (newSession) => {
+    this.setState({
+      SessionList: [...this.state.SessionList, newSession],
+    });
   };
 
   render() {
@@ -140,8 +155,10 @@ class Sessions extends Component {
         {this.setSessionsView()}
 
         <CreateSession
+          key={this.state.key}
           modalVisible={this.state.modalVisible}
           exitModal={this.exitModal}
+          addSession={this.addSessionToSessionList}
         />
 
         <View style={styles.addSessionContainer}>

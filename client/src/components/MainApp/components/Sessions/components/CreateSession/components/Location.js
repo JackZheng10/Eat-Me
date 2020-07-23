@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import { StyleSheet, View } from "react-native";
 import { Header, Icon, Button, Input, SearchBar } from "react-native-elements";
 import MapView, { Marker } from "react-native-maps";
-import baseURL from "../../../../../../../baseURL";
+import baseURL from "../../../../../../../../baseURL";
 import axios from "axios";
-import ModalStyles from "./styles/ModalStyles";
+import ModalStyles from "../styles/ModalStyles";
 
 /* 
     Native Module cannot be null 
