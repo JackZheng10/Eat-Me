@@ -37,7 +37,17 @@ class Location extends Component {
   };
 
   componentDidMount = () => {
-    navigator.geolocation.getCurrentPosition(this.setCurrentPosition);
+    if (this.props.selectedLocation.latitude !== 0) {
+      const selectedPostion = {
+        coords: {
+          latitude: this.props.selectedLocation.latitude,
+          longitude: this.props.selectedLocation.longitude,
+        },
+      };
+      this.setCurrentPosition(selectedPostion);
+    } else {
+      navigator.geolocation.getCurrentPosition(this.setCurrentPosition);
+    }
   };
 
   setCurrentPosition = (currentPosition) => {
@@ -64,6 +74,7 @@ class Location extends Component {
     });
   };
 
+  //Add name of Address to location object
   addLocationToSession = () => {
     const location = {
       latitude: this.state.locationLatitude,
@@ -120,7 +131,6 @@ class Location extends Component {
   };
 
   renderMap = () => {
-    console.log("Hey Mappy");
     const {
       locationLatitude,
       locationLongitude,

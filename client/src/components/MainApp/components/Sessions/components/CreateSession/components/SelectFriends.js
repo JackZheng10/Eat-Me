@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import { StyleSheet, View } from "react-native";
 import { Header, Icon, Button, SearchBar } from "react-native-elements";
-import { getCurrentUser } from "../../../../helpers/session";
+import { getCurrentUser } from "../../../../../../../helpers/session";
 import ModalStyles from "../styles/ModalStyles";
 import { ScrollView } from "react-native-gesture-handler";
 import FriendItem from "./FriendItem";
 import axios from "axios";
-import baseURL from "../../../../../baseURL";
+import baseURL from "../../../../../../../../baseURL";
 
 const styles = StyleSheet.create({
   searchContainerStyle: {
