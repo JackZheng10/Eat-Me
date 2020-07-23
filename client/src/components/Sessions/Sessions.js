@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { View, StyleSheet, Dimensions, ScrollView } from "react-native";
 import { withNavigation } from "react-navigation";
-
+import { getCurrentUser } from "../../helpers/session";
 import baseURL from "../../../baseURL.js";
 import axios from "axios";
 import CreateSession from "./CreateSession/CreateSession";
@@ -53,10 +53,12 @@ class Sessions extends Component {
 
 	componentDidMount = async () => {
 		//Get session List from DB, Transform Data into individual componenets, Get actual User ID
-		console.log("Sessions Mounting");
+		const currentUser = await getCurrentUser();
+
 		const Sessions = await axios.post(baseURL + "/simple/getUserSessions", {
-			ID: 3,
+			ID: currentUser.ID,
 		});
+		//console.log(Sessions.data.Sessions);
 		this.setState({ SessionList: Sessions.data.Sessions });
 	};
 
@@ -89,7 +91,7 @@ class Sessions extends Component {
 					onPress={() => this.renderSession(Session)}
 					key={Session._id}
 					leftElement={this.renderSessionMembers}
-					title={"Session.Members"}
+					title={Session.Members.toString()}
 					titleStyle={styles.titleStyle}
 					subtitle={Session.Status}
 					subtitleStyle={styles.subtitleStyle}
@@ -130,7 +132,6 @@ class Sessions extends Component {
 	};
 
 	createNewSession = () => {
-		console.log("Hey New Sesh");
 		this.setState({ modalVisible: true });
 	};
 
@@ -143,11 +144,9 @@ class Sessions extends Component {
 	};
 
 	addSessionToSessionList = (newSession) => {
-		/*
 		this.setState({
-			SessionList: [...this.state.SessionList, newSession]
+			SessionList: [...this.state.SessionList, newSession],
 		});
-		*/
 	};
 
 	render() {

@@ -26,7 +26,16 @@ class SessionSave extends Component {
 	renderSessionFriendsList = () => {
 		const friendsList = this.props.sessionConfigurables.sessionFriends;
 		const friendsListText = friendsList.reduce((friendText, friend) => {
-			return { name: friendText.name + ", " + friend.name };
+			return {
+				names:
+					friendText.fName +
+					" " +
+					friendText.lName +
+					", " +
+					friend.fName +
+					" " +
+					friend.lName,
+			};
 		});
 
 		return (
@@ -34,7 +43,11 @@ class SessionSave extends Component {
 				<Text style={styles.sectionHeader} h3>
 					Selected Friends:
 				</Text>
-				<Text h4>{friendsListText.name}</Text>
+				<Text h4>
+					{friendsList.length > 0
+						? friendsListText.names
+						: `${friendsListText.fName} ${friendsListText.lName}`}
+				</Text>
 			</>
 		);
 	};

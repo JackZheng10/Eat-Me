@@ -2,7 +2,7 @@ const User = require("../models/User");
 const Session = require("../models/Session");
 const signToken = require("../helpers/auth").signToken;
 const sendPushNotification = require("../helpers/pushNotifications")
-  .sendPushNotification;
+	.sendPushNotification;
 // const SIO = require("../server").SIO;
 
 //todo: maybe separate some of these into another controller - session controller?
@@ -217,7 +217,7 @@ const addFriend = async (req, res) => {
 			message: "Friend request sent.",
 		});
 	} catch (error) {
-    console.log("Error with assigning friend request: ", error);
+		console.log("Error with assigning friend request: ", error);
 
 		return res.json({
 			success: false,
@@ -261,7 +261,7 @@ const acceptFriend = async (req, res) => {
 		const sender = await User.findOne({ ID: req.body.ID });
 		const recipient = res.locals.user;
 
-    sender.friends.push(recipient.ID);
+		sender.friends.push(recipient.ID);
 
 		recipient.friends.push(req.body.ID);
 		recipient.friendRequests = recipient.friendRequests.filter((item) => {
@@ -271,17 +271,17 @@ const acceptFriend = async (req, res) => {
 		sender.friends.push(recipient.ID);
 		await recipient.save();
 		await sender.save();
-    await recipient.save();
+		await recipient.save();
 
 		const SIO = require("../server").SIO;
 
 		SIO.of("/api/socket").to(recipient.phone).emit("acceptedFriend");
 		SIO.of("/api/socket").to(sender.phone).emit("incomingFriend");
 
-    sendPushNotification(
-      sender.pushToken,
-      `You're now friends with ${recipient.fName} ${recipient.lName}`
-    );
+		sendPushNotification(
+			sender.pushToken,
+			`You're now friends with ${recipient.fName} ${recipient.lName}`
+		);
 
 		return res.json({
 			success: true,
@@ -385,49 +385,69 @@ const fetchUsersByID = async (req, res) => {
 };
 
 const updatePushToken = async (req, res) => {
-  try {
-    const recipient = res.locals.user;
-    const token = req.body.pushToken;
+	try {
+		const recipient = res.locals.user;
+		const token = req.body.pushToken;
 
-    //if the token is different, update it
-    if (recipient.pushToken !== token) {
-      recipient.pushToken = token;
-      await recipient.save();
+		//if the token is different, update it
+		if (recipient.pushToken !== token) {
+			recipient.pushToken = token;
+			await recipient.save();
 
-      return res.json({
-        success: true,
-        message: "updated",
-      });
-    } else {
-      return res.json({
-        success: true,
-        message: "unchanged",
-      });
-    }
-  } catch (error) {
-    return res.json({
-      success: false,
-      message:
-        "Error with updating push notification token. Please try again later.",
-    });
-  }
+			return res.json({
+				success: true,
+				message: "updated",
+			});
+		} else {
+			return res.json({
+				success: true,
+				message: "unchanged",
+			});
+		}
+	} catch (error) {
+		return res.json({
+			success: false,
+			message:
+				"Error with updating push notification token. Please try again later.",
+		});
+	}
 };
 
 //Method needs updating
 const createSession = async (req, res) => {
-	console.log(req.body);
-	//Create Session, save session, add session to User, save user, return session
-	//Get user ID, Get # of Sessions, Convert Friends to appropriateID
+	const { currentUser } = req.body;
+	const {
+		sessionCategories,
+		sessionLocation,
+		sessionFriends,
+	} = req.body.sessionConfigurables;
+
+	const sessionFriendsIDs = sessionFriends.map(
+		(sessionFriend) => sessionFriend.ID
+	);
+
+	const sessionIDs = [...sessionFriendsIDs, currentUser.ID];
+
+	const count = await Session.countDocuments();
 
 	let newSession = new Session({
-		SessionID: 4,
-		Members: [],
-		Categories: [...req.body.sessionCategories],
-		LocationLatitude: req.body.sessionLocation.latitude,
-		LocationLongitude: req.body.sessionLocation.longitude,
+		SessionID: count + 1,
+		Members: sessionIDs,
+		Categories: sessionCategories,
+		LocationLatitude: sessionLocation.latitude,
+		LocationLongitude: sessionLocation.longitude,
 	});
 
-	res.json({ No: "No" });
+	addSessionToUsers(newSession.SessionID, sessionIDs);
+	newSession.save();
+
+	res.json(newSession);
+};
+
+const addSessionToUsers = (sessionID, usersIDs) => {
+	usersIDs.forEach(async (userID) => {
+		await User.updateOne({ ID: userID }, { $push: { sessions: sessionID } });
+	});
 };
 
 module.exports = {
@@ -443,6 +463,6 @@ module.exports = {
 	deleteFriend,
 	declineFriend,
 	fetchUsersByID,
-  	updatePushToken,
+	updatePushToken,
 	createSession,
 };

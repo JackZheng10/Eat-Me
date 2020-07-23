@@ -44,13 +44,13 @@ class FriendItem extends Component {
 
 	render() {
 		const { friend } = this.props;
+
 		return (
 			<ListItem
 				onPress={this.selectFriend}
-				title={friend.name}
+				title={friend.fName}
 				titleStyle={{ color: "#F79256" }}
-				subtitle={friend.subtitle}
-				leftAvatar={{ source: { uri: friend.avatar_url } }}
+				subtitle={friend.lName}
 				rightElement={this.renderSelectedElement}
 				bottomDivider
 			/>

@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 import { StyleSheet, View } from "react-native";
 import { Header, Icon, Button, SearchBar } from "react-native-elements";
+import { getCurrentUser } from "../../../../helpers/session";
 import ModalStyles from "../styles/ModalStyles";
 import { ScrollView } from "react-native-gesture-handler";
-import FakeFriends from "../helpers/FakeFriends";
 import FriendItem from "./FriendItem";
+import axios from "axios";
+import baseURL from "../../../../../baseURL";
 
 const styles = StyleSheet.create({
 	searchContainerStyle: {
@@ -27,30 +29,45 @@ const styles = StyleSheet.create({
 class SelectFriends extends Component {
 	state = {
 		searchTerm: "",
-		friends: [...FakeFriends],
+		friends: [],
 		selectedFriends: [...this.props.selectedFriends],
 	};
 
 	componentDidMount = () => {
-		//Fetch Friends
-		//this.fetchFriends();
+		this.fetchFriends();
 	};
 
 	componentDidUpdate = () => {};
 
+	//Get from future helper
 	fetchFriends = async () => {
 		//Refer to Friends.js
-		/*
-        let currentUser = await getCurrentUser();
-    
-        const users = await this.fetchUsersByID(currentUser.friends);
-    
-        if (users.success) {
-          this.setState({ friends: users.message });
-        } else {
-          alert(users.message);
-        }
-        */
+		let currentUser = await getCurrentUser();
+
+		const users = await this.fetchUsersByID(currentUser.friends);
+
+		if (users.success) {
+			this.setState({ friends: users.message });
+		} else {
+			alert(users.message);
+		}
+	};
+
+	//Get from future helper
+	fetchUsersByID = async (list) => {
+		try {
+			const response = await axios.post(`${baseURL}/user/fetchUsersByID`, {
+				list,
+			});
+
+			return { success: response.data.success, message: response.data.message };
+		} catch (error) {
+			console.log("Error with getting user list from IDs: ", error);
+			return {
+				success: false,
+				message: "Error with getting user list from IDs. Please contact us.",
+			};
+		}
 	};
 
 	addFriendsToSession = () => {
@@ -77,7 +94,7 @@ class SelectFriends extends Component {
 		const { selectedFriends } = this.state;
 		for (let i = 0; i < selectedFriends.length; i++) {
 			//Need better matching like maybe an ID
-			if (selectedFriends[i].name == friend.name) {
+			if (selectedFriends[i].fName == friend.fName) {
 				selected = true;
 				break;
 			}
@@ -112,8 +129,10 @@ class SelectFriends extends Component {
 
 	handleSearchChange = (event) => {
 		const searchTerm = event.nativeEvent.text;
-		const friends = FakeFriends.filter((friend) =>
-			friend.name.includes(searchTerm)
+
+		//FakeFriends
+		const friends = this.state.friends.filter((friend) =>
+			friend.fname.includes(searchTerm)
 		);
 		this.setState({ searchTerm: event.nativeEvent.text, friends });
 	};

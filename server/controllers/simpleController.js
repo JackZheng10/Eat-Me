@@ -23,7 +23,6 @@ const deleteDB = async (req, res) => {
 
 const getUserSessions = async (req, res) => {
 	let UserSessions = await Session.find({ Members: req.body.ID }).lean();
-
 	for (let Sesh of UserSessions) {
 		let MemberNames = [];
 		for (let MemberID of Sesh.Members) {
@@ -42,7 +41,7 @@ const helloDB = async (req, res) => {
 		ID: 3,
 		fName: "Will",
 		lName: "G",
-		phone: "999-999-9999",
+		phone: "9999999999",
 		password: "FAKE1",
 		sessions: [1, 3],
 		friends: [4, 5],
@@ -55,7 +54,7 @@ const helloDB = async (req, res) => {
 		ID: 4,
 		fName: "Jack",
 		lName: "Z",
-		phone: "888-888-8888",
+		phone: "8888888888",
 		password: "FAKE2",
 		sessions: [1, 2, 3],
 		friends: [3, 5],
@@ -68,7 +67,7 @@ const helloDB = async (req, res) => {
 		ID: 5,
 		fName: "West",
 		lName: "H",
-		phone: "777-777-7777",
+		phone: "7777777777",
 		password: "FAKE3",
 		sessions: [2, 3],
 		friends: [3, 4],
