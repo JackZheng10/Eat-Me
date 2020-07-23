@@ -13,6 +13,7 @@ export const getCurrentUser = async () => {
       return data;
     } else {
       //todo: maybe something else to handle this null return
+      //todo: possible combine w/getStored by returning object with property and token
       alert("Error with retrieving current user. Please relog and try again.");
       return null;
     }
@@ -34,6 +35,7 @@ export const getStoredLogin = async () => {
     }
   } catch (error) {
     console.log("Error with retrieving token: " + error);
+    alert("Error with logging in. Please try again later.");
     return false;
   }
 };

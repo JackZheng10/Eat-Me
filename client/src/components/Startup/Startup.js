@@ -6,6 +6,8 @@ import { Login, Register } from "./components";
 const StartupStack = createStackNavigator();
 
 const Startup = (props) => {
+  const { handleLoginCheck } = props;
+
   return (
     <StartupStack.Navigator
       screenOptions={({ route, navigation }) => ({
@@ -13,9 +15,7 @@ const Startup = (props) => {
       })}
     >
       <StartupStack.Screen name="Login">
-        {(props) => (
-          <Login {...props} handleLoginCheck={props.handleLoginCheck} />
-        )}
+        {(props) => <Login {...props} handleLoginCheck={handleLoginCheck} />}
       </StartupStack.Screen>
       <StartupStack.Screen name="Register" component={Register} />
     </StartupStack.Navigator>

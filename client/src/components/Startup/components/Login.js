@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { PureComponent } from "react";
 import {
   View,
   ScrollView,
@@ -103,7 +103,9 @@ const styles = StyleSheet.create({
   // },
 });
 
-class Login extends Component {
+//pure component needed: https://reactnavigation.org/docs/hello-react-navigation/#passing-additional-props
+//todo: maybe consider using react context, wrapping navigator with context provider
+class Login extends PureComponent {
   state = { phone: "", password: "", phoneErrorMsg: "", passwordErrorMsg: "" };
 
   componentDidMount() {
@@ -206,10 +208,7 @@ class Login extends Component {
             await AsyncStorage.setItem("@token", token);
 
             this.clearInputs();
-            alert("Logged in successfully");
-
-            //todo: figure this out
-            // this.props.handleLoginCheck();
+            this.props.handleLoginCheck();
           } catch (error) {
             console.log("Error with logging in: ", error);
             alert("Error with logging in. Please try again.");

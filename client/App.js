@@ -59,6 +59,10 @@ class App extends Component {
     }
   };
 
+  handleLogout = () => {
+    //delete JWT token, set loggedIn to false,
+  };
+
   handlePushNotifications = async () => {
     //check/setup their permissions. this will be something moved to main app component (vs log/reg when separating)
     if (await this.hasNotificationPermission()) {
