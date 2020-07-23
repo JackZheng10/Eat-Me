@@ -22,6 +22,21 @@ export const getCurrentUser = async () => {
   }
 };
 
+export const getStoredLogin = async () => {
+  try {
+    const value = await AsyncStorage.getItem("@token");
+
+    if (value !== null) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.log("Error with retrieving token: " + error);
+    return false;
+  }
+};
+
 export const updateToken = async (userPhone) => {
   try {
     const response = await axios.get(`${baseURL}/user/updateToken`, {

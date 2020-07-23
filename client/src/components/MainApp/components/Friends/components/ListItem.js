@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { View, StyleSheet, Animated, Text, Alert } from "react-native";
 import { ListItem as RNEListItem, Icon } from "react-native-elements";
-import { getCurrentUser, updateToken } from "../../../helpers/session";
+import { getCurrentUser, updateToken } from "../../../../../helpers/session";
 import axios from "axios";
-import baseURL from "../../../../baseURL";
+import baseURL from "../../../../../../baseURL";
 
 const styles = StyleSheet.create({
   iconContainerStyle: {

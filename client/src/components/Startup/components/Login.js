@@ -13,8 +13,8 @@ import Constants from "expo-constants";
 import AsyncStorage from "@react-native-community/async-storage";
 import axios from "axios";
 import jwtDecode from "jwt-decode";
-import baseURL from "../../../baseURL";
-import Logo from "../../images/Logo.png";
+import baseURL from "../../../../baseURL";
+import Logo from "../../../images/Logo.png";
 
 const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
@@ -206,19 +206,10 @@ class Login extends Component {
             await AsyncStorage.setItem("@token", token);
 
             this.clearInputs();
-            alert("Logged in successfully, see console for token info");
+            alert("Logged in successfully");
 
-            //demonstration of how to fetch and decode the token
-            try {
-              const value = await AsyncStorage.getItem("@token");
-
-              if (value !== null) {
-                const data = jwtDecode(value);
-                console.log(data);
-              }
-            } catch (error) {
-              console.log("Error with retrieving token: ", error);
-            }
+            //todo: figure this out
+            // this.props.handleLoginCheck();
           } catch (error) {
             console.log("Error with logging in: ", error);
             alert("Error with logging in. Please try again.");

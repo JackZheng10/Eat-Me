@@ -5,6 +5,7 @@ const expo = new Expo();
 
 const sendPushNotification = async (token, message) => {
   //check if the token is valid
+  //todo: maybe use an array of tokens if theyre using on multiple devices
   if (!Expo.isExpoPushToken(token)) {
     console.log("Detected an invalid or N/A Expo push token, aborting.");
     return;

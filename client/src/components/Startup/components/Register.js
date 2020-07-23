@@ -12,11 +12,11 @@ import {
 import { Input, Button, Overlay } from "react-native-elements";
 import { Col, Row, Grid } from "react-native-easy-grid";
 import { withNavigation } from "react-navigation";
-import DialogBox from "../components/DialogBox";
+import DialogBox from "../../utility/DialogBox";
 import Constants from "expo-constants";
 import axios from "axios";
-import Logo from "../../images/Logo.png";
-import baseURL from "../../../baseURL";
+import Logo from "../../../images/Logo.png";
+import baseURL from "../../../../baseURL";
 
 const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;

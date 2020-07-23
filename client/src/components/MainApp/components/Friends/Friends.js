@@ -10,16 +10,16 @@ import {
 } from "react-native";
 import { SearchBar, Icon, Divider, Badge } from "react-native-elements";
 import { withNavigation } from "react-navigation";
-import { getCurrentUser, updateToken } from "../../helpers/session";
+import { getCurrentUser, updateToken } from "../../../../helpers/session";
 import { Notifications } from "expo";
 // import { Expo } from "expo-server-sdk";
 import Constants from "expo-constants";
 import * as Permissions from "expo-permissions";
 import io from "socket.io-client";
 import axios from "axios";
-import baseURL from "../../../baseURL";
+import baseURL from "../../../../../baseURL";
 import List from "./components/List";
-import DialogBox from "../components/DialogBox";
+import DialogBox from "../../../utility/DialogBox";
 
 const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;

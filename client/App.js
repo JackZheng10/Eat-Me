@@ -13,23 +13,16 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { AppLoading, Notifications } from "expo";
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { MainApp, Startup } from "./src/components";
 import {
-  Friends,
-  Sessions,
-  Session,
-  Settings,
-  Login,
-  Register,
-} from "./src/components";
-import { getCurrentUser, updateToken } from "./src/helpers/session";
+  getCurrentUser,
+  updateToken,
+  getStoredLogin,
+} from "./src/helpers/session";
 import axios from "axios";
 import Constants from "expo-constants";
 import * as Permissions from "expo-permissions";
 import baseURL from "./baseURL";
-
-//!!!dont hardcode positions and sizes, use windowWidth/windowHeight  (see other files for example) whenever possible
-//hardcoding should(?) be fine if youre using top/bottom/left/right tho
-//with that being said, make sure to test on different sized screens to make sure what we've done with this philosophy works properly
 
 //DOCS:
 //bottom navigator docs: https://reactnavigation.org/docs/bottom-tab-navigator/
@@ -47,87 +40,23 @@ import baseURL from "./baseURL";
 //todo:
 //probably want header and footer to be the aqua color? idk play with it
 //dropshadow to topbar and bottombar?
-//in future will need some sort of webhook/listener for updates like friend requests and matches..or firebase's firestore? firebase auth is also interesting
 //run expo install for any packages needed to ensure compatability
 
-const FriendsStack = createStackNavigator();
-const SessionsStack = createStackNavigator();
-const SettingsStack = createStackNavigator();
-const Tab = createBottomTabNavigator();
-
-const ExampleStack = () => {
-  return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Here's an example of how views can "stack"!</Text>
-    </View>
-  );
-};
-
-const FriendsStackScreen = () => {
-  return (
-    <FriendsStack.Navigator
-      screenOptions={({ route, navigation }) => ({
-        // headerShown: false,
-        headerTitleAlign: "left",
-        headerStyle: { backgroundColor: "#00B2CA" },
-        headerTitleStyle: { color: "white" },
-        // headerRight: () => {
-        //   return (
-        //     <MaterialCommunityIcons
-        //       name="silverware-fork"
-        //       size={30}
-        //       color={"white"}
-        //       style={{ marginRight: 10 }}
-        //     />
-        //   );
-        // },
-      })}
-    >
-      <FriendsStack.Screen name="Friends" component={Friends} />
-      <FriendsStack.Screen name="StackExample" component={ExampleStack} />
-    </FriendsStack.Navigator>
-  );
-};
-
-const SessionsStackScreen = () => {
-  return (
-    <SessionsStack.Navigator
-      screenOptions={({ route, navigation }) => ({
-        // headerShown: false,
-        headerTitleAlign: "left",
-        headerStyle: { backgroundColor: "#00B2CA" },
-        headerTitleStyle: { color: "white" },
-      })}
-    >
-      <SessionsStack.Screen name="Sessions" component={Sessions} />
-      <SessionsStack.Screen name="Session" component={Session} />
-    </SessionsStack.Navigator>
-  );
-};
-
-const SettingsStackScreen = () => {
-  return (
-    <SettingsStack.Navigator
-      screenOptions={({ route, navigation }) => ({
-        // headerShown: false,
-        headerTitleAlign: "left",
-        headerStyle: { backgroundColor: "#00B2CA" },
-        headerTitleStyle: { color: "white" },
-      })}
-    >
-      <SettingsStack.Screen name="Settings" component={Settings} />
-      <SettingsStack.Screen name="StackExample" component={ExampleStack} />
-    </SettingsStack.Navigator>
-  );
-};
-
 class App extends Component {
-  state = { loading: true, keyboardVisible: false };
+  state = { loading: true, loggedIn: false };
 
   //for android, because android. prob still janky. with access to manifest file would be easy. figure out later.
   componentDidMount = () => {
-    console.log(Sessions);
-    this.handlePushNotifications();
+    // this.handlePushNotifications();
+    this.handleLoginCheck();
+  };
+
+  handleLoginCheck = async () => {
+    if (await getStoredLogin()) {
+      this.setState({ loading: false, loggedIn: true });
+    } else {
+      this.setState({ loading: false, loggedIn: false });
+    }
   };
 
   handlePushNotifications = async () => {
@@ -230,64 +159,24 @@ class App extends Component {
   };
 
   render() {
-    if (!this.state.loading) {
-      return (
-        <AppLoading
-          onFinish={() => this.setState({ loading: false })}
-          onError={console.warn}
-        />
-      );
-    } else {
+    console.log("logged in: ", this.state.loggedIn);
+    if (this.state.loading) {
+      return <AppLoading />;
+    }
+
+    if (this.state.loggedIn) {
       return (
         <NavigationContainer>
-          <Tab.Navigator
-            screenOptions={({ route }) => ({
-              tabBarIcon: ({ focused, color, size }) => {
-                switch (route.name) {
-                  case "Friends":
-                    return (
-                      <MaterialIcons name="people" size={size} color={color} />
-                    );
-
-                  case "Sessions":
-                    return (
-                      <MaterialCommunityIcons
-                        name="food"
-                        size={size}
-                        color={color}
-                      />
-                    );
-
-                  case "Settings":
-                    return (
-                      <MaterialIcons
-                        name="settings"
-                        size={size}
-                        color={color}
-                      />
-                    );
-                }
-              },
-            })}
-            tabBarOptions={{
-              activeTintColor: "#F5F1ED",
-              inactiveTintColor: "#848482",
-              keyboardHidesTabBar: true,
-              style: { backgroundColor: "#00B2CA" },
-              // style: this.state.keyboardVisible ? { display: "none" } : {},
-            }}
-            initialRouteName="Friends"
-            lazy={false} //all tabs rendered on initial app load, but maybe not their stack views. if this is too slow, think of a workaround
-          >
-            <Tab.Screen name="Friends" component={FriendsStackScreen} />
-            <Tab.Screen name="Sessions" component={SessionsStackScreen} />
-            <Tab.Screen name="Settings" component={SettingsStackScreen} />
-            <Tab.Screen name="Login" component={Login} />
-            <Tab.Screen name="Register" component={Register} />
-          </Tab.Navigator>
+          <MainApp />
         </NavigationContainer>
       );
     }
+
+    return (
+      <NavigationContainer>
+        <Startup handleLoginCheck={this.handleLoginCheck} />
+      </NavigationContainer>
+    );
   }
 }
 
