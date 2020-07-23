@@ -1,4 +1,5 @@
 import React from "react";
+import { View, Text } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
@@ -91,7 +92,7 @@ const MainApp = () => {
         keyboardHidesTabBar: true,
         style: { backgroundColor: "#00B2CA" },
       }}
-      initialRouteName="Sessions"
+      initialRouteName="Friends" //until sessions ui is fixed
       lazy={false} //all tabs rendered on initial app load, but maybe not their stack views. if this is too slow, think of a workaround
     >
       <Tab.Screen name="Friends" component={FriendsStackScreen} />
