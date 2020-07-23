@@ -9,6 +9,7 @@ export const getCurrentUser = async () => {
 
     if (value !== null) {
       const data = jwtDecode(value);
+      //todo: verify the token beforehand
       return data;
     } else {
       //todo: maybe something else to handle this null return
