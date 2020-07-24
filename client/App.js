@@ -19,6 +19,7 @@ import {
   updateToken,
   getStoredLogin,
 } from "./src/helpers/session";
+import { MainAppContext, StartupContext } from "./src/contexts";
 
 //DOCS:
 //bottom navigator docs: https://reactnavigation.org/docs/bottom-tab-navigator/
@@ -67,7 +68,6 @@ class App extends Component {
   };
 
   render() {
-    console.log("logged in: ", this.state.loggedIn);
     if (this.state.loading) {
       return <AppLoading />;
     }
@@ -75,14 +75,24 @@ class App extends Component {
     if (this.state.loggedIn) {
       return (
         <NavigationContainer>
-          <MainApp handleLogout={this.handleLogout} />
+          <MainAppContext.Provider
+            value={{
+              handleLogout: this.handleLogout,
+            }}
+          >
+            <MainApp />
+          </MainAppContext.Provider>
         </NavigationContainer>
       );
     }
 
     return (
       <NavigationContainer>
-        <Startup handleLoginCheck={this.handleLoginCheck} />
+        <StartupContext.Provider
+          value={{ handleLoginCheck: this.handleLoginCheck }}
+        >
+          <Startup />
+        </StartupContext.Provider>
       </NavigationContainer>
     );
   }

@@ -98,20 +98,16 @@ class Friends extends Component {
     //todo: probably separate actual app and log + reg into 2 components, since dont want this to fire
     //on initial app load since theyre not necessarily logged in yet
     let currentUser = await getCurrentUser();
-
     //establish a socket connection with backend, joining the proper room
     //todo: figure out how to move this to app.js and export for use
     this.socket = io(`${baseURL}/socket?phone=${currentUser.phone}`);
-
     await this.addSocketListeners(currentUser);
-
     //in case user had app closed, update their token and relevant info
     if (await updateToken(currentUser.phone)) {
       //todo: await on these? prob not so they fire both at once
       this.fetchFriendRequests();
       this.fetchFriends();
     }
-
     //push notification testing
     // this.registerForPushNotifications();
   };

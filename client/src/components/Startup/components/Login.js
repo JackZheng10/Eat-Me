@@ -1,4 +1,4 @@
-import React, { PureComponent } from "react";
+import React, { Component } from "react";
 import {
   View,
   ScrollView,
@@ -12,6 +12,7 @@ import { withNavigation } from "react-navigation";
 import Constants from "expo-constants";
 import AsyncStorage from "@react-native-community/async-storage";
 import axios from "axios";
+import { StartupContext } from "../../../contexts";
 import jwtDecode from "jwt-decode";
 import baseURL from "../../../../baseURL";
 import Logo from "../../../images/Logo.png";
@@ -104,9 +105,9 @@ const styles = StyleSheet.create({
   // },
 });
 
-//pure component needed: https://reactnavigation.org/docs/hello-react-navigation/#passing-additional-props
-//todo: maybe consider using react context, wrapping navigator with context provider
-class Login extends PureComponent {
+class Login extends Component {
+  static contextType = StartupContext;
+
   state = { phone: "", password: "", phoneErrorMsg: "", passwordErrorMsg: "" };
 
   componentDidMount() {
@@ -209,7 +210,7 @@ class Login extends PureComponent {
             await AsyncStorage.setItem("@token", token);
 
             this.clearInputs();
-            this.props.handleLoginCheck();
+            this.context.handleLoginCheck();
           } catch (error) {
             console.log("Error with logging in: ", error);
             alert("Error with logging in. Please try again.");

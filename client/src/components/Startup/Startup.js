@@ -5,18 +5,14 @@ import { Login, Register } from "./components";
 
 const StartupStack = createStackNavigator();
 
-const Startup = (props) => {
-  const { handleLoginCheck } = props;
-
+const Startup = () => {
   return (
     <StartupStack.Navigator
       screenOptions={({ route, navigation }) => ({
         headerShown: false,
       })}
     >
-      <StartupStack.Screen name="Login">
-        {(props) => <Login {...props} handleLoginCheck={handleLoginCheck} />}
-      </StartupStack.Screen>
+      <StartupStack.Screen name="Login" component={Login} />
       <StartupStack.Screen name="Register" component={Register} />
     </StartupStack.Navigator>
   );

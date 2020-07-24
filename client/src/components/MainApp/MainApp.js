@@ -10,6 +10,7 @@ import {
   getStoredLogin,
 } from "../../helpers/session";
 import { Notifications } from "expo";
+import io from "socket.io-client";
 import Constants from "expo-constants";
 import * as Permissions from "expo-permissions";
 import axios from "axios";
@@ -60,9 +61,7 @@ const SessionsStackScreen = () => {
 };
 
 //todo: this should be pure component since it's getting prop passed in
-const SettingsStackScreen = (props) => {
-  const { handleLogout } = props;
-
+const SettingsStackScreen = () => {
   return (
     <SettingsStack.Navigator
       screenOptions={({ route, navigation }) => ({
@@ -72,9 +71,7 @@ const SettingsStackScreen = (props) => {
         headerTitleStyle: { color: "white" },
       })}
     >
-      <Tab.Screen name="Settings">
-        {(props) => <Settings {...props} handleLogout={handleLogout} />}
-      </Tab.Screen>
+      <SettingsStack.Screen name="Settings" component={Settings} />
       <SettingsStack.Screen name="StackExample" component={ExampleStack} />
     </SettingsStack.Navigator>
   );
@@ -171,7 +168,7 @@ class MainApp extends Component {
           return false;
         }
       } else {
-        console.warn(
+        console.log(
           "Warning: Must use physical device for push notifications. Emulators will not work."
         );
         return false;
@@ -186,8 +183,7 @@ class MainApp extends Component {
   };
 
   render() {
-    const { handleLogout } = this.props;
-
+    //wait until socket connection established, then render, passing down socket as prop
     return (
       <Tab.Navigator
         screenOptions={({ route }) => ({
@@ -225,11 +221,7 @@ class MainApp extends Component {
       >
         <Tab.Screen name="Friends" component={FriendsStackScreen} />
         <Tab.Screen name="Sessions" component={SessionsStackScreen} />
-        <Tab.Screen name="Settings">
-          {(props) => (
-            <SettingsStackScreen {...props} handleLogout={handleLogout} />
-          )}
-        </Tab.Screen>
+        <Tab.Screen name="Settings" component={SettingsStackScreen} />
       </Tab.Navigator>
     );
   }
