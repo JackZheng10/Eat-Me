@@ -13,17 +13,12 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { AppLoading, Notifications } from "expo";
-import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { MainApp, Startup } from "./src/components";
 import {
   getCurrentUser,
   updateToken,
   getStoredLogin,
 } from "./src/helpers/session";
-import axios from "axios";
-import Constants from "expo-constants";
-import * as Permissions from "expo-permissions";
-import baseURL from "./baseURL";
 
 //DOCS:
 //bottom navigator docs: https://reactnavigation.org/docs/bottom-tab-navigator/
@@ -42,13 +37,12 @@ import baseURL from "./baseURL";
 //probably want header and footer to be the aqua color? idk play with it
 //dropshadow to topbar and bottombar?
 //run expo install for any packages needed to ensure compatability
+//loading/progress bar for processes like loading
 
 class App extends Component {
   state = { loading: true, loggedIn: false };
 
-  //for android, because android. prob still janky. with access to manifest file would be easy. figure out later.
   componentDidMount = () => {
-    // this.handlePushNotifications();
     this.handleLoginCheck();
   };
 
@@ -69,105 +63,6 @@ class App extends Component {
     } catch (error) {
       console.log("Error with logging out: ", error);
       alert("Error with logging out. Please try again later.");
-    }
-  };
-
-  handlePushNotifications = async () => {
-    //check/setup their permissions. this will be something moved to main app component (vs log/reg when separating)
-    if (await this.hasNotificationPermission()) {
-      //set up notification channel for android
-      if (Platform.OS === "android") {
-        Notifications.createChannelAndroidAsync("notifications", {
-          name: "default",
-          sound: true,
-          priority: "max",
-          vibrate: [0, 250, 250, 250],
-        });
-      }
-
-      //retrieve the token
-      const token = await Notifications.getExpoPushTokenAsync();
-
-      //update the token in db if needed
-      let currentUser = await getCurrentUser();
-
-      try {
-        const response = await axios.put(`${baseURL}/user/updatePushToken`, {
-          phone: currentUser.phone,
-          pushToken: token,
-        });
-
-        //if updated, update the token stored (JWT)
-        if (response.data.success) {
-          if (response.data.message === "updated") {
-            await updateToken(currentUser.phone);
-          }
-        } else {
-          alert(response.data.message);
-        }
-      } catch (error) {
-        console.log("Error with updating push token: ", error);
-        alert("Error with updating push token. Please try again later.");
-      }
-    }
-  };
-
-  hasNotificationPermission = async () => {
-    try {
-      if (Constants.isDevice) {
-        const { status: existingStatus } = await Permissions.getAsync(
-          Permissions.NOTIFICATIONS
-        );
-
-        let finalStatus = existingStatus;
-
-        //if perms not granted already, ask for it
-        if (finalStatus !== "granted") {
-          const { status } = await Permissions.askAsync(
-            Permissions.NOTIFICATIONS
-          );
-          finalStatus = status;
-        }
-
-        //if perms are granted already or after asking for them, exit
-        if (finalStatus === "granted") {
-          return true;
-        }
-
-        //if still not granted, they can open up settings for it
-        if (finalStatus !== "granted") {
-          Alert.alert(
-            "Alert",
-            "Push notifications are not enabled. Please go to your settings and enable them for Eat Me if you'd like to receive them.",
-            [
-              {
-                text: "Cancel",
-                style: "cancel",
-              },
-              {
-                text: "Settings",
-                onPress: () =>
-                  Platform.OS === "ios"
-                    ? Linking.openURL("app-settings:")
-                    : Linking.openSettings(),
-              },
-            ],
-            { cancelable: true }
-          );
-          return false;
-        }
-      } else {
-        alert(
-          "Must use physical device for push notifications. Emulators will not work."
-        );
-        return false;
-      }
-    } catch (error) {
-      console.log("Error with setting up push notifications: ", error);
-      alert(
-        "Something went wrong with setting up push notifications. Please try again later."
-      );
-      return false;
     }
   };
 

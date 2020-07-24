@@ -1,8 +1,8 @@
-import React, { Component } from "react";
+import React, { PureComponent } from "react";
 import { Text, View, Button } from "react-native";
 import { withNavigation } from "react-navigation";
 
-class Settings extends Component {
+class Settings extends PureComponent {
   render() {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>

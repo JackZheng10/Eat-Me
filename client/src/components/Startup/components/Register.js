@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     // justifyContent: "center",
     paddingTop: Constants.statusBarHeight,
+    paddingBottom: Constants.statusBarHeight,
     backgroundColor: "#F5F1ED",
   },
   inputContainer: {
@@ -322,7 +323,7 @@ class Register extends Component {
           this.clearInputs();
           this.toggleVerifyDialog();
           Alert.alert(
-            "Alert",
+            "Welcome!",
             response.data.message,
             [
               {
