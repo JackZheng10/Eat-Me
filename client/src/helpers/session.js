@@ -60,13 +60,13 @@ export const updateToken = async (userPhone) => {
         return false;
       }
     } else {
-      console.log("Error with retrieving updated token.");
-      alert("Error with retrieving updated token. Please relog and try again.");
+      console.log("Error with updating token: ", response.data.message);
+      alert("Error with updating token. Please relog and try again.");
       return false;
     }
   } catch (error) {
-    console.log("Error with retrieving updated token: ", error);
-    alert("Error with retrieving updated token. Please relog and try again.");
+    console.log("Error with updating token: ", error);
+    alert("Error with updating token. Please relog and try again.");
     return false;
   }
 };

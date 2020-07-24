@@ -1,21 +1,21 @@
 const {
-		login,
-		checkDuplicatePhone,
-		countUsers,
-		register,
-		findUser,
-		addFriend,
-		updateToken,
-		checkExistingRequests,
-		acceptFriend,
-		declineFriend,
-		deleteFriend,
-		fetchUsersByID,
-		updatePushToken,
-		createSession,
-	} = require("../controllers/userController"),
-	express = require("express"),
-	router = express.Router();
+    login,
+    checkDuplicatePhone,
+    countUsers,
+    register,
+    findUser,
+    addFriend,
+    updateToken,
+    checkExistingRequests,
+    acceptFriend,
+    declineFriend,
+    deleteFriend,
+    getUsersByID,
+    updatePushToken,
+    createSession,
+  } = require("../controllers/userController"),
+  express = require("express"),
+  router = express.Router();
 
 //todo: think about what to do for AUTHORIZATION - aka does someone have permission to access this route. not if their token is valid or not (authentication)
 //todo: ^^ prob use user from the authentication (found user who token is referring to)
@@ -29,7 +29,7 @@ router.get("/updateToken", updateToken);
 router.put("/acceptFriend", findUser, acceptFriend);
 router.put("/declineFriend", findUser, declineFriend);
 router.put("/deleteFriend", findUser, deleteFriend);
-router.post("/fetchUsersByID", fetchUsersByID);
+router.post("/getUsersByID", getUsersByID);
 router.put("/updatePushToken", findUser, updatePushToken);
 router.post("/createSession", createSession);
 

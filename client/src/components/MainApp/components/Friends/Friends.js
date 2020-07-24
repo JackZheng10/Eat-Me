@@ -11,6 +11,7 @@ import {
 import { SearchBar, Icon, Divider, Badge } from "react-native-elements";
 import { withNavigation } from "react-navigation";
 import { getCurrentUser, updateToken } from "../../../../helpers/session";
+import { getUsersByID } from "../../../../helpers/user";
 import io from "socket.io-client";
 import axios from "axios";
 import { SocketContext } from "../../../../contexts";
@@ -146,7 +147,7 @@ class Friends extends Component {
   fetchFriendRequests = async () => {
     let currentUser = await getCurrentUser();
 
-    const users = await this.fetchUsersByID(currentUser.friendRequests);
+    const users = await getUsersByID(currentUser.friendRequests);
 
     if (users.success) {
       this.setState({ friendRequests: users.message });
@@ -156,32 +157,18 @@ class Friends extends Component {
   };
 
   //Helper too, but can we store this globally for access anywhere in our app?
+  //^yes it can be provided but since its always attached to the token, no point really i think
   fetchFriends = async () => {
     let currentUser = await getCurrentUser();
 
-    const users = await this.fetchUsersByID(currentUser.friends);
+    const users = await getUsersByID(currentUser.friends);
 
+    //if successful, update the friends list
     if (users.success) {
       this.setState({ friends: users.message });
     } else {
+      //if not, show the error msg
       alert(users.message);
-    }
-  };
-
-  //todo: move to helper function
-  fetchUsersByID = async (list) => {
-    try {
-      const response = await axios.post(`${baseURL}/user/fetchUsersByID`, {
-        list,
-      });
-
-      return { success: response.data.success, message: response.data.message };
-    } catch (error) {
-      console.log("Error with getting user list from IDs: ", error);
-      return {
-        success: false,
-        message: "Error with getting user list from IDs. Please contact us.",
-      };
     }
   };
 

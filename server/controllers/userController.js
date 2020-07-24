@@ -233,7 +233,7 @@ const updateToken = async (req, res) => {
 
     return res.json({
       success: false,
-      message: "Error with updating token. Please try again.",
+      message: "Error with updating token.",
     });
   }
 };
@@ -336,7 +336,7 @@ const deleteFriend = async (req, res) => {
   }
 };
 
-const fetchUsersByID = async (req, res) => {
+const getUsersByID = async (req, res) => {
   try {
     const users = await User.find()
       .where("ID")
@@ -442,7 +442,7 @@ module.exports = {
   acceptFriend,
   deleteFriend,
   declineFriend,
-  fetchUsersByID,
+  getUsersByID,
   updatePushToken,
   createSession,
   addSessionToUsers,

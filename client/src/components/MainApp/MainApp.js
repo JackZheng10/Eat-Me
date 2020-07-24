@@ -113,7 +113,7 @@ class MainApp extends Component {
 
       //retrieve the token
       const token = await Notifications.getExpoPushTokenAsync();
-      console.log("Expo push token (should not be null/undefined): ", token);
+      console.log("Expo push token: ", token);
 
       //update the token in db if needed
       let currentUser = await getCurrentUser();
@@ -192,7 +192,7 @@ class MainApp extends Component {
     } catch (error) {
       console.log("Error with setting up push notifications: ", error);
       alert(
-        "Something went wrong with setting up push notifications. Please try again later."
+        "Error with setting up push notifications. Please try again later."
       );
       return false;
     }
