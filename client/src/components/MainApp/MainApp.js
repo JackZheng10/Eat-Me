@@ -9,11 +9,12 @@ import {
   updateToken,
   getStoredLogin,
 } from "../../helpers/session";
-import { Notifications } from "expo";
+import { Notifications, AppLoading } from "expo";
 import io from "socket.io-client";
 import Constants from "expo-constants";
 import * as Permissions from "expo-permissions";
 import axios from "axios";
+import { SocketContext } from "../../contexts";
 import baseURL from "../../../baseURL";
 
 const FriendsStack = createStackNavigator();
@@ -78,8 +79,23 @@ const SettingsStackScreen = () => {
 };
 
 class MainApp extends Component {
-  componentDidMount = () => {
-    this.handlePushNotifications();
+  state = { loading: true, SIO: null };
+
+  componentDidMount = async () => {
+    let currentUser = await getCurrentUser();
+    this.handleSIO(currentUser);
+  };
+
+  handleSIO = (currentUser) => {
+    const socket = io(`${baseURL}/socket?phone=${currentUser.phone}`);
+
+    this.setState({ loading: false, SIO: socket }, () => {
+      this.handlePushNotifications();
+    });
+  };
+
+  componentWillUnmount = () => {
+    this.state.SIO.disconnect();
   };
 
   handlePushNotifications = async () => {
@@ -183,46 +199,51 @@ class MainApp extends Component {
   };
 
   render() {
-    //wait until socket connection established, then render, passing down socket as prop
+    if (this.state.loading) {
+      return <AppLoading />;
+    }
+
     return (
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color, size }) => {
-            switch (route.name) {
-              case "Friends":
-                return (
-                  <MaterialIcons name="people" size={size} color={color} />
-                );
+      <SocketContext.Provider value={{ SIO: this.state.SIO }}>
+        <Tab.Navigator
+          screenOptions={({ route }) => ({
+            tabBarIcon: ({ focused, color, size }) => {
+              switch (route.name) {
+                case "Friends":
+                  return (
+                    <MaterialIcons name="people" size={size} color={color} />
+                  );
 
-              case "Sessions":
-                return (
-                  <MaterialCommunityIcons
-                    name="food"
-                    size={size}
-                    color={color}
-                  />
-                );
+                case "Sessions":
+                  return (
+                    <MaterialCommunityIcons
+                      name="food"
+                      size={size}
+                      color={color}
+                    />
+                  );
 
-              case "Settings":
-                return (
-                  <MaterialIcons name="settings" size={size} color={color} />
-                );
-            }
-          },
-        })}
-        tabBarOptions={{
-          activeTintColor: "#F5F1ED",
-          inactiveTintColor: "#848482",
-          keyboardHidesTabBar: true,
-          style: { backgroundColor: "#00B2CA" },
-        }}
-        initialRouteName="Friends" //until sessions ui is fixed
-        lazy={false} //all tabs rendered on initial app load, but maybe not their stack views. if this is too slow, think of a workaround
-      >
-        <Tab.Screen name="Friends" component={FriendsStackScreen} />
-        <Tab.Screen name="Sessions" component={SessionsStackScreen} />
-        <Tab.Screen name="Settings" component={SettingsStackScreen} />
-      </Tab.Navigator>
+                case "Settings":
+                  return (
+                    <MaterialIcons name="settings" size={size} color={color} />
+                  );
+              }
+            },
+          })}
+          tabBarOptions={{
+            activeTintColor: "#F5F1ED",
+            inactiveTintColor: "#848482",
+            keyboardHidesTabBar: true,
+            style: { backgroundColor: "#00B2CA" },
+          }}
+          initialRouteName="Friends" //until sessions ui is fixed
+          lazy={false} //all tabs rendered on initial app load, but maybe not their stack views. if this is too slow, think of a workaround
+        >
+          <Tab.Screen name="Friends" component={FriendsStackScreen} />
+          <Tab.Screen name="Sessions" component={SessionsStackScreen} />
+          <Tab.Screen name="Settings" component={SettingsStackScreen} />
+        </Tab.Navigator>
+      </SocketContext.Provider>
     );
   }
 }

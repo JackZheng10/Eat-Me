@@ -11,12 +11,9 @@ import {
 import { SearchBar, Icon, Divider, Badge } from "react-native-elements";
 import { withNavigation } from "react-navigation";
 import { getCurrentUser, updateToken } from "../../../../helpers/session";
-import { Notifications } from "expo";
-// import { Expo } from "expo-server-sdk";
-import Constants from "expo-constants";
-import * as Permissions from "expo-permissions";
 import io from "socket.io-client";
 import axios from "axios";
+import { SocketContext } from "../../../../contexts";
 import baseURL from "../../../../../baseURL";
 import List from "./components/List";
 import DialogBox from "../../../utility/DialogBox";
@@ -80,6 +77,8 @@ const styles = StyleSheet.create({
 //todo: solve issue of listener being off but app doesnt technically mount again?? if remove friend while phone app closed it doesnt show sometimes?
 
 class Friends extends Component {
+  static contextType = SocketContext;
+
   constructor(props) {
     super(props);
 
@@ -95,100 +94,50 @@ class Friends extends Component {
   }
 
   componentDidMount = async () => {
-    //todo: probably separate actual app and log + reg into 2 components, since dont want this to fire
-    //on initial app load since theyre not necessarily logged in yet
     let currentUser = await getCurrentUser();
-    //establish a socket connection with backend, joining the proper room
-    //todo: figure out how to move this to app.js and export for use
-    this.socket = io(`${baseURL}/socket?phone=${currentUser.phone}`);
-    await this.addSocketListeners(currentUser);
+
+    //await on this? eh
+    await this.addSocketListeners(this.context.SIO, currentUser.phone);
+
     //in case user had app closed, update their token and relevant info
     if (await updateToken(currentUser.phone)) {
       //todo: await on these? prob not so they fire both at once
       this.fetchFriendRequests();
       this.fetchFriends();
     }
-    //push notification testing
-    // this.registerForPushNotifications();
   };
 
-  componentWillUnmount = () => {
-    //maybe unecessary
-    this.socket.disconnect();
-  };
-
-  //todo: figure out how to move this to app.js, token will change if reinstalled or data cleared..figure out how to store or maybe just send to backend
-  registerForPushNotifications = async () => {
-    if (Constants.isDevice) {
-      const { status: existingStatus } = await Permissions.getAsync(
-        Permissions.NOTIFICATIONS
-      );
-
-      let finalStatus = existingStatus;
-
-      if (existingStatus !== "granted") {
-        const { status } = await Permissions.askAsync(
-          Permissions.NOTIFICATIONS
-        );
-        finalStatus = status;
-      }
-
-      if (finalStatus !== "granted") {
-        alert("Failed to get push token for push notification.");
-        return;
-      }
-
-      const token = await Notifications.getExpoPushTokenAsync();
-      console.log("Push notifications token: ", token);
-
-      this.setState({ expoPushToken: token });
-    } else {
-      alert(
-        "Must use physical device for push notifications. Emulators are not allowed."
-      );
-    }
-
-    if (Platform.OS === "android") {
-      Notifications.createChannelAndroidAsync("default", {
-        name: "default",
-        sound: true,
-        priority: "max",
-        vibrate: [0, 250, 250, 250],
-      });
-    }
-  };
-
-  addSocketListeners = async (currentUser) => {
+  addSocketListeners = async (socket, phone) => {
     //listen for an incoming friend request event, sent in the user's room
     //todo: maybe change these names/config
-    this.socket.on("incomingFriendRequest", async () => {
-      if (await updateToken(currentUser.phone)) {
+    socket.on("incomingFriendRequest", async () => {
+      if (await updateToken(phone)) {
         //await on this? eh
         this.fetchFriendRequests();
       }
     });
 
-    this.socket.on("acceptedFriend", async () => {
-      if (await updateToken(currentUser.phone)) {
-        this.fetchFriends();
+    socket.on("acceptedFriend", async () => {
+      if (await updateToken(phone)) {
         this.fetchFriendRequests();
-      }
-    });
-
-    this.socket.on("incomingFriend", async () => {
-      if (await updateToken(currentUser.phone)) {
         this.fetchFriends();
       }
     });
 
-    this.socket.on("deletedFriend", async () => {
-      if (await updateToken(currentUser.phone)) {
+    socket.on("incomingFriend", async () => {
+      if (await updateToken(phone)) {
         this.fetchFriends();
       }
     });
 
-    this.socket.on("declinedFriend", async () => {
-      if (await updateToken(currentUser.phone)) {
+    socket.on("deletedFriend", async () => {
+      if (await updateToken(phone)) {
+        this.fetchFriends();
+      }
+    });
+
+    socket.on("declinedFriend", async () => {
+      if (await updateToken(phone)) {
         this.fetchFriendRequests();
       }
     });
