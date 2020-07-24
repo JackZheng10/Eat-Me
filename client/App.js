@@ -8,6 +8,7 @@ import {
   YellowBox,
   Alert,
 } from "react-native";
+import AsyncStorage from "@react-native-community/async-storage";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -59,8 +60,16 @@ class App extends Component {
     }
   };
 
-  handleLogout = () => {
+  handleLogout = async () => {
     //delete JWT token, set loggedIn to false,
+    try {
+      await AsyncStorage.removeItem("@token").then(() => {
+        this.handleLoginCheck();
+      });
+    } catch (error) {
+      console.log("Error with logging out: ", error);
+      alert("Error with logging out. Please try again later.");
+    }
   };
 
   handlePushNotifications = async () => {
@@ -171,7 +180,7 @@ class App extends Component {
     if (this.state.loggedIn) {
       return (
         <NavigationContainer>
-          <MainApp />
+          <MainApp handleLogout={this.handleLogout} />
         </NavigationContainer>
       );
     }

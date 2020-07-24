@@ -11,6 +11,8 @@ class Settings extends Component {
           title="Go to a new stack view"
           onPress={() => this.props.navigation.navigate("StackExample")}
         />
+        <View style={{ height: 10 }} />
+        <Button title="Dev logout button" onPress={this.props.handleLogout} />
       </View>
     );
   }

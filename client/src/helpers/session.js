@@ -35,7 +35,7 @@ export const getStoredLogin = async () => {
     }
   } catch (error) {
     console.log("Error with retrieving token: " + error);
-    alert("Error with logging in. Please try again later.");
+    alert("Error with checking for logged in user. Please try again later.");
     return false;
   }
 };

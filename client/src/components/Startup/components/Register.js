@@ -321,7 +321,19 @@ class Register extends Component {
         if (response.data.success) {
           this.clearInputs();
           this.toggleVerifyDialog();
-          alert(response.data.message);
+          Alert.alert(
+            "Alert",
+            response.data.message,
+            [
+              {
+                text: "OK",
+                onPress: () => {
+                  this.props.navigation.navigate("Login");
+                },
+              },
+            ],
+            { cancelable: false }
+          );
         } else {
           alert(response.data.message);
         }

@@ -49,7 +49,9 @@ const SessionsStackScreen = () => {
   );
 };
 
-const SettingsStackScreen = () => {
+const SettingsStackScreen = (props) => {
+  const { handleLogout } = props;
+
   return (
     <SettingsStack.Navigator
       screenOptions={({ route, navigation }) => ({
@@ -59,13 +61,17 @@ const SettingsStackScreen = () => {
         headerTitleStyle: { color: "white" },
       })}
     >
-      <SettingsStack.Screen name="Settings" component={Settings} />
+      <Tab.Screen name="Settings">
+        {(props) => <Settings {...props} handleLogout={handleLogout} />}
+      </Tab.Screen>
       <SettingsStack.Screen name="StackExample" component={ExampleStack} />
     </SettingsStack.Navigator>
   );
 };
 
-const MainApp = () => {
+const MainApp = (props) => {
+  const { handleLogout } = props;
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -97,7 +103,11 @@ const MainApp = () => {
     >
       <Tab.Screen name="Friends" component={FriendsStackScreen} />
       <Tab.Screen name="Sessions" component={SessionsStackScreen} />
-      <Tab.Screen name="Settings" component={SettingsStackScreen} />
+      <Tab.Screen name="Settings">
+        {(props) => (
+          <SettingsStackScreen {...props} handleLogout={handleLogout} />
+        )}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 };
