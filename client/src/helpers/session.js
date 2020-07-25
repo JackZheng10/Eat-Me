@@ -12,7 +12,7 @@ export const getCurrentUser = async () => {
       //todo: verify the token beforehand
       return data;
     } else {
-      //todo: maybe something else to handle this null return
+      //todo: maybe something else to handle this null return. depends on the context this is usually used in
       //todo: possible combine w/getStored by returning object with property and token
       alert("Error with retrieving current user. Please relog and try again.");
       return null;
@@ -29,17 +29,20 @@ export const getStoredLogin = async () => {
     const value = await AsyncStorage.getItem("@token");
 
     if (value !== null) {
+      //todo: verify token
       return true;
     } else {
       return false;
     }
   } catch (error) {
     console.log("Error with retrieving token: " + error);
-    alert("Error with checking for logged in user. Please try again later.");
+    alert("Error with checking for logged in user. Please try again.");
     return false;
   }
 };
 
+//should use whenever a change to the user is made in the db, so the frontend always has the updated JWT
+//todo: maybe use socket.io for this..?
 export const updateToken = async (userPhone) => {
   try {
     const response = await axios.get(`${baseURL}/user/updateToken`, {

@@ -326,7 +326,8 @@ class Friends extends Component {
             onChange={this.handleSearchChange}
             onClear={this.clearSearch}
           />
-          <Divider style={{ backgroundColor: "grey", height: 0.1 }} />
+          {/*todo: with or without?*/}
+          <Divider style={{ backgroundColor: "grey", height: 0.2 }} />
         </View>
         <List friendReqConfig={false} users={this.handleFilteredFriends()} />
         <View style={styles.floatingButton}>

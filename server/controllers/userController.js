@@ -137,7 +137,7 @@ const checkExistingRequests = async (req, res, next) => {
   let recipientFriends = recipient.friends;
   let senderRequests = req.body.senderFriendRequests;
 
-  //use for chunk of chunks syntax, easier
+  //todo: use for chunk of chunks syntax, easier
   for (let x = 0; x < recipientRequests.length; x++) {
     if (recipientRequests[x] === req.body.senderID) {
       return res.json({

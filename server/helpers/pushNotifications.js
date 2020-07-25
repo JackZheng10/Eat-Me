@@ -5,7 +5,7 @@ const expo = new Expo();
 
 const sendPushNotification = async (token, message) => {
   //check if the token is valid
-  //todo: maybe use an array of tokens if theyre using on multiple devices
+  //todo: maybe use an array of tokens if theyre using on multiple devices, would need to change schema for this
   if (!Expo.isExpoPushToken(token)) {
     console.log("Detected an invalid or N/A Expo push token, aborting.");
     return;
@@ -23,6 +23,7 @@ const sendPushNotification = async (token, message) => {
 
   let chunks = expo.chunkPushNotifications(messages);
 
+  //todo: handle where to go when user taps, also handle uninstall (token no longer used) or data clear, which generates new token
   //send the message
   for (let chunk of chunks) {
     try {

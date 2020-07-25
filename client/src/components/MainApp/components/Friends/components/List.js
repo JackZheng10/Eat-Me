@@ -39,6 +39,9 @@ const styles = StyleSheet.create({
   subtitleStyle: {
     color: "black",
   },
+  scrollContainer: {
+    width: "100%",
+  },
 });
 
 class List extends Component {
@@ -72,7 +75,7 @@ class List extends Component {
     const { friendReqConfig } = this.props;
 
     return (
-      <ScrollView style={{ width: "100%" }}>
+      <ScrollView style={styles.scrollContainer}>
         {this.renderList(friendReqConfig)}
         <View style={{ height: friendReqConfig ? 15 : 0 }} />
       </ScrollView>

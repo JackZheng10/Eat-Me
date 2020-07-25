@@ -5,6 +5,7 @@
 -For styles, use a themeprovider?
 -Uninstall unused packages
 -Standardize style naming convention + styling convention stuff
+-Standard error messages
 -Other bottom bar option: https://reactnavigation.org/docs/material-bottom-tab-navigator/#screenoptions
 -Example that would wrap app:
 <ThemeProvider
