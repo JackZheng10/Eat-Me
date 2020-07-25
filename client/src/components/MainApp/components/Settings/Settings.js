@@ -47,6 +47,8 @@ const dummySettings = [
   { name: "Dark Mode", config: "switch" },
 ];
 
+//todo: play w height of settingsContainerStyle, base it off of windowheight? depends how the other lists show..
+
 class Settings extends Component {
   static contextType = MainAppContext;
 
@@ -56,6 +58,14 @@ class Settings extends Component {
     ) : (
       <Switch />
     );
+  };
+
+  handleOnPress = (config, name) => {
+    return config === "screen"
+      ? () => {
+          this.props.navigation.navigate(name);
+        }
+      : null;
   };
 
   renderSettingsList = () => {
@@ -68,6 +78,7 @@ class Settings extends Component {
           containerStyle={styles.settingsContainerStyle}
           titleProps={{ style: { color: "#F79256" } }}
           rightIcon={this.renderIcon(setting.config)}
+          onPress={this.handleOnPress(setting.config, setting.name)}
         />
       );
     });

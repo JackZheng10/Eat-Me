@@ -3,7 +3,14 @@ import { View, Text } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Friends, Settings, Sessions, Session } from "./components";
+import {
+  Friends,
+  Settings,
+  Sessions,
+  Session,
+  General,
+  Account,
+} from "./components";
 import {
   getCurrentUser,
   updateToken,
@@ -73,6 +80,8 @@ const SettingsStackScreen = () => {
       })}
     >
       <SettingsStack.Screen name="Settings" component={Settings} />
+      <SettingsStack.Screen name="General" component={General} />
+      <SettingsStack.Screen name="Account" component={Account} />
       <SettingsStack.Screen name="StackExample" component={ExampleStack} />
     </SettingsStack.Navigator>
   );
