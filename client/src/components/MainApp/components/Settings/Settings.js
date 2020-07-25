@@ -25,16 +25,20 @@ const styles = StyleSheet.create({
   scrollContainer: {
     width: "100%",
   },
-  logoutButtonContainer: {
+  buttonContainer: {
     alignItems: "center",
-    paddingVertical: 8,
   },
   settingsContainerStyle: {
     backgroundColor: "#F5F1ED",
     height: 55,
   },
-  buttonContainerStyle: {
+  buttonContainerStyleUpper: {
     width: windowWidth - 250,
+    marginVertical: 20,
+  },
+  buttonContainerStyleLower: {
+    width: windowWidth - 250,
+    marginBottom: 20,
   },
   buttonStyle: {
     backgroundColor: "#F79256",
@@ -57,12 +61,15 @@ const dummySettings = [
 ];
 
 //todo: play w height of settingsContainerStyle, base it off of windowheight? depends how the other lists show..
+//todo: when i fixed paddingbottom of login/register, use that for the other pages too? for ex: maincontainer here..depends what it looks like when full page taken up by scroll
+//todo: standardize the button spacing (2 buttons here vs 2 buttons in register, for example)
 
 class Settings extends Component {
   static contextType = MainAppContext;
 
   state = { darkMode: false };
 
+  //todo: test switch look on ios
   renderIcon = (config) => {
     return config === "screen" ? (
       <Icon name="angle-right" type="font-awesome" color="#F79256" size={25} />
@@ -75,7 +82,7 @@ class Settings extends Component {
           false: "#D3D3D3",
         }}
         thumbColor="#FFFFFF"
-        ios_backgroundColor="#FBFBFB"
+        ios_backgroundColor="#D3D3D3"
         style={
           Platform.OS === "ios"
             ? this.state.darkMode
@@ -107,7 +114,7 @@ class Settings extends Component {
           title={setting.name}
           bottomDivider
           containerStyle={styles.settingsContainerStyle}
-          titleProps={{ style: { color: "#F79256" } }}
+          titleProps={{ style: { color: "#F79256", fontWeight: "bold" } }}
           rightIcon={this.renderIcon(setting.config)}
           onPress={this.handleOnPress(setting.config, setting.name)}
         />
@@ -120,14 +127,24 @@ class Settings extends Component {
       <View style={styles.mainContainer}>
         <ScrollView style={styles.scrollContainer}>
           {this.renderSettingsList()}
-          <View style={styles.logoutButtonContainer}>
+          <View style={styles.buttonContainer}>
+            <Button
+              title="Contact Us"
+              raised
+              onPress={() => {
+                alert("Got questions or need to report a bug? etc...");
+              }}
+              containerStyle={styles.buttonContainerStyleUpper}
+              buttonStyle={styles.buttonStyle}
+            />
             <Button
               title="Log Out"
               raised
               onPress={this.context.handleLogout}
-              containerStyle={styles.buttonContainerStyle}
+              containerStyle={styles.buttonContainerStyleLower}
               buttonStyle={styles.buttonStyle}
             />
+            <Text>Eat Me v1.0</Text>
           </View>
         </ScrollView>
       </View>

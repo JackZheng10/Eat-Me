@@ -21,8 +21,6 @@ import baseURL from "../../../../baseURL";
 const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
 
-//todo: change alert dialogs on other screens too
-
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
@@ -100,6 +98,8 @@ const styles = StyleSheet.create({
     color: "#00B2CA",
   },
 });
+
+//todo: limit password to certain length
 
 class Register extends Component {
   state = {

@@ -68,13 +68,9 @@ const styles = StyleSheet.create({
 //todo: decide on 10-digit phone or not
 //todo: input validation for add friend?
 //todo: format phone number differently?
-//todo: code refactoring, maybe ugly in places
-//todo: disable multiple requests to same person, but what if the sender changes phone number...? maybe disable phone # change in first place.
 //todo: ^ this prob solved just today. also add confirmation alert for deleting/declining?
 //TODO: move current user fetch to app.js UNLESS we decide to lazy load all the other pages? or maybe we need to call getcurrentuser every time the token/user info updates
-//TODO: prob use contextprovider for currentuser and push token, also maybe SIO frontend client
 //todo: sort out when to use updatetoken and getcurrentuser
-//todo: maybe one upate token in app.js to replace any in componentdidmount of other pages
 //todo: solve issue of listener being off but app doesnt technically mount again?? if remove friend while phone app closed it doesnt show sometimes?
 
 class Friends extends Component {

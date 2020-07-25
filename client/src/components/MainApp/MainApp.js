@@ -43,7 +43,7 @@ const FriendsStackScreen = () => {
       screenOptions={({ route, navigation }) => ({
         headerTitleAlign: "left",
         headerStyle: { backgroundColor: "#00B2CA" },
-        headerTitleStyle: { color: "white" },
+        headerTintColor: "white",
       })}
     >
       <FriendsStack.Screen name="Friends" component={Friends} />
@@ -56,10 +56,9 @@ const SessionsStackScreen = () => {
   return (
     <SessionsStack.Navigator
       screenOptions={({ route, navigation }) => ({
-        // headerShown: false,
         headerTitleAlign: "left",
         headerStyle: { backgroundColor: "#00B2CA" },
-        headerTitleStyle: { color: "white" },
+        headerTintColor: "white",
       })}
     >
       <SessionsStack.Screen name="Sessions" component={Sessions} />
@@ -68,15 +67,13 @@ const SessionsStackScreen = () => {
   );
 };
 
-//todo: this should be pure component since it's getting prop passed in
 const SettingsStackScreen = () => {
   return (
     <SettingsStack.Navigator
       screenOptions={({ route, navigation }) => ({
-        // headerShown: false,
         headerTitleAlign: "left",
         headerStyle: { backgroundColor: "#00B2CA" },
-        headerTitleStyle: { color: "white" },
+        headerTintColor: "white",
       })}
     >
       <SettingsStack.Screen name="Settings" component={Settings} />
@@ -220,7 +217,11 @@ class MainApp extends Component {
               switch (route.name) {
                 case "Friends":
                   return (
-                    <MaterialIcons name="people" size={size} color={color} />
+                    <MaterialIcons
+                      name="people"
+                      size={size}
+                      color={focused ? "#F79256" : color}
+                    />
                   );
 
                 case "Sessions":
@@ -228,20 +229,24 @@ class MainApp extends Component {
                     <MaterialCommunityIcons
                       name="food"
                       size={size}
-                      color={color}
+                      color={focused ? "#F79256" : color}
                     />
                   );
 
                 case "Settings":
                   return (
-                    <MaterialIcons name="settings" size={size} color={color} />
+                    <MaterialIcons
+                      name="settings"
+                      size={size}
+                      color={focused ? "#F79256" : color}
+                    />
                   );
               }
             },
           })}
           tabBarOptions={{
             activeTintColor: "#F5F1ED",
-            inactiveTintColor: "#848482",
+            inactiveTintColor: "#525252",
             keyboardHidesTabBar: true,
             style: { backgroundColor: "#00B2CA" },
           }}
