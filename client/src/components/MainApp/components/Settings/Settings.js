@@ -6,6 +6,7 @@ import {
   ScrollView,
   Dimensions,
   Switch,
+  Platform,
 } from "react-native";
 import { ListItem, Icon, Button } from "react-native-elements";
 import { withNavigation } from "react-navigation";
@@ -39,6 +40,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#F79256",
     borderRadius: 40,
   },
+  switchEnableBorder: {
+    borderColor: "#8ED5F5",
+    borderWidth: 1,
+  },
+  switchDisableBorder: {
+    borderColor: "#D3D3D3",
+    borderWidth: 1,
+  },
 });
 
 const dummySettings = [
@@ -52,12 +61,34 @@ const dummySettings = [
 class Settings extends Component {
   static contextType = MainAppContext;
 
+  state = { darkMode: false };
+
   renderIcon = (config) => {
     return config === "screen" ? (
       <Icon name="angle-right" type="font-awesome" color="#F79256" size={25} />
     ) : (
-      <Switch />
+      <Switch
+        onValueChange={this.toggleDarkMode}
+        value={this.state.darkMode}
+        trackColor={{
+          true: "#8ED5F5",
+          false: "#D3D3D3",
+        }}
+        thumbColor="#FFFFFF"
+        ios_backgroundColor="#FBFBFB"
+        style={
+          Platform.OS === "ios"
+            ? this.state.darkMode
+              ? styles.switchEnableBorder
+              : styles.switchDisableBorder
+            : {}
+        }
+      />
     );
+  };
+
+  toggleDarkMode = () => {
+    this.setState({ darkMode: !this.state.darkMode });
   };
 
   handleOnPress = (config, name) => {
