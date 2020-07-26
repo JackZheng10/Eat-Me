@@ -393,6 +393,37 @@ const updatePushToken = async (req, res) => {
   }
 };
 
+//updated fields is an array of {name: "name of field in DB", value: "new value"}
+const updateUser = async (req, res) => {
+  try {
+    let recipient = res.locals.user;
+    let updatedFields = req.body.fields;
+
+    //update the necessary fields
+    for (field of updatedFields) {
+      if (field.name === "password") {
+        //hash it
+      }
+
+      recipient.field.name = field.value;
+    }
+
+    await recipient.save();
+
+    //dont forget to update token upon success
+    return res.json({
+      success: true,
+      message: "User successfully updated.",
+    });
+  } catch (error) {
+    console.log("Error with updating user: ", error);
+    return res.json({
+      success: false,
+      message: "Error with updating user. Please try again later.",
+    });
+  }
+};
+
 //Method needs updating
 const createSession = async (req, res) => {
   const { currentUser } = req.body;
@@ -446,4 +477,5 @@ module.exports = {
   updatePushToken,
   createSession,
   addSessionToUsers,
+  updateUser,
 };

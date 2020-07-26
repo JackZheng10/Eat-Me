@@ -147,7 +147,7 @@ class Settings extends Component {
         </Text>
         <Text style={{ fontSize: 15, textAlign: "center" }}>or</Text>
         <Button
-          title="Submit an Issue on GitHub"
+          title="Submit an issue on GitHub"
           raised
           onPress={() => {
             Linking.openURL("https://github.com/JackZheng10/Eat-Me").catch(

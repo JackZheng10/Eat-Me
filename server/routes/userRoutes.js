@@ -13,6 +13,7 @@ const {
     getUsersByID,
     updatePushToken,
     createSession,
+    updateUser,
   } = require("../controllers/userController"),
   express = require("express"),
   router = express.Router();
@@ -32,5 +33,6 @@ router.put("/deleteFriend", findUser, deleteFriend);
 router.post("/getUsersByID", getUsersByID);
 router.put("/updatePushToken", findUser, updatePushToken);
 router.post("/createSession", createSession);
+router.put("/updateUser", findUser, updateUser);
 
 module.exports = router;
