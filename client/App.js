@@ -38,7 +38,7 @@ import { MainAppContext, StartupContext } from "./src/contexts";
 //probably want header and footer to be the aqua color? idk play with it
 //dropshadow to topbar and bottombar?
 //run expo install for any packages needed to ensure compatability
-//loading/progress bar for processes like loading
+//loading/progress bar for processes like loading here, except replaced with something else not the splash screen. good for screens that need to load data under componentdidmount
 
 class App extends Component {
   state = { loading: true, loggedIn: false };

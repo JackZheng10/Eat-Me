@@ -31,10 +31,12 @@ const styles = StyleSheet.create({
   friendsTitleStyle: {
     fontWeight: "bold",
     color: "#F79256",
+    fontSize: 18,
   },
   friendReqTitleStyle: {
     fontWeight: "bold",
     color: "#8ED5F5",
+    fontSize: 15,
   },
   subtitleStyle: {
     color: "black",
@@ -43,6 +45,8 @@ const styles = StyleSheet.create({
     width: "100%",
   },
 });
+
+//todo: play w font sizes and colors - might want to differentiate more from settings and friend reqs
 
 class List extends Component {
   renderList = (friendReqConfig) => {

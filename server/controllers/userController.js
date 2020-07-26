@@ -394,6 +394,8 @@ const updatePushToken = async (req, res) => {
 };
 
 //updated fields is an array of {name: "name of field in DB", value: "new value"}
+//possible updates: fName, lName, phone, password (everything else handled by other route or should not be updated this way (ex: friend reqs))
+//todo: pass through checkduplicatephone first? figure out.
 const updateUser = async (req, res) => {
   try {
     let recipient = res.locals.user;
@@ -401,6 +403,7 @@ const updateUser = async (req, res) => {
 
     //update the necessary fields
     for (field of updatedFields) {
+      //todo: switch for field name
       if (field.name === "password") {
         //hash it
       }
@@ -410,7 +413,7 @@ const updateUser = async (req, res) => {
 
     await recipient.save();
 
-    //dont forget to update token upon success
+    //dont forget to update token in frontend upon success
     return res.json({
       success: true,
       message: "User successfully updated.",

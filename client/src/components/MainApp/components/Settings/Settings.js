@@ -58,9 +58,13 @@ const styles = StyleSheet.create({
     borderColor: "#D3D3D3",
     borderWidth: 1,
   },
+  settingsTitle: {
+    color: "#F79256",
+    fontWeight: "bold",
+  },
 });
 
-const dummySettings = [
+const settingsList = [
   { name: "General", config: "screen" },
   { name: "Account", config: "screen" },
   { name: "Dark Mode", config: "switch" },
@@ -118,14 +122,14 @@ class Settings extends Component {
   };
 
   renderSettingsList = () => {
-    return dummySettings.map((setting, index) => {
+    return settingsList.map((setting, index) => {
       return (
         <ListItem
           key={index}
           title={setting.name}
           bottomDivider
           containerStyle={styles.settingsContainerStyle}
-          titleProps={{ style: { color: "#F79256", fontWeight: "bold" } }}
+          titleProps={{ style: styles.settingsTitle }}
           rightIcon={this.renderIcon(setting.config)}
           onPress={this.handleOnPress(setting.config, setting.name)}
         />
@@ -152,7 +156,8 @@ class Settings extends Component {
           onPress={() => {
             Linking.openURL("https://github.com/JackZheng10/Eat-Me").catch(
               (error) => {
-                alert("Error with opening page: ", error);
+                console.log("Error with opening page: ", error);
+                alert("Error with opening page. Please try again later.");
               }
             );
             this.toggleContactDialog();
