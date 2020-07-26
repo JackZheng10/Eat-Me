@@ -104,7 +104,7 @@ class Friends extends Component {
     }
   };
 
-  addSocketListeners = async (socket, phone) => {
+  addSocketListeners = (socket, phone) => {
     //listen for an incoming friend request event, sent in the user's room
     //todo: maybe change these names/config
     socket.on("incomingFriendRequest", async () => {

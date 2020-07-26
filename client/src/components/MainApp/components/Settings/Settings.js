@@ -7,10 +7,12 @@ import {
   Dimensions,
   Switch,
   Platform,
+  Linking,
 } from "react-native";
 import { ListItem, Icon, Button } from "react-native-elements";
 import { withNavigation } from "react-navigation";
 import Constants from "expo-constants";
+import DialogBox from "../../../utility/DialogBox";
 import MainAppContext from "../../../../contexts/MainAppContext";
 
 const windowHeight = Dimensions.get("window").height;
@@ -40,6 +42,10 @@ const styles = StyleSheet.create({
     width: windowWidth - 250,
     marginBottom: 20,
   },
+  buttonContainerStyleAlone: {
+    width: windowWidth - 180,
+    marginVertical: 10,
+  },
   buttonStyle: {
     backgroundColor: "#F79256",
     borderRadius: 40,
@@ -63,11 +69,12 @@ const dummySettings = [
 //todo: play w height of settingsContainerStyle, base it off of windowheight? depends how the other lists show..
 //todo: when i fixed paddingbottom of login/register, use that for the other pages too? for ex: maincontainer here..depends what it looks like when full page taken up by scroll
 //todo: standardize the button spacing (2 buttons here vs 2 buttons in register, for example)
+//todo: localstorage for darkmode? probably faster than making a network request to handle it.
 
 class Settings extends Component {
   static contextType = MainAppContext;
 
-  state = { darkMode: false };
+  state = { darkMode: false, showContactDialog: false };
 
   //todo: test switch look on ios
   renderIcon = (config) => {
@@ -98,6 +105,10 @@ class Settings extends Component {
     this.setState({ darkMode: !this.state.darkMode });
   };
 
+  toggleContactDialog = () => {
+    this.setState({ showContactDialog: !this.state.showContactDialog });
+  };
+
   handleOnPress = (config, name) => {
     return config === "screen"
       ? () => {
@@ -122,18 +133,65 @@ class Settings extends Component {
     });
   };
 
+  renderContactInfo = () => {
+    return (
+      <View style={{ alignItems: "center" }}>
+        <Text style={{ fontSize: 15, fontWeight: "bold", textAlign: "center" }}>
+          Have questions or need to report a bug?
+        </Text>
+        <Text style={{ fontSize: 15, marginTop: 10, textAlign: "center" }}>
+          Send us an email at:
+        </Text>
+        <Text style={{ fontSize: 15, marginBottom: 10, textAlign: "center" }}>
+          placeholder@placeholder.com
+        </Text>
+        <Text style={{ fontSize: 15, textAlign: "center" }}>or</Text>
+        <Button
+          title="Submit an Issue on GitHub"
+          raised
+          onPress={() => {
+            Linking.openURL("https://github.com/JackZheng10/Eat-Me").catch(
+              (error) => {
+                alert("Error with opening page: ", error);
+              }
+            );
+            this.toggleContactDialog();
+          }}
+          containerStyle={styles.buttonContainerStyleAlone}
+          buttonStyle={styles.buttonStyle}
+        />
+      </View>
+    );
+  };
+
   render() {
     return (
       <View style={styles.mainContainer}>
+        <DialogBox
+          overlayProps={{
+            isVisible: this.state.showContactDialog,
+            onBackdropPress: this.toggleContactDialog,
+          }}
+          buttons={[
+            {
+              label: "Close",
+              color: "#F75555",
+              onPress: this.toggleContactDialog,
+            },
+          ]}
+          input={false}
+          description={false}
+          showContent={true}
+          content={this.renderContactInfo()}
+          title="Contact Us"
+        />
         <ScrollView style={styles.scrollContainer}>
           {this.renderSettingsList()}
           <View style={styles.buttonContainer}>
             <Button
               title="Contact Us"
               raised
-              onPress={() => {
-                alert("Got questions or need to report a bug? etc...");
-              }}
+              onPress={this.toggleContactDialog}
               containerStyle={styles.buttonContainerStyleUpper}
               buttonStyle={styles.buttonStyle}
             />

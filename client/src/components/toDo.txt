@@ -7,6 +7,7 @@
 -Standardize style naming convention + styling convention stuff
 -Standard error messages
 -Other bottom bar option: https://reactnavigation.org/docs/material-bottom-tab-navigator/#screenoptions
+-Testing with Jest (good to learn anyways!)
 -Example that would wrap app:
 <ThemeProvider
               theme={{
