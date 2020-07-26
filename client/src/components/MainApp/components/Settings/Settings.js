@@ -141,13 +141,13 @@ class Settings extends Component {
     this.setState({ showContactDialog: !this.state.showContactDialog });
   };
 
-  handleOnPress = (config, name) => {
-    return config === "screen"
-      ? () => {
-          this.props.navigation.navigate(name);
-        }
-      : null;
+  handleOnPress = (name) => {
+    this.props.navigation.navigate(name);
   };
+
+  //todo: why does changing the onpress to an arrow function calling it make it not work?? whereas doing it in account works??
+  //^^ it was because one of the handlers returned a function (settings). in onpress: call a function (brackets) or return a function to be called (function reference, or () => function which is an implicit return arrow function)
+  //https://stackoverflow.com/questions/39629962/arrow-function-without-curly-braces ?
 
   renderSettingsList = () => {
     return settingsList.map((setting, index) => {
@@ -160,7 +160,13 @@ class Settings extends Component {
           titleProps={{ style: styles.settingsTitle }}
           rightIcon={this.renderRightIcon(setting.config)}
           leftIcon={this.renderLeftIcon(setting.name)}
-          onPress={this.handleOnPress(setting.config, setting.name)}
+          onPress={
+            setting.config === "screen"
+              ? () => {
+                  this.handleOnPress(setting.name);
+                }
+              : null
+          }
         />
       );
     });

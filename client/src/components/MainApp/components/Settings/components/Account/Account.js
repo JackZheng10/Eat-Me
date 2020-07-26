@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { Text, View, StyleSheet, ScrollView } from "react-native";
 import { ListItem, Icon, Button } from "react-native-elements";
-import { getCurrentUser } from "../../../../../helpers/session";
+import { withNavigation } from "react-navigation";
+import { getCurrentUser } from "../../../../../../helpers/session";
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -81,6 +82,10 @@ class Account extends Component {
     }
   };
 
+  handleOnPress = (name) => {
+    this.props.navigation.navigate(name);
+  };
+
   renderAccountInfo = () => {
     return this.state.accountInfo.map((property, index) => {
       return (
@@ -94,7 +99,9 @@ class Account extends Component {
           subtitleProps={{ style: styles.accountInfoSubtitle }}
           rightIcon={this.renderRightIcon()}
           leftIcon={this.renderLeftIcon(property.name)}
-          // onPress={this.handleOnPress(setting.config, setting.name)}
+          onPress={() => {
+            this.handleOnPress(property.name);
+          }}
         />
       );
     });
@@ -111,4 +118,4 @@ class Account extends Component {
   }
 }
 
-export default Account;
+export default withNavigation(Account);

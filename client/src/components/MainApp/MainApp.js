@@ -10,6 +10,9 @@ import {
   Session,
   General,
   Account,
+  Name,
+  Phone,
+  Password,
 } from "./components";
 import {
   getCurrentUser,
@@ -79,7 +82,9 @@ const SettingsStackScreen = () => {
       <SettingsStack.Screen name="Settings" component={Settings} />
       <SettingsStack.Screen name="General" component={General} />
       <SettingsStack.Screen name="Account" component={Account} />
-      <SettingsStack.Screen name="StackExample" component={ExampleStack} />
+      <SettingsStack.Screen name="Name" component={Name} />
+      <SettingsStack.Screen name="Phone" component={Phone} />
+      <SettingsStack.Screen name="Password" component={Password} />
     </SettingsStack.Navigator>
   );
 };
