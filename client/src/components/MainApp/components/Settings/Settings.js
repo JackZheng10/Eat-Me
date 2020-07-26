@@ -50,6 +50,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#F79256",
     borderRadius: 40,
   },
+  buttonStyleGH: {
+    backgroundColor: "#8ED5F5",
+    borderRadius: 40,
+  },
   switchEnableBorder: {
     borderColor: "#8ED5F5",
     borderWidth: 1,
@@ -81,7 +85,7 @@ class Settings extends Component {
   state = { darkMode: false, showContactDialog: false };
 
   //todo: test switch look on ios
-  renderIcon = (config) => {
+  renderRightIcon = (config) => {
     return config === "screen" ? (
       <Icon name="angle-right" type="font-awesome" color="#F79256" size={25} />
     ) : (
@@ -103,6 +107,30 @@ class Settings extends Component {
         }
       />
     );
+  };
+
+  renderLeftIcon = (name) => {
+    switch (name) {
+      case "General":
+        return (
+          <Icon name="settings" type="material" color="#00B2CA" size={25} />
+        );
+
+      case "Account":
+        return (
+          <Icon
+            name="account-circle"
+            type="material"
+            color="#00B2CA"
+            size={25}
+          />
+        );
+
+      case "Dark Mode":
+        return (
+          <Icon name="wb-sunny" type="material" color="#00B2CA" size={25} />
+        );
+    }
   };
 
   toggleDarkMode = () => {
@@ -130,7 +158,8 @@ class Settings extends Component {
           bottomDivider
           containerStyle={styles.settingsContainerStyle}
           titleProps={{ style: styles.settingsTitle }}
-          rightIcon={this.renderIcon(setting.config)}
+          rightIcon={this.renderRightIcon(setting.config)}
+          leftIcon={this.renderLeftIcon(setting.name)}
           onPress={this.handleOnPress(setting.config, setting.name)}
         />
       );
@@ -163,7 +192,7 @@ class Settings extends Component {
             this.toggleContactDialog();
           }}
           containerStyle={styles.buttonContainerStyleAlone}
-          buttonStyle={styles.buttonStyle}
+          buttonStyle={styles.buttonStyleGH}
         />
       </View>
     );

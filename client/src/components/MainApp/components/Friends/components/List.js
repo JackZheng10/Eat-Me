@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
   },
 });
 
-//todo: play w font sizes and colors - might want to differentiate more from settings and friend reqs
+//todo: play with font sizes, colors, list item height, etc. - might want to differentiate more from settings and friend reqs or something
 
 class List extends Component {
   renderList = (friendReqConfig) => {

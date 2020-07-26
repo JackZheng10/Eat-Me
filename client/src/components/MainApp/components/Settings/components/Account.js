@@ -48,10 +48,37 @@ class Account extends Component {
     });
   };
 
-  renderIcon = () => {
+  renderRightIcon = () => {
     return (
       <Icon name="angle-right" type="font-awesome" color="#F79256" size={35} />
     );
+  };
+
+  renderLeftIcon = (name) => {
+    switch (name) {
+      case "Name":
+        return (
+          <Icon
+            name="account"
+            type="material-community"
+            color="#00B2CA"
+            size={35}
+          />
+        );
+
+      case "Phone":
+        return (
+          <Icon
+            name="phone"
+            type="material-community"
+            color="#00B2CA"
+            size={35}
+          />
+        );
+
+      case "Password":
+        return <Icon name="lock" type="material" color="#00B2CA" size={35} />;
+    }
   };
 
   renderAccountInfo = () => {
@@ -65,7 +92,8 @@ class Account extends Component {
           containerStyle={styles.settingsContainerStyle}
           titleProps={{ style: styles.accountInfoTitle }}
           subtitleProps={{ style: styles.accountInfoSubtitle }}
-          rightIcon={this.renderIcon()}
+          rightIcon={this.renderRightIcon()}
+          leftIcon={this.renderLeftIcon(property.name)}
           // onPress={this.handleOnPress(setting.config, setting.name)}
         />
       );
