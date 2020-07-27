@@ -20,11 +20,12 @@ import {
   getStoredLogin,
 } from "../../helpers/session";
 import { Notifications, AppLoading } from "expo";
+import { SocketContext } from "../../contexts";
+import { Loading } from "../utility/";
 import io from "socket.io-client";
 import Constants from "expo-constants";
 import * as Permissions from "expo-permissions";
 import axios from "axios";
-import { SocketContext } from "../../contexts";
 import baseURL from "../../../baseURL";
 
 const FriendsStack = createStackNavigator();

@@ -62,6 +62,15 @@ const styles = StyleSheet.create({
     top: 5,
     zIndex: 2,
   },
+  loading: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });
 
 //todo: add keyboard listener to unfocus friend search
@@ -262,12 +271,16 @@ class Friends extends Component {
   };
 
   render() {
-    if (this.state.loading) {
-      return <Loading />;
-    }
+    // if (this.state.loading) {
+    //   return <Loading />;
+    // }
 
     return (
-      <View style={styles.mainContainer}>
+      <View
+        style={styles.mainContainer}
+        pointerEvents={this.state.loading ? "none" : "auto"}
+      >
+        {this.state.loading && <Loading showLogo={false} />}
         <DialogBox
           overlayProps={{
             isVisible: this.state.showInboxDialog,

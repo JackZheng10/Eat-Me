@@ -13,10 +13,13 @@ const windowWidth = Dimensions.get("window").width;
 
 const styles = StyleSheet.create({
   mainContainer: {
-    flex: 1,
-    alignItems: "center",
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
     justifyContent: "center",
-    backgroundColor: "#F5F1ED",
+    alignItems: "center",
   },
   logoContainer: {
     alignItems: "center",
@@ -30,12 +33,14 @@ const styles = StyleSheet.create({
   },
 });
 
-const Loading = () => {
+const Loading = (props) => {
   return (
     <View style={styles.mainContainer}>
-      <View style={styles.logoContainer}>
-        <Image source={Logo} style={styles.logo} />
-      </View>
+      {props.showLogo && (
+        <View style={styles.logoContainer}>
+          <Image source={Logo} style={styles.logo} />
+        </View>
+      )}
       <ActivityIndicator size="large" color="#F79256" />
     </View>
   );
