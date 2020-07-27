@@ -1,131 +1,116 @@
 import React, { Component } from "react";
 import { View, StyleSheet } from "react-native";
-import { Header, Icon, Button, Text, Divider } from "react-native-elements";
+import { Text } from "react-native-elements";
 import ModalStyles from "../styles/ModalStyles";
+import CreateSessionHeader from "./CreateSessionHeader";
+import CreateSessionFooter from "./CreateSessionFooter";
 
 const styles = StyleSheet.create({
-  sectionHeader: {
-    color: "#F79256",
-  },
+	sectionHeader: {
+		color: "#F79256",
+	},
 });
 
 class SessionSave extends Component {
-  state = {};
+	state = {};
 
-  componentDidMount = () => {};
+	componentDidMount = () => {};
 
-  renderSessionSaveLeft = () => {
-    return <Icon onPress={this.props.goBack} name="arrow-back" color="#FFF" />;
-  };
+	renderSessionFriendsList = () => {
+		const friendsList = this.props.sessionConfigurables.sessionFriends;
+		const friendsListText = friendsList.reduce((friendText, friend) => {
+			return {
+				names:
+					friendText.fName +
+					" " +
+					friendText.lName +
+					", " +
+					friend.fName +
+					" " +
+					friend.lName,
+			};
+		});
 
-  renderSessionSaveRight = () => {
-    //Consider Screen sizes for these elements
-    return <Icon name="clear" onPress={this.props.exit} color="#FFF" />;
-  };
+		return (
+			<>
+				<Text style={styles.sectionHeader} h3>
+					Selected Friends:
+				</Text>
+				<Text h4>
+					{friendsList.length > 0
+						? friendsListText.names
+						: `${friendsListText.fName} ${friendsListText.lName}`}
+				</Text>
+			</>
+		);
+	};
 
-  renderSessionFriendsList = () => {
-    const friendsList = this.props.sessionConfigurables.sessionFriends;
-    const friendsListText = friendsList.reduce((friendText, friend) => {
-      return {
-        names:
-          friendText.fName +
-          " " +
-          friendText.lName +
-          ", " +
-          friend.fName +
-          " " +
-          friend.lName,
-      };
-    });
+	renderSessionLocation = () => {
+		const { sessionLocation } = this.props.sessionConfigurables;
 
-    return (
-      <>
-        <Text style={styles.sectionHeader} h3>
-          Selected Friends:
-        </Text>
-        <Text h4>
-          {friendsList.length > 0
-            ? friendsListText.names
-            : `${friendsListText.fName} ${friendsListText.lName}`}
-        </Text>
-      </>
-    );
-  };
+		//Change later to display address name not coordinates
+		const addressName =
+			sessionLocation.latitude + ", " + sessionLocation.longitude;
+		return (
+			<>
+				<Text style={styles.sectionHeader} h3>
+					Selected Location:
+				</Text>
+				<Text h4>{addressName}</Text>
+			</>
+		);
+	};
 
-  renderSessionLocation = () => {
-    //Get name here possibly, maybe add it to Create Session state SessionConfigurables
-    const { sessionLocation } = this.props.sessionConfigurables;
+	renderSessionCategories = () => {
+		const categories = this.props.sessionConfigurables.sessionCategories;
+		const selectedCategoriesText = categories.reduce(
+			(categoryText, category) => {
+				return categoryText + `, ${category}`;
+			}
+		);
 
-    //Change later
-    const addressName =
-      sessionLocation.latitude + ", " + sessionLocation.longitude;
-    return (
-      <>
-        <Text style={styles.sectionHeader} h3>
-          Selected Location:
-        </Text>
-        <Text h4>{addressName}</Text>
-      </>
-    );
-  };
+		return (
+			<>
+				<Text style={styles.sectionHeader} h3>
+					Selected Categories:
+				</Text>
+				<Text h4>{selectedCategoriesText}</Text>
+			</>
+		);
+	};
 
-  renderSessionCategories = () => {
-    const categories = this.props.sessionConfigurables.sessionCategories;
-    const selectedCategoriesText = categories.reduce(
-      (categoryText, category) => {
-        return categoryText + `, ${category}`;
-      }
-    );
+	render() {
+		return (
+			<View style={{ flex: 1 }}>
+				<CreateSessionHeader
+					title="Session Details"
+					goBack={this.props.goBack}
+					exit={this.props.exit}
+				/>
 
-    return (
-      <>
-        <Text style={styles.sectionHeader} h3>
-          Selected Categories:
-        </Text>
-        <Text h4>{selectedCategoriesText}</Text>
-      </>
-    );
-  };
+				<View style={ModalStyles.content}>
+					<View style={{ flex: 1, justifyContent: "space-around" }}>
+						<View style={{ flex: 1, margin: 10 }}>
+							{this.renderSessionCategories()}
+						</View>
 
-  render() {
-    return (
-      <View style={{ flex: 1 }}>
-        <View style={{ flex: 1 }}>
-          <Header
-            containerStyle={{ backgroundColor: "#00B2CA" }}
-            leftComponent={this.renderSessionSaveLeft}
-            centerComponent={{
-              text: "Session Details",
-              style: ModalStyles.headerCenterText,
-            }}
-            rightComponent={this.renderSessionSaveRight}
-          />
-        </View>
-        <View style={ModalStyles.content}>
-          <View style={{ flex: 1, justifyContent: "space-around" }}>
-            <View style={{ flex: 1, margin: 10 }}>
-              {this.renderSessionCategories()}
-            </View>
+						<View style={{ flex: 1, margin: 10 }}>
+							{this.renderSessionLocation()}
+						</View>
 
-            <View style={{ flex: 1, margin: 10 }}>
-              {this.renderSessionLocation()}
-            </View>
+						<View style={{ flex: 1, margin: 10 }}>
+							{this.renderSessionFriendsList()}
+						</View>
+					</View>
+				</View>
 
-            <View style={{ flex: 1, margin: 10 }}>
-              {this.renderSessionFriendsList()}
-            </View>
-          </View>
-        </View>
-        <View style={ModalStyles.footer}>
-          <Button
-            onPress={this.props.createSession}
-            buttonStyle={ModalStyles.updateSessionButton}
-            title="Create Session"
-          />
-        </View>
-      </View>
-    );
-  }
+				<CreateSessionFooter
+					title="Create Session"
+					updateSession={this.props.createSession}
+				/>
+			</View>
+		);
+	}
 }
 
 export default SessionSave;

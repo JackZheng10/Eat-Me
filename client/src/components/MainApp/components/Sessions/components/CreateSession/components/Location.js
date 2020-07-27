@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 import { StyleSheet, View } from "react-native";
-import { Header, Icon, Button, Input, SearchBar } from "react-native-elements";
+import { Button, Input } from "react-native-elements";
 import MapView, { Marker } from "react-native-maps";
 import baseURL from "../../../../../../../../baseURL";
 import axios from "axios";
 import ModalStyles from "../styles/ModalStyles";
+import CreateSessionHeader from "./CreateSessionHeader";
+import CreateSessionFooter from "./CreateSessionFooter";
 
 /* 
     Native Module cannot be null 
@@ -14,214 +16,188 @@ import ModalStyles from "../styles/ModalStyles";
 //import Geolocation from "react-native-geolocation-service";
 
 const styles = StyleSheet.create({
-  locationInputView: {
-    position: "absolute",
-    top: 20,
-    width: "100%",
-  },
-  locationInputContainer: {
-    borderRadius: 50,
-    borderColor: "black",
-    borderWidth: 1,
-    backgroundColor: "white",
-  },
+	locationInputView: {
+		position: "absolute",
+		top: 20,
+		width: "100%",
+	},
+	locationInputContainer: {
+		borderRadius: 50,
+		borderColor: "black",
+		borderWidth: 1,
+		backgroundColor: "white",
+	},
 });
 
 class Location extends Component {
-  state = {
-    searchTerm: "",
-    locationLatitude: 26.05172755,
-    locationLongitude: -80.2112422592151,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  };
+	state = {
+		searchTerm: "",
+		locationLatitude: 26.05172755,
+		locationLongitude: -80.2112422592151,
+		latitudeDelta: 0.0922,
+		longitudeDelta: 0.0421,
+	};
 
-  componentDidMount = () => {
-    if (this.props.selectedLocation.latitude !== 0) {
-      const selectedPostion = {
-        coords: {
-          latitude: this.props.selectedLocation.latitude,
-          longitude: this.props.selectedLocation.longitude,
-        },
-      };
-      this.setCurrentPosition(selectedPostion);
-    } else {
-      navigator.geolocation.getCurrentPosition(this.setCurrentPosition);
-    }
-  };
+	componentDidMount = () => {
+		const { latitude, longitude } = this.props.selectedLocation;
 
-  setCurrentPosition = (currentPosition) => {
-    const { latitude, longitude } = currentPosition.coords;
+		const locationSelected = this.props.selectedLocation.latitude !== 0;
 
-    this.setState({
-      locationLatitude: latitude,
-      locationLongitude: longitude,
-    });
-  };
+		if (locationSelected) {
+			this.updateLocation(latitude, longitude);
+		} else {
+			navigator.geolocation.getCurrentPosition(this.setCurrentPosition);
+		}
+	};
 
-  updateSearchTerm = (event) => {
-    const { text } = event.nativeEvent;
+	setCurrentPosition = (currentPosition) => {
+		const { latitude, longitude } = currentPosition.coords;
 
-    this.setState({
-      searchTerm: text,
-    });
-  };
+		this.updateLocation(latitude, longitude);
+	};
 
-  setPosition = (position) => {
-    this.setState({
-      locationLongitude: position.longitude,
-      locationLatitude: position.latitude,
-    });
-  };
+	updateSearchTerm = (event) => {
+		const { text } = event.nativeEvent;
 
-  //Add name of Address to location object
-  addLocationToSession = () => {
-    const location = {
-      latitude: this.state.locationLatitude,
-      longitude: this.state.locationLongitude,
-    };
+		this.setState({
+			searchTerm: text,
+		});
+	};
 
-    this.props.updateSessionConfigurable(location);
-  };
+	//Add name of Address to location object
+	addLocationToSession = () => {
+		const location = {
+			latitude: this.state.locationLatitude,
+			longitude: this.state.locationLongitude,
+		};
 
-  submitSearchTerm = async () => {
-    const places = await axios.post(`${baseURL}/google/find-places`, {
-      searchTerm: this.state.searchTerm,
-    });
+		this.props.updateSessionConfigurable(location);
+	};
 
-    if (places.data.candidates.length > 0) {
-      const newMarker = {
-        nativeEvent: {
-          coordinate: {
-            latitude: places.data.candidates[0].geometry.location.lat,
-            longitude: places.data.candidates[0].geometry.location.lng,
-          },
-        },
-      };
-      this.placeLocationMarker(newMarker);
-    } else {
-      alert("Search Again");
-    }
-  };
+	submitSearchTerm = async () => {
+		const places = await axios.post(`${baseURL}/google/find-places`, {
+			searchTerm: this.state.searchTerm,
+		});
 
-  placeLocationMarker = (marker) => {
-    const markerCoordinate = marker.nativeEvent.coordinate;
-    const { latitude, longitude } = markerCoordinate;
+		const locationFound = places.data.candidates.length > 0;
 
-    this.map.animateToRegion({
-      latitude,
-      longitude,
-      latitudeDelta: this.state.latitudeDelta,
-      longitudeDelta: this.state.longitudeDelta,
-    });
+		if (locationFound) {
+			const { lat, lng } = places.data.candidates[0].geometry.location;
+			this.animateToRegion(lat, lng);
+			this.updateLocation(lat, lng);
+		} else {
+			alert("Search Again");
+		}
+	};
 
-    this.setState({
-      locationLatitude: latitude,
-      locationLongitude: longitude,
-    });
-  };
+	placeLocationMarker = (marker) => {
+		const { latitude, longitude } = marker.nativeEvent.coordinate;
 
-  onRegionChangeComplete = (newRegion) => {
-    const { latitudeDelta, longitudeDelta } = newRegion;
+		this.animateToRegion(latitude, longitude);
 
-    this.setState({
-      latitudeDelta,
-      longitudeDelta,
-    });
-  };
+		this.updateLocation(latitude, longitude);
+	};
 
-  renderMap = () => {
-    const {
-      locationLatitude,
-      locationLongitude,
-      latitudeDelta,
-      longitudeDelta,
-    } = this.state;
+	animateToRegion = (latitude, longitude) => {
+		this.map.animateToRegion({
+			latitude,
+			longitude,
+			latitudeDelta: this.state.latitudeDelta,
+			longitudeDelta: this.state.longitudeDelta,
+		});
+	};
 
-    return (
-      <MapView
-        ref={(map) => {
-          this.map = map;
-        }}
-        provider="google"
-        style={{ flex: 1 }}
-        initialRegion={{
-          latitude: locationLatitude,
-          longitude: locationLongitude,
-          latitudeDelta: latitudeDelta,
-          longitudeDelta: longitudeDelta,
-        }}
-        onRegionChangeComplete={this.onRegionChangeComplete}
-        showsUserLocation={true}
-        onPress={this.placeLocationMarker}
-      >
-        <Marker
-          coordinate={{
-            latitude: locationLatitude,
-            longitude: locationLongitude,
-          }}
-        />
-      </MapView>
-    );
-  };
+	updateLocation = (locationLatitude, locationLongitude) => {
+		this.setState({
+			locationLatitude,
+			locationLongitude,
+		});
+	};
 
-  renderLocationHeadLeft = () => {
-    return <Icon onPress={this.props.goBack} name="arrow-back" color="#FFF" />;
-  };
+	onRegionChangeComplete = (newRegion) => {
+		const { latitudeDelta, longitudeDelta } = newRegion;
 
-  renderLocationHeadRight = () => {
-    //Consider Screen sizes for these elements
-    return <Icon name="clear" onPress={this.props.exit} color="#FFF" />;
-  };
+		this.setState({
+			latitudeDelta,
+			longitudeDelta,
+		});
+	};
 
-  setRightIcon = () => {
-    return (
-      <Button
-        title="Find"
-        buttonStyle={{ borderRadius: 50, backgroundColor: "#00B2CA" }}
-        onPress={this.submitSearchTerm}
-      />
-    );
-  };
+	renderMap = () => {
+		const {
+			locationLatitude,
+			locationLongitude,
+			latitudeDelta,
+			longitudeDelta,
+		} = this.state;
 
-  render() {
-    return (
-      <View style={{ flex: 1 }}>
-        <View style={{ flex: 1 }}>
-          <Header
-            containerStyle={{ backgroundColor: "#00B2CA" }}
-            leftComponent={this.renderLocationHeadLeft}
-            centerComponent={{
-              text: "Choose your location",
-              style: ModalStyles.headerCenterText,
-            }}
-            rightComponent={this.renderLocationHeadRight}
-          />
-        </View>
-        <View style={ModalStyles.content}>
-          <View style={{ flex: 1 }}>
-            {this.renderMap()}
-            <View style={styles.locationInputView}>
-              <Input
-                onChange={this.updateSearchTerm}
-                placeholder="Search"
-                leftIcon={{ name: "search" }}
-                rightIcon={this.setRightIcon}
-                inputContainerStyle={styles.locationInputContainer}
-              />
-            </View>
-          </View>
-        </View>
-        <View style={ModalStyles.footer}>
-          <Button
-            onPress={this.addLocationToSession}
-            buttonStyle={ModalStyles.updateSessionButton}
-            title="Add Location"
-          />
-        </View>
-      </View>
-    );
-  }
+		return (
+			<MapView
+				ref={(map) => {
+					this.map = map;
+				}}
+				provider="google"
+				style={{ flex: 1 }}
+				initialRegion={{
+					latitude: locationLatitude,
+					longitude: locationLongitude,
+					latitudeDelta: latitudeDelta,
+					longitudeDelta: longitudeDelta,
+				}}
+				onRegionChangeComplete={this.onRegionChangeComplete}
+				showsUserLocation={true}
+				onPress={this.placeLocationMarker}
+			>
+				<Marker
+					coordinate={{
+						latitude: locationLatitude,
+						longitude: locationLongitude,
+					}}
+				/>
+			</MapView>
+		);
+	};
+
+	setRightInputIcon = () => {
+		return (
+			<Button
+				title="Find"
+				buttonStyle={{ borderRadius: 50, backgroundColor: "#00B2CA" }}
+				onPress={this.submitSearchTerm}
+			/>
+		);
+	};
+
+	render() {
+		return (
+			<View style={{ flex: 1 }}>
+				<CreateSessionHeader
+					goBack={this.props.goBack}
+					exit={this.props.exit}
+					title="Choose your location"
+				/>
+				<View style={ModalStyles.content}>
+					<View style={{ flex: 1 }}>
+						{this.renderMap()}
+
+						<View style={styles.locationInputView}>
+							<Input
+								onChange={this.updateSearchTerm}
+								placeholder="Search"
+								leftIcon={{ name: "search" }}
+								rightIcon={this.setRightInputIcon}
+								inputContainerStyle={styles.locationInputContainer}
+							/>
+						</View>
+					</View>
+				</View>
+				<CreateSessionFooter
+					title="Add Location"
+					updateSession={this.addLocationToSession}
+				/>
+			</View>
+		);
+	}
 }
 
 export default Location;

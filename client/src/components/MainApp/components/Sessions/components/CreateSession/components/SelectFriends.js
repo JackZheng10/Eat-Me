@@ -1,189 +1,144 @@
 import React, { Component } from "react";
 import { StyleSheet, View } from "react-native";
-import { Header, Icon, Button, SearchBar } from "react-native-elements";
-import { getCurrentUser } from "../../../../../../../helpers/session";
+import { SearchBar } from "react-native-elements";
 import ModalStyles from "../styles/ModalStyles";
 import { ScrollView } from "react-native-gesture-handler";
 import FriendItem from "./FriendItem";
-import axios from "axios";
-import baseURL from "../../../../../../../../baseURL";
+import { fetchFriends } from "../../../../../../../helpers/user";
+import CreateSessionHeader from "./CreateSessionHeader";
+import CreateSessionFooter from "./CreateSessionFooter";
 
 const styles = StyleSheet.create({
-  searchContainerStyle: {
-    backgroundColor: "#F5F1ED",
-    width: "100%",
-    borderBottomColor: "transparent",
-    borderTopColor: "transparent",
-  },
-  searchInputStyle: {
-    color: "black",
-    marginRight: 5,
-    marginLeft: 5,
-  },
-  searchInputContainerStyle: {
-    backgroundColor: "white",
-    borderRadius: 40,
-  },
+	searchContainerStyle: {
+		backgroundColor: "#F5F1ED",
+		width: "100%",
+		borderBottomColor: "transparent",
+		borderTopColor: "transparent",
+	},
+	searchInputStyle: {
+		color: "black",
+		marginRight: 5,
+		marginLeft: 5,
+	},
+	searchInputContainerStyle: {
+		backgroundColor: "white",
+		borderRadius: 40,
+	},
 });
 
 class SelectFriends extends Component {
-  state = {
-    searchTerm: "",
-    friends: [],
-    selectedFriends: [...this.props.selectedFriends],
-  };
+	state = {
+		searchTerm: "",
+		friends: [],
+		selectedFriends: [...this.props.selectedFriends],
+	};
 
-  componentDidMount = () => {
-    this.fetchFriends();
-  };
+	componentDidMount = () => {
+		this.loadFriends();
+	};
 
-  componentDidUpdate = () => {};
+	loadFriends = async () => {
+		const friends = await fetchFriends();
+		this.setState({ friends });
+	};
 
-  //Get from future helper
-  fetchFriends = async () => {
-    //Refer to Friends.js
-    let currentUser = await getCurrentUser();
+	addFriendsToSession = () => {
+		this.props.updateSessionConfigurable(this.state.selectedFriends);
+	};
 
-    const users = await this.fetchUsersByID(currentUser.friends);
+	renderFriends = () => {
+		return this.state.friends.map((friend, i) => {
+			const selected = this.determineSelectedStatus(friend);
+			return (
+				<FriendItem
+					key={i}
+					friend={friend}
+					onSelect={this.onFriendSelect}
+					selected={selected}
+				/>
+			);
+		});
+	};
 
-    if (users.success) {
-      this.setState({ friends: users.message });
-    } else {
-      alert(users.message);
-    }
-  };
+	determineSelectedStatus = (friend) => {
+		const { selectedFriends } = this.state;
+		let selected = false;
 
-  //Get from future helper
-  fetchUsersByID = async (list) => {
-    try {
-      const response = await axios.post(`${baseURL}/user/fetchUsersByID`, {
-        list,
-      });
+		for (let i = 0; i < selectedFriends.length; i++) {
+			if (selectedFriends[i].ID == friend.ID) {
+				selected = true;
+				break;
+			}
+		}
 
-      return { success: response.data.success, message: response.data.message };
-    } catch (error) {
-      console.log("Error with getting user list from IDs: ", error);
-      return {
-        success: false,
-        message: "Error with getting user list from IDs. Please contact us.",
-      };
-    }
-  };
+		return selected;
+	};
 
-  addFriendsToSession = () => {
-    this.props.updateSessionConfigurable(this.state.selectedFriends);
-  };
+	onFriendSelect = (friend, shouldAdd) => {
+		let newFriends;
+		if (shouldAdd) {
+			newFriends = [...this.state.selectedFriends, friend];
+		} else {
+			newFriends = this.state.selectedFriends.filter((originalFriends) => {
+				return originalFriends !== friend;
+			});
+		}
 
-  renderFriends = () => {
-    return this.state.friends.map((friend, i) => {
-      const selected = this.determineSelectedStatus(friend);
-      return (
-        <FriendItem
-          key={i}
-          friend={friend}
-          onSelect={this.onFriendSelect}
-          selected={selected}
-        />
-      );
-    });
-  };
+		this.setState({
+			selectedFriends: newFriends,
+		});
+	};
 
-  determineSelectedStatus = (friend) => {
-    let selected = false;
+	handleSearchChange = (event) => {
+		const searchTerm = event.nativeEvent.text;
 
-    const { selectedFriends } = this.state;
-    for (let i = 0; i < selectedFriends.length; i++) {
-      //Need better matching like maybe an ID
-      if (selectedFriends[i].fName == friend.fName) {
-        selected = true;
-        break;
-      }
-    }
+		const friends = this.state.friends.filter((friend) =>
+			friend.fname.includes(searchTerm)
+		);
 
-    return selected;
-  };
+		this.setState({ searchTerm: event.nativeEvent.text, friends });
+	};
 
-  onFriendSelect = (friend, shouldAdd) => {
-    let newFriends;
-    if (shouldAdd) {
-      newFriends = [...this.state.selectedFriends, friend];
-    } else {
-      newFriends = this.state.selectedFriends.filter((originalFriends) => {
-        return originalFriends !== friend;
-      });
-    }
+	clearSearch = () => {
+		this.setState({ searchTerm: "" });
+	};
 
-    this.setState({
-      selectedFriends: newFriends,
-    });
-  };
+	render() {
+		return (
+			<View style={{ flex: 1 }}>
+				<CreateSessionHeader
+					title="Choose Friends"
+					goBack={this.props.goBack}
+					exit={this.props.exit}
+				/>
 
-  renderSelectFriendsHeadLeft = () => {
-    return <Icon onPress={this.props.goBack} name="arrow-back" color="#FFF" />;
-  };
+				<View style={ModalStyles.content}>
+					<View>
+						<SearchBar
+							placeholder="Search by name"
+							platform="default"
+							value={this.state.searchTerm}
+							lightTheme
+							containerStyle={styles.searchContainerStyle}
+							inputStyle={styles.searchInputStyle}
+							inputContainerStyle={styles.searchInputContainerStyle}
+							searchIcon={{ color: "#00B2CA" }}
+							clearIcon={{ color: "#00B2CA" }}
+							placeholderTextColor={"#00B2CA"}
+							onChange={this.handleSearchChange}
+							onClear={this.clearSearch}
+						/>
+					</View>
+					<ScrollView>{this.renderFriends()}</ScrollView>
+				</View>
 
-  renderSelectFriendsHeadRight = () => {
-    //Consider Screen sizes for these elements
-    return <Icon name="clear" onPress={this.props.exit} color="#FFF" />;
-  };
-
-  handleSearchChange = (event) => {
-    const searchTerm = event.nativeEvent.text;
-
-    //FakeFriends
-    const friends = this.state.friends.filter((friend) =>
-      friend.fname.includes(searchTerm)
-    );
-    this.setState({ searchTerm: event.nativeEvent.text, friends });
-  };
-
-  clearSearch = () => {
-    this.setState({ searchTerm: "" });
-  };
-
-  render() {
-    return (
-      <View style={{ flex: 1 }}>
-        <View style={{ flex: 1 }}>
-          <Header
-            containerStyle={{ backgroundColor: "#00B2CA" }}
-            leftComponent={this.renderSelectFriendsHeadLeft}
-            centerComponent={{
-              text: "Choose Friends",
-              style: ModalStyles.headerCenterText,
-            }}
-            rightComponent={this.renderSelectFriendsHeadRight}
-          />
-        </View>
-        <View style={ModalStyles.content}>
-          <View>
-            <SearchBar
-              placeholder="Search by name"
-              platform="default"
-              value={this.state.searchTerm}
-              lightTheme
-              containerStyle={styles.searchContainerStyle}
-              inputStyle={styles.searchInputStyle}
-              inputContainerStyle={styles.searchInputContainerStyle}
-              searchIcon={{ color: "#00B2CA" }}
-              clearIcon={{ color: "#00B2CA" }}
-              placeholderTextColor={"#00B2CA"}
-              onChange={this.handleSearchChange}
-              onClear={this.clearSearch}
-            />
-          </View>
-          <ScrollView>{this.renderFriends()}</ScrollView>
-        </View>
-        <View style={ModalStyles.footer}>
-          <Button
-            onPress={this.addFriendsToSession}
-            buttonStyle={ModalStyles.updateSessionButton}
-            title="Add Friends"
-          />
-        </View>
-      </View>
-    );
-  }
+				<CreateSessionFooter
+					title="Add Friends"
+					updateSession={this.addFriendsToSession}
+				/>
+			</View>
+		);
+	}
 }
 
 export default SelectFriends;
