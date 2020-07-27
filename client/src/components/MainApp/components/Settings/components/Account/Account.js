@@ -38,6 +38,7 @@ class Account extends Component {
   };
 
   componentDidMount = async () => {
+    //todo: maybe fetch details on settings page itself for efficiency? since need darkmode anyways and just pass inside with nav.navigate
     let currentUser = await getCurrentUser();
 
     this.setState({

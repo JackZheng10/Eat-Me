@@ -263,9 +263,7 @@ class Register extends Component {
 
   handleVerification = async () => {
     //make sure all inputs are valid
-    let validInputs = this.handleInputValidation();
-
-    if (validInputs) {
+    if (this.handleInputValidation()) {
       //check if phone number is already in use
       try {
         const response = await axios.get(
@@ -499,7 +497,7 @@ class Register extends Component {
               inputStyle={styles.inputStyle}
               labelStyle={styles.labelStyle}
               placeholderTextColor="#00B2CA"
-              secureTextEntry={true}
+              secureTextEntry
             />
             <Input
               placeholder="Confirm Password"
@@ -519,7 +517,7 @@ class Register extends Component {
               inputStyle={styles.inputStyle}
               labelStyle={styles.labelStyle}
               placeholderTextColor="#00B2CA"
-              secureTextEntry={true}
+              secureTextEntry
             />
           </View>
           <Button

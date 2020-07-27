@@ -63,6 +63,88 @@ const styles = StyleSheet.create({
 });
 
 class Password extends Component {
+  state = {
+    password: "",
+    passwordConfirm: "",
+    passwordErrorMsg: "",
+    passwordConfirmErrorMsg: "",
+  };
+
+  handleInputChange = (event, property) => {
+    let input = event.nativeEvent.text;
+    this.setState({ [property]: input });
+  };
+
+  handleInputValidation = () => {
+    let valid = true;
+
+    const inputs = [
+      {
+        name: "password",
+        whitespaceMsg: "Please enter a password.",
+      },
+      {
+        name: "passwordConfirm",
+        whitespaceMsg: "Please confirm your password.",
+      },
+    ];
+
+    for (let input of inputs) {
+      let value = this.state[input.name];
+
+      //whitespace checks
+      if (!value.replace(/\s/g, "").length) {
+        this.setState({ [input.name + "ErrorMsg"]: input.whitespaceMsg });
+        valid = false;
+        continue;
+      } else {
+        this.setState({ [input.name + "ErrorMsg"]: "" });
+      }
+
+      switch (input.name) {
+        case "password":
+          if (
+            value.length < 6 ||
+            /[A-Z]+/.test(value) === false ||
+            /[\s~`!@#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?()\._]/g.test(value) ===
+              false
+          ) {
+            this.setState({
+              [input.name +
+              "ErrorMsg"]: "Passwords must be at least 6 characters long, contain one capital letter, and contain one special character.",
+            });
+            valid = false;
+          } else {
+            this.setState({
+              [input.name + "ErrorMsg"]: "",
+            });
+          }
+          break;
+
+        case "passwordConfirm":
+          if (value !== this.state.password) {
+            this.setState({
+              [input.name + "ErrorMsg"]: "Passwords must match.",
+            });
+            valid = false;
+          } else {
+            this.setState({
+              [input.name + "ErrorMsg"]: "",
+            });
+          }
+          break;
+      }
+    }
+
+    return valid;
+  };
+
+  handleUpdatePassword = () => {
+    if (this.handleInputValidation()) {
+      console.log("can update");
+    }
+  };
+
   render() {
     return (
       <View style={styles.mainContainer}>
@@ -74,12 +156,17 @@ class Password extends Component {
               name: "lock",
               color: "#00B2CA",
             }}
-            onChange={null}
+            onChange={(event) => {
+              this.handleInputChange(event, "password");
+            }}
+            errorMessage={this.state.passwordErrorMsg}
+            value={this.state.password}
             containerStyle={styles.containerStyle}
             inputContainerStyle={styles.inputContainerStyle}
             inputStyle={styles.inputStyle}
             labelStyle={styles.labelStyle}
             placeholderTextColor="#00B2CA"
+            secureTextEntry
           />
           <Input
             placeholder="Confirm Password"
@@ -88,15 +175,22 @@ class Password extends Component {
               name: "lock",
               color: "#00B2CA",
             }}
+            onChange={(event) => {
+              this.handleInputChange(event, "passwordConfirm");
+            }}
+            value={this.state.passwordConfirm}
+            errorMessage={this.state.passwordConfirmErrorMsg}
             containerStyle={styles.containerStyle}
             inputContainerStyle={styles.inputContainerStyle}
             inputStyle={styles.inputStyle}
             labelStyle={styles.labelStyle}
             placeholderTextColor="#00B2CA"
+            secureTextEntry
           />
           <Button
             title="Save"
             raised
+            onPress={this.handleUpdatePassword}
             containerStyle={styles.buttonContainerStyle}
             buttonStyle={styles.buttonStyle}
           />
