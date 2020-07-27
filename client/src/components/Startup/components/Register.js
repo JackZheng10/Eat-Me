@@ -12,7 +12,7 @@ import {
 import { Input, Button, Overlay } from "react-native-elements";
 import { Col, Row, Grid } from "react-native-easy-grid";
 import { withNavigation } from "react-navigation";
-import DialogBox from "../../utility/DialogBox";
+import { DialogBox } from "../../utility";
 import Constants from "expo-constants";
 import axios from "axios";
 import Logo from "../../../images/Logo.png";

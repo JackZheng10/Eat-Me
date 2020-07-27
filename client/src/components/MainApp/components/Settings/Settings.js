@@ -11,8 +11,8 @@ import {
 } from "react-native";
 import { ListItem, Icon, Button } from "react-native-elements";
 import { withNavigation } from "react-navigation";
+import { DialogBox } from "../../../utility";
 import Constants from "expo-constants";
-import DialogBox from "../../../utility/DialogBox";
 import MainAppContext from "../../../../contexts/MainAppContext";
 
 const windowHeight = Dimensions.get("window").height;

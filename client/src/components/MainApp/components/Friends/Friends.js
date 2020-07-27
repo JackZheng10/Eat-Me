@@ -7,17 +7,17 @@ import {
   ScrollView,
   Dimensions,
   YellowBox,
+  ActivityIndicator,
 } from "react-native";
 import { SearchBar, Icon, Divider, Badge } from "react-native-elements";
 import { withNavigation } from "react-navigation";
 import { getCurrentUser, updateToken } from "../../../../helpers/session";
 import { getUsersByID } from "../../../../helpers/user";
-import io from "socket.io-client";
-import axios from "axios";
+import { DialogBox, Loading } from "../../../utility";
 import { SocketContext } from "../../../../contexts";
+import axios from "axios";
 import baseURL from "../../../../../baseURL";
 import List from "./components/List";
-import DialogBox from "../../../utility/DialogBox";
 
 const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
@@ -80,6 +80,7 @@ class Friends extends Component {
     super(props);
 
     this.state = {
+      loading: true,
       searchTerm: "",
       showAddDialog: false,
       addedPhone: "",
@@ -99,8 +100,9 @@ class Friends extends Component {
     //in case user had app closed, update their token and relevant info
     if (await updateToken(currentUser.phone)) {
       //todo: await on these? prob not so they fire both at once
-      this.fetchFriendRequests();
-      this.fetchFriends();
+      await this.fetchFriendRequests();
+      await this.fetchFriends();
+      this.setState({ loading: false });
     }
   };
 
@@ -259,6 +261,10 @@ class Friends extends Component {
   };
 
   render() {
+    if (this.state.loading) {
+      return <Loading />;
+    }
+
     return (
       <View style={styles.mainContainer}>
         <DialogBox
@@ -359,10 +365,3 @@ class Friends extends Component {
 }
 
 export default withNavigation(Friends);
-
-{
-  /* <Button
-          title="Go to a new stack view"
-          onPress={() => this.props.navigation.navigate("StackExample")}
-        /> */
-}
