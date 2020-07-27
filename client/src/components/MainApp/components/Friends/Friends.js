@@ -106,9 +106,10 @@ class Friends extends Component {
     }
   };
 
-  addSocketListeners = (socket, phone) => {
+  addSocketListeners = async (socket, phone) => {
     //listen for an incoming friend request event, sent in the user's room
     //todo: maybe change these names/config
+    //todo: await on these? or not via line 98. look into socket io errors more to see how itd affect that
     socket.on("incomingFriendRequest", async () => {
       if (await updateToken(phone)) {
         //await on this? eh
