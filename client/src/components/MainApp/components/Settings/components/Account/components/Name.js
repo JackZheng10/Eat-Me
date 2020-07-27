@@ -1,7 +1,12 @@
 import React, { Component } from "react";
 import { View, StyleSheet, ScrollView, Dimensions } from "react-native";
 import { Input, Button, Text } from "react-native-elements";
-import { getCurrentUser } from "../../../../../../../helpers/session";
+import {
+  getCurrentUser,
+  updateToken,
+} from "../../../../../../../helpers/session";
+import axios from "axios";
+import baseURL from "../../../../../../../../baseURL";
 
 const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
@@ -117,10 +122,34 @@ class Name extends Component {
     return valid;
   };
 
-  handleUpdateName = () => {
+  handleUpdateName = async () => {
+    let currentUser = await getCurrentUser();
+
     if (this.handleInputValidation()) {
-      console.log("can update");
-      //still need to check if it's different or not
+      try {
+        const response = await axios.put(`${baseURL}/user/updateName`, {
+          phone: currentUser.phone,
+          fName: this.state.fName,
+          lName: this.state.lName,
+        });
+
+        if (response.data.success) {
+          await updateToken(currentUser.phone);
+          currentUser = await getCurrentUser();
+          this.props.route.params.updateInfo(
+            "Name",
+            `${currentUser.fName} ${currentUser.lName}`
+          );
+          //change in account.js too - callback to change that state since it needs to rerender to fetch the actual new one
+          //todo: problem to address - account details changing:
+          //all operations regarding current user should fetch the current user when the operation executes so it doesnt use old user data if changed (since token would be updated after)
+        }
+
+        alert(response.data.message);
+      } catch (error) {
+        console.log("Error with updating name in client: ", error);
+        alert("Error with updating name. Please try again later.");
+      }
     }
   };
 

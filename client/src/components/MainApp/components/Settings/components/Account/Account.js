@@ -50,6 +50,17 @@ class Account extends Component {
     });
   };
 
+  updateInfo = (property, value) => {
+    console.log("called");
+    // let accountInfo =
+    // this.setState({
+    //   accountInfo: [
+    //     { name: property, value: value },
+    //     ...this.state.accountInfo,
+    //   ],
+    // });
+  };
+
   renderRightIcon = () => {
     return (
       <Icon name="angle-right" type="font-awesome" color="#F79256" size={35} />
@@ -84,7 +95,7 @@ class Account extends Component {
   };
 
   handleOnPress = (name) => {
-    this.props.navigation.navigate(name);
+    this.props.navigation.navigate(name, { updateInfo: this.updateInfo });
   };
 
   renderAccountInfo = () => {

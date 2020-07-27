@@ -28,7 +28,7 @@ import { MainAppContext, StartupContext } from "./src/contexts";
 //dropshadow to topbar and bottombar?
 //run expo install for any packages needed to ensure compatability
 //!!!loading/progress bar for processes like loading here, except replaced with something else not the splash screen. good for screens that need to load data or do setup under componentdidmount
-//^ initializing = splash screen, loading = progress circle/bar etc.
+//^ initializing = splash screen, loading = progress circle/bar etc., add loading to network request stuff too like posting/updating/etc
 
 class App extends Component {
   state = { initializing: true, loggedIn: false };

@@ -369,7 +369,7 @@ const updatePushToken = async (req, res) => {
     const recipient = res.locals.user;
     const token = req.body.pushToken;
 
-    //if the token is different, update it
+    //if the token is different, update it and return that fact
     if (recipient.pushToken !== token) {
       recipient.pushToken = token;
       await recipient.save();
@@ -378,12 +378,12 @@ const updatePushToken = async (req, res) => {
         success: true,
         message: "updated",
       });
-    } else {
-      return res.json({
-        success: true,
-        message: "unchanged",
-      });
     }
+
+    return res.json({
+      success: true,
+      message: "unchanged",
+    });
   } catch (error) {
     return res.json({
       success: false,
@@ -393,36 +393,37 @@ const updatePushToken = async (req, res) => {
   }
 };
 
-//updated fields is an array of {name: "name of field in DB", value: "new value"}
-//possible updates: fName, lName, phone, password (everything else handled by other route or should not be updated this way (ex: friend reqs))
 //todo: pass through checkduplicatephone first? figure out.
-const updateUser = async (req, res) => {
+const updateName = async (req, res) => {
   try {
     let recipient = res.locals.user;
-    let updatedFields = req.body.fields;
 
-    //update the necessary fields
-    for (field of updatedFields) {
-      //todo: switch for field name
-      if (field.name === "password") {
-        //hash it
-      }
-
-      recipient.field.name = field.value;
+    if (
+      recipient.fName === req.body.fName &&
+      recipient.lName === req.body.lName
+    ) {
+      return res.json({
+        success: false,
+        message:
+          "Entered name is the same. Please make changes if you'd like to update it.",
+      });
     }
+
+    recipient.fName = req.body.fName;
+    recipient.lName = req.body.lName;
 
     await recipient.save();
 
     //dont forget to update token in frontend upon success
     return res.json({
       success: true,
-      message: "User successfully updated.",
+      message: "Name successfully updated.",
     });
   } catch (error) {
-    console.log("Error with updating user: ", error);
+    console.log("Error with updating name in server: ", error); //todo: better way to handle server/client errors?
     return res.json({
       success: false,
-      message: "Error with updating user. Please try again later.",
+      message: "Error with updating name. Please contact us. Error code: 5", //todo: better way to handle server/client errors? so we can tell where it failed easily
     });
   }
 };
@@ -480,5 +481,5 @@ module.exports = {
   updatePushToken,
   createSession,
   addSessionToUsers,
-  updateUser,
+  updateName,
 };

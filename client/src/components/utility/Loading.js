@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
   },
 });
 
+//todo: use for apploading for initial app slash screen..seems to cause it to not load at all though?
 const Loading = (props) => {
   return (
     <View style={styles.mainContainer}>
