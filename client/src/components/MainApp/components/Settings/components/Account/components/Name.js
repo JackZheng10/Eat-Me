@@ -123,9 +123,9 @@ class Name extends Component {
   };
 
   handleUpdateName = async () => {
-    let currentUser = await getCurrentUser();
-
     if (this.handleInputValidation()) {
+      let currentUser = await getCurrentUser();
+
       try {
         const response = await axios.put(`${baseURL}/user/updateName`, {
           phone: currentUser.phone,

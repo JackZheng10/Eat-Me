@@ -393,7 +393,6 @@ const updatePushToken = async (req, res) => {
   }
 };
 
-//todo: pass through checkduplicatephone first? figure out.
 const updateName = async (req, res) => {
   try {
     let recipient = res.locals.user;
@@ -424,6 +423,27 @@ const updateName = async (req, res) => {
     return res.json({
       success: false,
       message: "Error with updating name. Please contact us. Error code: 5", //todo: better way to handle server/client errors? so we can tell where it failed easily
+    });
+  }
+};
+
+const updatePhone = async (req, res) => {
+  try {
+    let recipient = res.locals.user;
+    recipient.phone = req.body.newPhone;
+
+    await recipient.save();
+
+    return res.json({
+      success: true,
+      message: "Phone successfully updated.",
+    });
+  } catch (error) {
+    console.log("Error with updating phone in server: ", error);
+    return res.json({
+      success: false,
+      message:
+        "Error with updating phone. Please contact us. Error code: example",
     });
   }
 };
@@ -482,4 +502,5 @@ module.exports = {
   createSession,
   addSessionToUsers,
   updateName,
+  updatePhone,
 };

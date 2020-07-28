@@ -1,7 +1,13 @@
 import React, { Component } from "react";
 import { View, StyleSheet, ScrollView, Dimensions } from "react-native";
 import { Input, Button, Text } from "react-native-elements";
-import { getCurrentUser } from "../../../../../../../helpers/session";
+import {
+  getCurrentUser,
+  updateToken,
+} from "../../../../../../../helpers/session";
+import { DialogBox } from "../../../../../../utility/";
+import axios from "axios";
+import baseURL from "../../../../../../../../baseURL";
 
 const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
@@ -64,7 +70,12 @@ const styles = StyleSheet.create({
 });
 
 class Phone extends Component {
-  state = { phone: "" };
+  state = {
+    phone: "",
+    showVerifyDialog: false,
+    generatedCode: "",
+    enteredCode: "",
+  };
 
   componentDidMount = async () => {
     //todo: maybe fetch details on settings page itself for efficiency? since need darkmode anyways and just pass inside with nav.navigate
@@ -74,6 +85,27 @@ class Phone extends Component {
       phone: currentUser.phone,
       phoneErrorMsg: "",
     });
+  };
+
+  toggleVerifyDialog = () => {
+    //to prevent generated code from being reset
+    if (this.state.showVerifyDialog) {
+      this.setState({
+        showVerifyDialog: !this.state.showVerifyDialog,
+        generatedCode: "",
+        enteredCode: "",
+      });
+    } else {
+      this.setState({ showVerifyDialog: !this.state.showVerifyDialog });
+    }
+  };
+
+  handleEnteredCodeChange = (event) => {
+    this.setState({ enteredCode: event.nativeEvent.text });
+  };
+
+  handleResendCode = () => {
+    alert("Code will be resent");
   };
 
   handleInputChange = (event, property) => {
@@ -88,9 +120,15 @@ class Phone extends Component {
     }
   };
 
-  handleInputValidation = () => {
+  handleInputValidation = async () => {
+    let currentUser = await getCurrentUser();
     let valid = true;
     let value = this.state.phone;
+
+    if (this.state.phone === currentUser.phone) {
+      alert("Please enter an updated phone number.");
+      valid = false;
+    }
 
     if (!value.replace(/\s/g, "").length) {
       this.setState({ phoneErrorMsg: "Please enter a 10-digit phone number." });
@@ -111,16 +149,110 @@ class Phone extends Component {
     return valid;
   };
 
-  handleUpdatePhone = () => {
-    if (this.handleInputValidation()) {
-      console.log("can update");
-      //still need to check for same, duplicate, etc.
+  handleVerification = async () => {
+    if (await this.handleInputValidation()) {
+      //check if phone number is already in use
+      try {
+        const response = await axios.get(
+          `${baseURL}/user/checkDuplicatePhone`,
+          {
+            params: {
+              phone: this.state.phone,
+            },
+          }
+        );
+
+        if (response.data.success) {
+          //send verification code and open up verification prompt
+          try {
+            const response = await axios.post(`${baseURL}/twilio/verify`, {
+              to: this.state.phone,
+            });
+
+            if (response.data.success) {
+              this.setState({ generatedCode: response.data.message }, () => {
+                this.toggleVerifyDialog();
+              });
+            } else {
+              alert(response.data.message);
+            }
+          } catch (error) {
+            console.log("Error with sending verification code: ", error);
+            alert("Error with sending verification code. Please try again.");
+          }
+        } else {
+          alert(response.data.message);
+        }
+      } catch (error) {
+        console.log("Error with checking duplicate phone number: ", error);
+        alert("Error with checking duplicate phone number. Please try again.");
+      }
+    }
+  };
+
+  handleUpdatePhone = async () => {
+    if (this.state.generatedCode === this.state.enteredCode) {
+      //update phone number, todo: send a socket event to all their friends to update list, request, session, etc?
+      let currentUser = await getCurrentUser();
+
+      try {
+        const response = await axios.put(`${baseURL}/user/updatePhone`, {
+          phone: currentUser.phone,
+          newPhone: this.state.phone,
+        });
+
+        if (response.data.success) {
+          await updateToken(this.state.phone);
+          this.toggleVerifyDialog();
+          this.props.route.params.updateInfo("Phone", this.state.phone);
+        }
+
+        alert(response.data.message);
+      } catch (error) {
+        console.log("Error with updating phone: ", error);
+        alert("Error with updating phone. Please try again.");
+      }
+    } else {
+      alert("Entered code is incorrect. Please try again.");
     }
   };
 
   render() {
     return (
       <View style={styles.mainContainer}>
+        <DialogBox
+          overlayProps={{
+            isVisible: this.state.showVerifyDialog,
+            onBackdropPress: this.toggleVerifyDialog,
+          }}
+          buttons={[
+            {
+              label: "Cancel",
+              color: "#F75555",
+              onPress: this.toggleVerifyDialog,
+            },
+            {
+              label: "Resend",
+              color: "#F79256",
+              onPress: this.handleResendCode,
+            },
+            {
+              label: "Verify",
+              color: "#8ED5F5",
+              onPress: this.handleUpdatePhone,
+            },
+          ]}
+          input={true}
+          inputProps={{
+            placeholder: "Code",
+            onChange: this.handleEnteredCodeChange,
+            value: this.state.enteredCode,
+          }}
+          showContent={false}
+          title="Verification"
+          description={true}
+          description="Please enter the verification code we just texted you in order to update your phone number."
+        />
         <View style={styles.inputContainer}>
           <Input
             placeholder="Phone"
@@ -143,7 +275,7 @@ class Phone extends Component {
           <Button
             title="Save"
             raised
-            onPress={this.handleUpdatePhone}
+            onPress={this.handleVerification}
             containerStyle={styles.buttonContainerStyle}
             buttonStyle={styles.buttonStyle}
           />

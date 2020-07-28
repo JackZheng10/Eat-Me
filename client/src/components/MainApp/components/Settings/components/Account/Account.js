@@ -51,14 +51,21 @@ class Account extends Component {
   };
 
   updateInfo = (property, value) => {
-    console.log("called");
-    // let accountInfo =
-    // this.setState({
-    //   accountInfo: [
-    //     { name: property, value: value },
-    //     ...this.state.accountInfo,
-    //   ],
-    // });
+    let accountInfo = [...this.state.accountInfo];
+
+    switch (property) {
+      case "Name":
+        let nameUpdated = { ...accountInfo[0], value: value };
+        accountInfo[0] = nameUpdated;
+        this.setState({ accountInfo });
+        break;
+
+      case "Phone":
+        let phoneUpdated = { ...accountInfo[1], value: value };
+        accountInfo[1] = phoneUpdated;
+        this.setState({ accountInfo });
+        break;
+    }
   };
 
   renderRightIcon = () => {
