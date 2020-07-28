@@ -16,6 +16,7 @@ const {
     createSession,
     updateName,
     updatePhone,
+    updatePassword,
   } = require("../controllers/userController"),
   express = require("express"),
   router = express.Router();
@@ -38,5 +39,6 @@ router.post("/getUserSessions", getUserSessions);
 router.post("/createSession", createSession);
 router.put("/updateName", findUser, updateName);
 router.put("/updatePhone", findUser, updatePhone);
+router.put("/updatePassword", findUser, updatePassword);
 
 module.exports = router;

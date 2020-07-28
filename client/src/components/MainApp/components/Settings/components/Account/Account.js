@@ -45,7 +45,7 @@ class Account extends Component {
       accountInfo: [
         { name: "Name", value: `${currentUser.fName} ${currentUser.lName}` },
         { name: "Phone", value: `${currentUser.phone}` },
-        { name: "Password", value: "*Hidden*" },
+        { name: "Password", value: "*HIDDEN*" },
       ],
     });
   };

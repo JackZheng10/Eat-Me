@@ -1,6 +1,12 @@
 import React, { Component } from "react";
 import { View, StyleSheet, ScrollView, Dimensions } from "react-native";
 import { Input, Button, Text } from "react-native-elements";
+import {
+  getCurrentUser,
+  updateToken,
+} from "../../../../../../../helpers/session";
+import axios from "axios";
+import baseURL from "../../../../../../../../baseURL";
 
 const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
@@ -139,10 +145,30 @@ class Password extends Component {
     return valid;
   };
 
-  handleUpdatePassword = () => {
+  handleUpdatePassword = async () => {
     if (this.handleInputValidation()) {
-      console.log("can update");
+      let currentUser = await getCurrentUser();
+      try {
+        const response = await axios.put(`${baseURL}/user/updatePassword`, {
+          phone: currentUser.phone,
+          newPassword: this.state.password,
+        });
+
+        if (response.data.success) {
+          await updateToken(currentUser.phone);
+          this.clearInputs();
+        }
+
+        alert(response.data.message);
+      } catch (error) {
+        console.log("Error with updating password: ", error);
+        alert("Error with updating password. Please try again later.");
+      }
     }
+  };
+
+  clearInputs = () => {
+    this.setState({ password: "", passwordConfirm: "" });
   };
 
   render() {

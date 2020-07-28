@@ -448,6 +448,30 @@ const updatePhone = async (req, res) => {
   }
 };
 
+const updatePassword = async (req, res) => {
+  try {
+    let recipient = res.locals.user;
+
+    //not needed since at pre-save, it's already hashed
+    // recipient.password = recipient.generateHash(req.body.newPassword);
+    recipient.password = req.body.newPassword;
+
+    await recipient.save();
+
+    return res.json({
+      success: true,
+      message: "Password successfully updated.",
+    });
+  } catch (error) {
+    console.log("Error with updating password in server: ", error);
+    return res.json({
+      success: false,
+      message:
+        "Error with updating password. Please contact us. Error code: example",
+    });
+  }
+};
+
 const getUserSessions = async (req, res) => {
   try {
     let userSessions = await Session.find({ members: req.body.ID }).lean();
@@ -540,4 +564,5 @@ module.exports = {
   addSessionToUsers,
   updateName,
   updatePhone,
+  updatePassword,
 };

@@ -119,6 +119,7 @@ class Friends extends Component {
     //listen for an incoming friend request event, sent in the user's room
     //todo: maybe change these names/config
     //todo: await on these? or not via line 98. look into socket io errors more to see how itd affect that
+    //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
     socket.on("incomingFriendRequest", async () => {
       if (await updateToken(phone)) {
         //await on this? eh
