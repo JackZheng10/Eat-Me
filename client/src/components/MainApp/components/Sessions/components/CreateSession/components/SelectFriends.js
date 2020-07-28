@@ -43,7 +43,14 @@ class SelectFriends extends Component {
 	};
 
 	addFriendsToSession = () => {
-		this.props.updateSessionConfigurable(this.state.selectedFriends);
+		const { friends, selectedFriends } = this.state;
+
+		if (selectedFriends.length > 0 || friends.length == 0) {
+			this.props.updateSessionConfigurable(this.state.selectedFriends);
+		} else {
+			//Future Toast Message
+			alert("Invite some friends!");
+		}
 	};
 
 	renderFriends = () => {

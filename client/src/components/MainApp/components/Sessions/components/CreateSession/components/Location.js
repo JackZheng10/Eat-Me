@@ -81,12 +81,13 @@ class Location extends Component {
 
 		const locationFound = places.data.candidates.length > 0;
 
+		//Maybe change method so response looks at success property
 		if (locationFound) {
 			const { lat, lng } = places.data.candidates[0].geometry.location;
 			this.animateToRegion(lat, lng);
 			this.updateLocation(lat, lng);
 		} else {
-			alert("Search Again");
+			alert("Address not found. Try Again");
 		}
 	};
 

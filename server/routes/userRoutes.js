@@ -12,6 +12,7 @@ const {
     deleteFriend,
     getUsersByID,
     updatePushToken,
+    getUserSessions,
     createSession,
     updateName,
     updatePhone,
@@ -33,6 +34,7 @@ router.put("/declineFriend", findUser, declineFriend);
 router.put("/deleteFriend", findUser, deleteFriend);
 router.post("/getUsersByID", getUsersByID);
 router.put("/updatePushToken", findUser, updatePushToken);
+router.post("/getUserSessions", getUserSessions);
 router.post("/createSession", createSession);
 router.put("/updateName", findUser, updateName);
 router.put("/updatePhone", findUser, updatePhone);

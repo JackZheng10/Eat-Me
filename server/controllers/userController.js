@@ -448,7 +448,34 @@ const updatePhone = async (req, res) => {
   }
 };
 
-//Method needs updating
+const getUserSessions = async (req, res) => {
+  try {
+    let userSessions = await Session.find({ members: req.body.ID }).lean();
+
+    for (let userSession of userSessions) {
+      userSession.memberNames = await getUsersNameByID(userSession.members);
+    }
+
+    res.json({ success: true, sessions: userSessions });
+  } catch (error) {
+    console.log("Error retrieving user sessions:  " + error);
+    res.json({ success: false, error });
+  }
+};
+
+//Duplicate of getUsersByID but I only get name for now,
+//maybe move this method elsewhere no so directly related to userController
+getUsersNameByID = async (userIDs) => {
+  const userNames = Promise.all(
+    userIDs.map(async (ID) => {
+      const user = await User.findOne({ ID });
+      return user.fName;
+    })
+  );
+
+  return userNames;
+};
+
 const createSession = async (req, res) => {
   const { currentUser } = req.body;
   const {
@@ -463,20 +490,29 @@ const createSession = async (req, res) => {
 
   const sessionIDs = [...sessionFriendsIDs, currentUser.ID];
 
-  const count = await Session.countDocuments();
+  try {
+    const count = await Session.countDocuments();
 
-  let newSession = new Session({
-    SessionID: count + 1,
-    Members: sessionIDs,
-    Categories: sessionCategories,
-    LocationLatitude: sessionLocation.latitude,
-    LocationLongitude: sessionLocation.longitude,
-  });
+    let newSession = new Session({
+      ID: count + 1,
+      members: sessionIDs,
+      categories: sessionCategories,
+      latitude: sessionLocation.latitude,
+      longitude: sessionLocation.longitude,
+    });
 
-  addSessionToUsers(newSession.SessionID, sessionIDs);
-  newSession.save();
+    addSessionToUsers(newSession.SessionID, sessionIDs);
+    await newSession.save();
 
-  res.json(newSession);
+    const memberNames = await getUsersNameByID(sessionIDs);
+
+    const userSession = { ...newSession.toObject(), memberNames };
+
+    res.json({ success: true, userSession });
+  } catch (error) {
+    console.log("Error creating session: " + error);
+    res.json({ success: false, error });
+  }
 };
 
 const addSessionToUsers = (sessionID, usersIDs) => {
@@ -499,6 +535,7 @@ module.exports = {
   declineFriend,
   getUsersByID,
   updatePushToken,
+  getUserSessions,
   createSession,
   addSessionToUsers,
   updateName,
