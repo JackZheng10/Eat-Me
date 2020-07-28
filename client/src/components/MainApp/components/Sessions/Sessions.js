@@ -8,172 +8,176 @@ import CreateSession from "./components/CreateSession/CreateSession";
 import { ListItem, Text, Icon } from "react-native-elements";
 
 const styles = StyleSheet.create({
-  ListItem: {
-    margin: 10,
-    borderStyle: "solid",
-    borderColor: "#00B2CA",
-    borderWidth: 2,
-    borderRadius: 50,
-  },
-  containerStyle: {
-    backgroundColor: "#fcfbfa",
-    borderStyle: "solid",
-    borderColor: "#F79256",
-    borderRadius: 50,
-  },
-  titleStyle: {
-    fontWeight: "bold",
-    color: "#F79256",
-  },
-  subtitleStyle: {
-    color: "black",
-  },
-  emptySession: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  addSessionContainer: {
-    position: "absolute",
-    bottom: 25,
-    right: 50,
-  },
-  sessionsContainer: {
-    flex: 1,
-    backgroundColor: "#F5F1ED",
-  },
+	listItem: {
+		margin: 10,
+		borderStyle: "solid",
+		borderColor: "#00B2CA",
+		borderWidth: 2,
+		borderRadius: 50,
+	},
+	containerStyle: {
+		backgroundColor: "#fcfbfa",
+		borderStyle: "solid",
+		borderColor: "#F79256",
+		borderRadius: 50,
+	},
+	titleStyle: {
+		fontWeight: "bold",
+		color: "#F79256",
+	},
+	subtitleStyle: {
+		color: "black",
+	},
+	emptySession: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	addSessionContainer: {
+		position: "absolute",
+		bottom: 25,
+		right: 50,
+	},
+	sessionsContainer: {
+		flex: 1,
+		backgroundColor: "#F5F1ED",
+	},
 });
 
 class Sessions extends Component {
-  state = {
-    key: 0,
-    SessionList: [],
-    modalVisible: false,
-  };
+	state = {
+		key: 0,
+		sessionList: [],
+		modalVisible: false,
+	};
 
-  componentDidMount = async () => {
-    //Get session List from DB, Transform Data into individual componenets, Get actual User ID
-    const currentUser = await getCurrentUser();
+	componentDidMount = async () => {
+		const currentUser = await getCurrentUser();
 
-    const Sessions = await axios.post(baseURL + "/simple/getUserSessions", {
-      ID: currentUser.ID,
-    });
-    //console.log(Sessions.data.Sessions);
-    this.setState({ SessionList: Sessions.data.Sessions });
-  };
+		const userSessions = await axios.post(baseURL + "/user/getUserSessions", {
+			ID: currentUser.ID,
+		});
 
-  setSessionsView = () => {
-    if (this.state.SessionList.length == 0)
-      return this.renderEmptySessionsView();
-    else {
-      return <ScrollView>{this.renderSessions()}</ScrollView>;
-    }
-  };
+		if (userSessions.data.success) {
+			this.setState({ sessionList: userSessions.data.sessions });
+		} else {
+			alert("Error retrieving sessions");
+		}
+	};
 
-  renderEmptySessionsView = () => {
-    return (
-      <View style={styles.emptySession}>
-        <Text h3 style={{ color: "#F79256" }}>
-          Create a New Session!
-        </Text>
-      </View>
-    );
-  };
+	setSessionsView = () => {
+		if (this.state.sessionList.length == 0)
+			return this.renderEmptySessionsView();
+		else {
+			return <ScrollView>{this.renderSessions()}</ScrollView>;
+		}
+	};
 
-  renderSession = (sessionDetails) => {
-    this.props.navigation.push("Session", { sessionDetails });
-  };
+	renderEmptySessionsView = () => {
+		return (
+			<View style={styles.emptySession}>
+				<Text h3 style={{ color: "#F79256" }}>
+					Create a New Session!
+				</Text>
+			</View>
+		);
+	};
 
-  renderSessions = () => {
-    return this.state.SessionList.map((Session) => {
-      return (
-        <ListItem
-          onPress={() => this.renderSession(Session)}
-          key={Session._id}
-          leftElement={this.renderSessionMembers}
-          title={Session.Members.toString()}
-          titleStyle={styles.titleStyle}
-          subtitle={Session.Status}
-          subtitleStyle={styles.subtitleStyle}
-          avatar
-          style={styles.ListItem}
-          containerStyle={styles.containerStyle}
-          rightIcon={this.renderSessionStatus(Session.Status)}
-        />
-      );
-    });
-  };
+	renderSession = (sessionDetails) => {
+		this.props.navigation.push("Session", { sessionDetails });
+	};
 
-  renderSessionMembers = () => {
-    //Idea - Return circular picture of all friends in session. Small though,
-    return <Icon name="person" />;
-  };
+	renderSessions = () => {
+		return this.state.sessionList.map((session) => {
+			//console.log("YOOO: " + session.ID + " " + session.status);
+			return (
+				<ListItem
+					onPress={() => this.renderSession(session)}
+					key={session.ID}
+					leftElement={this.renderSessionMembers}
+					title={session.memberNames.toString()}
+					titleStyle={styles.titleStyle}
+					subtitle={session.status}
+					subtitleStyle={styles.subtitleStyle}
+					avatar
+					style={styles.listItem}
+					containerStyle={styles.containerStyle}
+					rightIcon={this.renderSessionStatus(session.Status)}
+				/>
+			);
+		});
+	};
 
-  renderSessionStatus = (sessionStatus) => {
-    let sessionIcon;
-    switch (sessionStatus) {
-      case "No Match": {
-        sessionIcon = "check";
-        break;
-      }
-      case "No Progress": {
-        sessionIcon = "hourglass-empty";
-        break;
-      }
-      case "Match": {
-        sessionIcon = "check";
-        break;
-      }
-    }
+	renderSessionMembers = () => {
+		//Idea - Return circular picture of all friends in session. Small though,
+		return <Icon name="person" />;
+	};
 
-    return (
-      <Icon name={sessionIcon} color="#F79256" style={{ marginRight: 10 }} />
-    );
-  };
+	renderSessionStatus = (sessionStatus) => {
+		let sessionIcon;
+		switch (sessionStatus) {
+			case "No Match": {
+				sessionIcon = "check";
+				break;
+			}
+			case "No Progress": {
+				sessionIcon = "hourglass-empty";
+				break;
+			}
+			case "Match": {
+				sessionIcon = "check";
+				break;
+			}
+		}
 
-  createNewSession = () => {
-    this.setState({ modalVisible: true });
-  };
+		return (
+			<Icon name={sessionIcon} color="#F79256" style={{ marginRight: 10 }} />
+		);
+	};
 
-  exitModal = () => {
-    //Key is used to reset Modal compoent when
-    this.setState({
-      modalVisible: false,
-      key: this.state.key + 1,
-    });
-  };
+	createNewSession = () => {
+		this.setState({ modalVisible: true });
+	};
 
-  addSessionToSessionList = (newSession) => {
-    this.setState({
-      SessionList: [...this.state.SessionList, newSession],
-    });
-  };
+	exitModal = () => {
+		//Key is used to reset Modal compoent when
+		this.setState({
+			modalVisible: false,
+			key: this.state.key + 1,
+		});
+	};
 
-  render() {
-    return (
-      <View style={styles.sessionsContainer}>
-        {this.setSessionsView()}
+	addSessionToSessionList = (newSession) => {
+		this.setState({
+			sessionList: [...this.state.sessionList, newSession],
+		});
+	};
 
-        <CreateSession
-          key={this.state.key}
-          modalVisible={this.state.modalVisible}
-          exitModal={this.exitModal}
-          addSession={this.addSessionToSessionList}
-        />
+	render() {
+		return (
+			<View style={styles.sessionsContainer}>
+				{this.setSessionsView()}
 
-        <View style={styles.addSessionContainer}>
-          <Icon
-            onPress={this.createNewSession}
-            name="add"
-            type="material"
-            color="#F79256"
-            raised
-            reverse
-          />
-        </View>
-      </View>
-    );
-  }
+				<CreateSession
+					key={this.state.key}
+					modalVisible={this.state.modalVisible}
+					exitModal={this.exitModal}
+					addSession={this.addSessionToSessionList}
+				/>
+
+				<View style={styles.addSessionContainer}>
+					<Icon
+						onPress={this.createNewSession}
+						name="add"
+						type="material"
+						color="#F79256"
+						raised
+						reverse
+					/>
+				</View>
+			</View>
+		);
+	}
 }
 
 export default withNavigation(Sessions);

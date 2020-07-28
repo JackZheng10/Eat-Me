@@ -3,59 +3,65 @@ import { ListItem } from "react-native-elements";
 import { View, StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
-  selected: {
-    width: 25,
-    height: 25,
-    borderRadius: 50,
-    borderWidth: 2,
-    borderColor: "green",
-  },
+	selected: {
+		width: 25,
+		height: 25,
+		borderRadius: 50,
+		borderWidth: 2,
+		borderColor: "green",
+	},
 });
 
 class FriendItem extends Component {
-  state = {
-    selected: this.props.selected,
-  };
+	state = {
+		selected: this.props.selected,
+	};
 
-  componentDidMount = () => {};
+	componentDidMount = () => {};
 
-  componentDidUpdate = () => {};
+	componentDidUpdate = () => {};
 
-  selectFriend = () => {
-    this.props.onSelect(this.props.friend, !this.state.selected);
-    this.setState({
-      selected: !this.state.selected,
-    });
-  };
+	selectFriend = () => {
+		this.props.onSelect(this.props.friend, !this.state.selected);
 
-  renderSelectedElement = () => {
-    const backgroundColorStyle = this.getBackgroundColorStyle();
-    const combinedStyle = StyleSheet.flatten([
-      styles.selected,
-      backgroundColorStyle,
-    ]);
-    return <View style={combinedStyle}></View>;
-  };
+		this.setState({
+			selected: !this.state.selected,
+		});
+	};
 
-  getBackgroundColorStyle = () => {
-    const backgroundColor = this.state.selected ? "green" : "white";
-    return { backgroundColor };
-  };
+	renderSelectedElement = () => {
+		const backgroundColorStyle = this.getBackgroundColorStyle();
 
-  render() {
-    const { friend } = this.props;
+		const combinedStyle = StyleSheet.flatten([
+			styles.selected,
+			backgroundColorStyle,
+		]);
 
-    return (
-      <ListItem
-        onPress={this.selectFriend}
-        title={friend.fName}
-        titleStyle={{ color: "#F79256" }}
-        subtitle={friend.lName}
-        rightElement={this.renderSelectedElement}
-        bottomDivider
-      />
-    );
-  }
+		return <View style={combinedStyle}></View>;
+	};
+
+	getBackgroundColorStyle = () => {
+		const backgroundColorStyle = {
+			backgroundColor: this.state.selected ? "green" : "white",
+		};
+
+		return backgroundColorStyle;
+	};
+
+	render() {
+		const { friend } = this.props;
+
+		return (
+			<ListItem
+				onPress={this.selectFriend}
+				title={friend.fName}
+				titleStyle={{ color: "#F79256" }}
+				subtitle={friend.lName}
+				rightElement={this.renderSelectedElement}
+				bottomDivider
+			/>
+		);
+	}
 }
 
 export default FriendItem;

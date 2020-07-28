@@ -5,7 +5,7 @@ import Location from "./components/Location";
 import SessionSave from "./components/SessionSave";
 import SelectFriends from "./components/SelectFriends";
 import baseURL from "../../../../../../../baseURL";
-import { getCurrentUser } from "../../../../../../helpers/session";
+import { getCurrentUser, updateToken } from "../../../../../../helpers/session";
 import axios from "axios";
 import { createStackNavigator } from "@react-navigation/stack";
 
@@ -128,9 +128,14 @@ class CreateSession extends Component {
 			currentUser,
 		});
 
-		//Change backend method
-		this.props.addSession(newSession.data);
-		this.onModalClose();
+		if (newSession.data.success) {
+			updateToken(currentUser.phone);
+			this.props.addSession(newSession.data.userSession);
+			this.onModalClose();
+		} else {
+			//Future Toast
+			alert("Error creating session! Try again later");
+		}
 	};
 
 	updateSessionConfigurable = (sessionConfigurable) => {

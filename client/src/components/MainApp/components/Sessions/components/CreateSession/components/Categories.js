@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { StyleSheet, View } from "react-native";
-import { Header, Icon, Button } from "react-native-elements";
 import CategoryButton from "./CategoryButton";
 import { CATEGORIES } from "../../../../../../../constants";
 import ModalStyles from "../styles/ModalStyles";
@@ -25,7 +24,12 @@ class Categories extends Component {
 	};
 
 	addCategoriesToSession = () => {
-		this.props.updateSessionConfigurable(this.state.selectedCategories);
+		if (this.state.selectedCategories.length > 0) {
+			this.props.updateSessionConfigurable(this.state.selectedCategories);
+		} else {
+			//Future Toast Message
+			alert("Select some categories");
+		}
 	};
 
 	onCategorySelect = (category, shouldAdd) => {
