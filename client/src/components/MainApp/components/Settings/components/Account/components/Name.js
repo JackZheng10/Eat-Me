@@ -193,14 +193,14 @@ class Name extends Component {
             labelStyle={styles.labelStyle}
             placeholderTextColor="#00B2CA"
           />
-          <Button
-            title="Save"
-            raised
-            onPress={this.handleUpdateName}
-            containerStyle={styles.buttonContainerStyle}
-            buttonStyle={styles.buttonStyle}
-          />
         </View>
+        <Button
+          title="Save"
+          raised
+          onPress={this.handleUpdateName}
+          containerStyle={styles.buttonContainerStyle}
+          buttonStyle={styles.buttonStyle}
+        />
       </View>
     );
   }

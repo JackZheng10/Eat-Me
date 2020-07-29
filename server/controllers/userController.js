@@ -403,8 +403,7 @@ const updateName = async (req, res) => {
     ) {
       return res.json({
         success: false,
-        message:
-          "Entered name is the same. Please make changes if you'd like to update it.",
+        message: "Please enter an updated name.",
       });
     }
 
