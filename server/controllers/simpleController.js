@@ -66,6 +66,9 @@ const helloDB = async (req, res) => {
 		members: [3, 4],
 		restaurants: [],
 		votes: [],
+		categories: ["bbq", "tradamerican"],
+		latitude: 26.075567152869752,
+		longitude: -80.22537589511568,
 	});
 
 	await session1.save();
@@ -76,6 +79,9 @@ const helloDB = async (req, res) => {
 		restaurants: [],
 		votes: [],
 		status: "In Progress",
+		categories: ["pizza", "italian"],
+		latitude: 26.075567152869752,
+		longitude: -80.22537589511568,
 	});
 
 	await session2.save();
@@ -86,6 +92,9 @@ const helloDB = async (req, res) => {
 		restaurants: [],
 		votes: [],
 		status: "No Match",
+		categories: ["chinese", "latin"],
+		latitude: 26.075567152869752,
+		longitude: -80.22537589511568,
 	});
 
 	await session3.save();

@@ -1,39 +1,52 @@
 const mongoose = require("mongoose");
+const Session = require("../models/Session");
 const { yelp } = require("./apis/yelp");
 
 const getRestaurantCategories = async (req, res) => {
-	
-	try{
-		const categories = await yelp.get('/categories');
+	try {
+		const categories = await yelp.get("/categories");
 		res.json(categories.data);
-	}
-	catch(error){
+	} catch (error) {
 		//How i think error handling shoould be instead of chain statements
 		console.log(error);
 	}
-
 };
 
-const getRestaurantInfo = async (req, res) =>{
+const getRestaurantInfo = async (req, res) => {
 	const businessURL = `/businesses/${req.body.restaurantID}`;
-	const restaurauntInfo = await yelp.get(businessURL);
-	res.json(restaurauntInfo.data);
+	try {
+		const restaurauntInfo = await yelp.get(businessURL);
+		res.json(restaurauntInfo.data);
+	} catch (error) {}
 };
 
-const searchRestaurants = async (req, res) =>{
+const searchRestaurants = async (req, res) => {
 	console.log("Searching Rest on the backend");
-	//think we should use latitude and longitude like coordinates from a map to get location
-	//stored in session DB object
+
 	//categories filter in params object
 	//radius in meters
-	const restauraunts = await yelp.get('/businesses/search', {
+	const { currentSession } = req.body;
+
+	//const sessionCategories = convertToYelpCategories(currentSession.categories);
+	console.log(currentSession.categories);
+
+	const restauraunts = await yelp.get("/businesses/search", {
 		params: {
-			latitude: 26.065090,
-			longitude: -80.232210,
-			radius: 8047
-		}
+			categories: currentSession.categories.toString(),
+			latitude: currentSession.latitude,
+			longitude: currentSession.longitude,
+			radius: 8047,
+		},
 	});
 	res.json(restauraunts.data);
 };
 
-module.exports = { getRestaurantCategories, getRestaurantInfo, searchRestaurants };
+convertToYelpCategories = (categories) => {
+	return [];
+};
+
+module.exports = {
+	getRestaurantCategories,
+	getRestaurantInfo,
+	searchRestaurants,
+};

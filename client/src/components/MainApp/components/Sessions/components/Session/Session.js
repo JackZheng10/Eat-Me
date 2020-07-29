@@ -22,9 +22,11 @@ class Session extends Component {
 	};
 
 	practiceStartup = async () => {
+		console.log("FRONT:");
+		const currentSession = this.props.route.params.sessionDetails;
 		const sessionRestaurants = await axios.post(
 			`${baseURL}/yelp/session-restaurants`,
-			{ ID: "ID" }
+			{ currentSession }
 		);
 
 		const firstRestaurant = await axios.post(`${baseURL}/yelp/restaurant`, {
