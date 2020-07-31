@@ -8,6 +8,7 @@ import baseURL from "../../../../../../../baseURL";
 import { getCurrentUser, updateToken } from "../../../../../../helpers/session";
 import axios from "axios";
 import { createStackNavigator } from "@react-navigation/stack";
+import { TransitionPresets } from "@react-navigation/stack";
 
 const CreateSessionStack = createStackNavigator();
 
@@ -37,18 +38,22 @@ class CreateSession extends Component {
 				<CreateSessionStack.Screen
 					name="Categories"
 					component={this.renderCategories}
+					options={{ ...TransitionPresets.SlideFromRightIOS }}
 				/>
 				<CreateSessionStack.Screen
 					name="Location"
 					component={this.renderLocation}
+					options={{ ...TransitionPresets.SlideFromRightIOS }}
 				/>
 				<CreateSessionStack.Screen
 					name="Friends"
 					component={this.renderFriends}
+					options={{ ...TransitionPresets.SlideFromRightIOS }}
 				/>
 				<CreateSessionStack.Screen
 					name="Save"
 					component={this.renderSessionSave}
+					options={{ ...TransitionPresets.SlideFromRightIOS }}
 				/>
 			</CreateSessionStack.Navigator>
 		);
@@ -173,7 +178,7 @@ class CreateSession extends Component {
 		const { modalVisible } = this.props;
 		return (
 			<Modal
-				animationType="fade"
+				animationType="slide"
 				visible={modalVisible}
 				onRequestClose={this.onModalClose}
 			>

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, Button } from "react-native";
+import { Platform, View } from "react-native";
 import { withNavigation } from "react-navigation";
 import Swiper from "react-native-deck-swiper";
 import RestaurantCard from "./components/RestaurantCard";
@@ -107,6 +107,7 @@ class Session extends Component {
 		) {
 			return (
 				<Swiper
+					useViewOverflow={Platform.OS === "ios"}
 					cards={this.state.restaurants}
 					renderCard={this.renderRestaurant}
 					verticalSwipe={false}
