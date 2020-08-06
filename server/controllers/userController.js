@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const Session = require("../models/Session");
+const { addRestaurantsToSession } = require("./sessionController");
 const signToken = require("../helpers/auth").signToken;
 const sendPushNotification = require("../helpers/pushNotifications")
   .sendPushNotification;
@@ -473,7 +474,9 @@ const updatePassword = async (req, res) => {
 
 const getUserSessions = async (req, res) => {
   try {
-    let userSessions = await Session.find({ members: req.body.ID }).lean();
+    let userSessions = await Session.find({ members: req.body.ID })
+      .select("ID members status")
+      .lean();
 
     for (let userSession of userSessions) {
       userSession.memberNames = await getUsersNameByID(userSession.members);
@@ -524,7 +527,8 @@ const createSession = async (req, res) => {
       longitude: sessionLocation.longitude,
     });
 
-    addSessionToUsers(newSession.SessionID, sessionIDs);
+    addSessionToUsers(newSession.ID, sessionIDs);
+
     await newSession.save();
 
     const memberNames = await getUsersNameByID(sessionIDs);
@@ -532,6 +536,13 @@ const createSession = async (req, res) => {
     const userSession = { ...newSession.toObject(), memberNames };
 
     res.json({ success: true, userSession });
+
+    //Save Restaurants after sending back response
+    await addRestaurantsToSession(
+      sessionCategories,
+      sessionLocation,
+      userSession.ID
+    );
   } catch (error) {
     console.log("Error creating session: " + error);
     res.json({ success: false, error });

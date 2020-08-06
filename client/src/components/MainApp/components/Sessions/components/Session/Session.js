@@ -7,131 +7,103 @@ import baseURL from "../../../../../../../baseURL";
 import axios from "axios";
 
 class Session extends Component {
-	state = {
-		bareRestaurants: [],
-		restaurants: [],
-		currentRestaurant: null,
-		restaurantIndex: 0,
-		currentImageIndex: 0,
-		needMoreRestaurants: false,
-		fetchIndex: 0,
-	};
+  state = {
+    restaurants: [],
+    currentRestaurant: null,
+    restaurantIndex: 0,
+    needMoreRestaurants: false,
+  };
 
-	componentDidMount = () => {
-		this.practiceStartup();
-	};
+  componentDidMount = () => {
+    this.newStartup();
+  };
 
-	practiceStartup = async () => {
-		console.log("FRONT:");
-		const currentSession = this.props.route.params.sessionDetails;
-		const sessionRestaurants = await axios.post(
-			`${baseURL}/yelp/session-restaurants`,
-			{ currentSession }
-		);
+  //Check Session Status - If started, continue in list from where they left off
+  newStartup = async () => {
+    const { sessionDetails } = this.props.route.params;
+    const sessionRestaurants = await axios.post(
+      `${baseURL}/session/getSessionRestaurants`,
+      { ID: sessionDetails.ID }
+    );
 
-		const firstRestaurant = await axios.post(`${baseURL}/yelp/restaurant`, {
-			restaurantID: sessionRestaurants.data.businesses[0].id,
-		});
+    const { restaurants, restaurantIndex } = sessionRestaurants.data.session;
 
-		let restaurants = [...sessionRestaurants.data.businesses];
-		restaurants[0] = firstRestaurant;
+    this.setState({
+      restaurants: restaurants,
+      restaurantIndex: restaurantIndex,
+      currentRestaurant: restaurants[restaurantIndex],
+    });
+  };
 
-		this.setState({
-			bareRestaurants: [...sessionRestaurants.data.businesses],
-			restaurants,
-			currentRestaurant: firstRestaurant.data,
-			fetchIndex: 1,
-			needMoreRestaurants: true,
-		});
-	};
+  componentDidUpdate = () => {
+    /*
+	  if (this.state.needMoreRestaurants) {
+      //this.fetchRestaurants();
+  	}
+	  */
+  };
 
-	componentDidUpdate = () => {
-		if (this.state.needMoreRestaurants) {
-			//this.fetchRestaurants();
-		}
-	};
+  fetchRestaurants = async () => {
+    //Try to fetch more restaurants if possible, If not then give the user options
+  };
 
-	fetchRestaurants = async () => {
-		let fetchIndex;
-		let newRestaurants = [...this.state.restaurants];
+  onSwiped = (index) => {
+    //If less than 3 restaraunts left fetch more
+    const needMoreRestaurants =
+      this.state.restaurants.length - this.state.restaurantIndex < 3;
 
-		//Get 5 new Restaurants
-		for (
-			fetchIndex = this.state.fetchIndex;
-			fetchIndex < this.state.fetchIndex + 5;
-			fetchIndex++
-		) {
-			const restaurant = await axios.post(`${baseURL}/yelp/restaurant`, {
-				restaurantID: this.state.bareRestaurants[fetchIndex].id,
-			});
-			newRestaurants[fetchIndex] = restaurant.data;
-		}
+    this.setState({
+      currentRestaurant: this.state.restaurants[index + 1],
+      restaurantIndex: index + 1,
+      needMoreRestaurants,
+    });
+  };
 
-		this.setState({
-			fetchIndex,
-			restaurants: newRestaurants,
-			needMoreRestaurants: false,
-		});
-	};
+  onSwipedRight = (index) => {};
 
-	onSwiped = (index) => {
-		//If less than 3 restaraunts left fetch more
-		const needMoreRestaurants =
-			this.state.fetchIndex - this.state.restaurantIndex < 3;
+  onSwipedLeft = (index) => {};
 
-		this.setState({
-			currentRestaurant: this.state.restaurants[index + 1],
-			restaurantIndex: index + 1,
-			currentImageIndex: 0,
-			needMoreRestaurants,
-		});
-	};
+  renderRestaurant = (restaurant, index) => {
+    return (
+      <RestaurantCard
+        restaurant={this.state.currentRestaurant}
+        images={this.state.currentRestaurant.images}
+      />
+    );
+  };
 
-	onSwipedRight = (index) => {};
+  renderSwiper = () => {
+    if (
+      this.state.restaurants.length > 0 &&
+      this.state.currentRestaurant !== null
+    ) {
+      return (
+        <Swiper
+          useViewOverflow={Platform.OS === "ios"}
+          cards={this.state.restaurants}
+          renderCard={this.renderRestaurant}
+          verticalSwipe={false}
+          onSwiped={this.onSwiped}
+          onSwipedRight={this.onSwipedRight}
+          onSwipedLeft={this.onSwipedLeft}
+          cardIndex={this.state.restaurantIndex}
+          backgroundColor="#F5F1ED"
+        />
+      );
+    }
+  };
 
-	onSwipedLeft = (index) => {};
-
-	renderRestaurant = (Restaurant, index) => {
-		return (
-			<RestaurantCard
-				restaurant={this.state.currentRestaurant}
-				images={this.state.currentRestaurant.photos}
-			/>
-		);
-	};
-
-	renderSwiper = () => {
-		if (
-			this.state.restaurants.length > 0 &&
-			this.state.currentRestaurant !== null
-		) {
-			return (
-				<Swiper
-					useViewOverflow={Platform.OS === "ios"}
-					cards={this.state.restaurants}
-					renderCard={this.renderRestaurant}
-					verticalSwipe={false}
-					onSwiped={this.onSwiped}
-					onSwipedRight={this.onSwipedRight}
-					onSwipedLeft={this.onSwipedLeft}
-					cardIndex={this.state.restaurantIndex}
-					backgroundColor="#F5F1ED"
-				></Swiper>
-			);
-		}
-	};
-
-	render() {
-		return (
-			<View
-				style={{
-					flex: 1,
-				}}
-			>
-				{this.renderSwiper()}
-			</View>
-		);
-	}
+  render() {
+    return (
+      <View
+        style={{
+          flex: 1,
+        }}
+      >
+        {this.renderSwiper()}
+      </View>
+    );
+  }
 }
 
 export default withNavigation(Session);
