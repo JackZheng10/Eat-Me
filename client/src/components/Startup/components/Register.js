@@ -114,7 +114,7 @@ class Register extends Component {
     passwordErrorMsg: "",
     passwordConfirmErrorMsg: "",
     showVerifyDialog: false,
-    generatedCode: "",
+    generatedCode: "N/A",
     enteredCode: "",
   };
 
@@ -371,7 +371,7 @@ class Register extends Component {
     if (this.state.showVerifyDialog) {
       this.setState({
         showVerifyDialog: !this.state.showVerifyDialog,
-        generatedCode: "",
+        generatedCode: "N/A",
         enteredCode: "",
       });
     } else {

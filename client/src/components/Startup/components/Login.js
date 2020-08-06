@@ -190,9 +190,7 @@ class Login extends Component {
   };
 
   handleLogin = async () => {
-    let valid = this.handleInputValidation();
-
-    if (valid) {
+    if (this.handleInputValidation()) {
       const { phone, password } = this.state;
       //attempt to login
       try {
