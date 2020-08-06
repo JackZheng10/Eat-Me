@@ -66,7 +66,7 @@ class Categories extends Component {
 								const selected = this.determineSelectedStatus(category);
 								return (
 									<CategoryButton
-										key={category}
+										key={category.name}
 										category={category}
 										onSelect={this.onCategorySelect}
 										selected={selected}

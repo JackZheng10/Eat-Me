@@ -89,7 +89,6 @@ class Sessions extends Component {
 
 	renderSessions = () => {
 		return this.state.sessionList.map((session) => {
-			//console.log("YOOO: " + session.ID + " " + session.status);
 			return (
 				<ListItem
 					onPress={() => this.renderSession(session)}
