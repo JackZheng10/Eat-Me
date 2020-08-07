@@ -1,10 +1,9 @@
 const mongoose = require("mongoose");
 
 const RestaurantSchema = new mongoose.Schema({
-  //May be provided by default
   ID: {
     type: String,
-    unique: true,
+    unique: false,
     required: true,
   },
 
@@ -20,7 +19,6 @@ const RestaurantSchema = new mongoose.Schema({
     required: false,
   },
 
-  //Need to think about all this
   name: {
     type: String,
     unique: false,
@@ -45,6 +43,6 @@ const RestaurantSchema = new mongoose.Schema({
   },
 });
 
-const Restaurant = mongoose.model("Restaurant", RestaurantSchema);
+//const Restaurant = mongoose.model("Restaurant", RestaurantSchema);
 
-module.exports = Restaurant;
+module.exports = RestaurantSchema;

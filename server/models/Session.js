@@ -1,33 +1,30 @@
 const mongoose = require("mongoose");
-const Restaurant = require("./Restaurant").schema;
+const RestaurantSchema = require("./schema/RestaurantSchema");
+const MemberSchema = require("./schema/MemberSchema");
 
 const SessionSchema = new mongoose.Schema({
-  //May be provided by default
   ID: {
     type: String,
     unique: true,
     required: true,
   },
 
-  //Name or ID
   members: {
     type: [Number],
     unique: false,
     required: true,
   },
 
-  //Maybe separate restaraunt schema instead of string with votes attached
   restaurants: {
-    type: [Restaurant],
-    unique: false, //Maybe
+    type: [RestaurantSchema],
+    unique: false,
     required: false,
   },
 
-  restaurantIndex: {
-    type: Number,
+  members: {
+    type: [MemberSchema],
     unique: false,
     required: true,
-    default: 0,
   },
 
   //Need to think about all this
@@ -36,6 +33,12 @@ const SessionSchema = new mongoose.Schema({
     unique: false,
     required: false,
     default: [],
+  },
+
+  matchedRestaurantIndex: {
+    type: Number,
+    required: true,
+    default: -1,
   },
 
   status: {

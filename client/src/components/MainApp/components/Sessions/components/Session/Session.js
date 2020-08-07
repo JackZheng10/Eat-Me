@@ -1,8 +1,10 @@
 import React, { Component } from "react";
 import { Platform, View } from "react-native";
 import { withNavigation } from "react-navigation";
+import { Text } from "react-native-elements";
 import Swiper from "react-native-deck-swiper";
 import RestaurantCard from "./components/RestaurantCard";
+import { getCurrentUser } from "../../../../../../helpers/session";
 import baseURL from "../../../../../../../baseURL";
 import axios from "axios";
 
@@ -12,28 +14,39 @@ class Session extends Component {
     currentRestaurant: null,
     restaurantIndex: 0,
     needMoreRestaurants: false,
+    matchedRestaurantIndex: -1,
   };
 
   componentDidMount = () => {
     this.newStartup();
   };
 
-  //Check Session Status - If started, continue in list from where they left off
   newStartup = async () => {
+    const currentUser = await getCurrentUser();
     const { sessionDetails } = this.props.route.params;
+
     const sessionRestaurants = await axios.post(
       `${baseURL}/session/getSessionRestaurants`,
-      { ID: sessionDetails.ID }
+      { sessionID: sessionDetails.ID, userID: currentUser.ID }
     );
 
-    const { restaurants, restaurantIndex } = sessionRestaurants.data.session;
+    const {
+      restaurants,
+      member,
+      matchedRestaurantIndex,
+    } = sessionRestaurants.data;
 
     this.setState({
-      restaurants: restaurants,
-      restaurantIndex: restaurantIndex,
-      currentRestaurant: restaurants[restaurantIndex],
+      restaurants,
+      restaurantIndex: member.currentRestaurantIndex,
+      currentRestaurant: restaurants[member.currentRestaurantIndex],
+      matchedRestaurantIndex,
     });
   };
+
+  componentWillUnmount() {
+    console.log("Unmounting Session");
+  }
 
   componentDidUpdate = () => {
     /*
@@ -59,23 +72,38 @@ class Session extends Component {
     });
   };
 
-  onSwipedRight = (index) => {};
+  onSwipedRight = async (index) => {
+    //Good Swipe - Update DB with Vote and Maybe something with UI but that's probably done outside of this method
+    const { sessionDetails } = this.props.route.params;
+
+    const vote = await axios.post(`${baseURL}/session/addVoteToSession`, {
+      sessionID: sessionDetails.ID,
+      restaurantIndex: index,
+    });
+
+    if (vote.data.success) {
+      const { matchedRestaurantIndex } = vote.data;
+      if (matchedRestaurantIndex != -1) {
+        this.setState({ matchedRestaurantIndex });
+      }
+    } else {
+      //Maybe Retry
+      console.log("Error trying to add vote: " + vote.data.error);
+      alert("Error trying to add vote");
+    }
+  };
 
   onSwipedLeft = (index) => {};
 
   renderRestaurant = (restaurant, index) => {
-    return (
-      <RestaurantCard
-        restaurant={this.state.currentRestaurant}
-        images={this.state.currentRestaurant.images}
-      />
-    );
+    return <RestaurantCard restaurant={this.state.currentRestaurant} />;
   };
 
   renderSwiper = () => {
     if (
       this.state.restaurants.length > 0 &&
-      this.state.currentRestaurant !== null
+      this.state.currentRestaurant !== null &&
+      this.state.matchedRestaurantIndex == -1
     ) {
       return (
         <Swiper
@@ -93,6 +121,22 @@ class Session extends Component {
     }
   };
 
+  renderMatchedRestaurant = () => {
+    const { matchedRestaurantIndex } = this.state;
+    if (this.state.matchedRestaurantIndex !== -1) {
+      //View which shows restaurant Details
+      const { restaurants } = this.state;
+      return (
+        <View>
+          <RestaurantCard
+            restaurant={restaurants[matchedRestaurantIndex]}
+            match={true}
+          />
+        </View>
+      );
+    }
+  };
+
   render() {
     return (
       <View
@@ -101,6 +145,7 @@ class Session extends Component {
         }}
       >
         {this.renderSwiper()}
+        {this.renderMatchedRestaurant()}
       </View>
     );
   }

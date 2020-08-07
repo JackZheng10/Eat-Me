@@ -1,12 +1,68 @@
 const { yelp } = require("./apis/yelp");
 const Session = require("../models/Session");
 
+addVoteToSession = async (req, res) => {
+  try {
+    const session = await Session.findOneAndUpdate(
+      { ID: req.body.sessionID },
+      { $push: { votes: req.body.restaurantIndex } }
+    );
+
+    session.votes.push(req.body.restaurantIndex);
+
+    let matchedRestaurantIndex = findDuplicateRestaurantIndex(session.votes);
+
+    if (matchedRestaurantIndex != -1) {
+      notifyOtherSessionUsers(session.members, req.body.userID);
+      await Session.findOneAndUpdate(
+        { ID: req.body.sessionID },
+        { status: "Match", matchedRestaurantIndex }
+      );
+    }
+
+    res.json({ success: true, matchedRestaurantIndex });
+  } catch (error) {
+    res.json({ success: false, error });
+  }
+};
+
+findDuplicateRestaurantIndex = (votes) => {
+  let votesMap = {};
+
+  for (let i = 0; i < votes.length; i++) {
+    if (!votesMap[votes[i]]) votesMap[votes[i]] = 0;
+
+    votesMap[votes[i]] += 1;
+
+    if (votesMap[votes[i]] > 1) {
+      return votes[i];
+    }
+  }
+
+  return -1;
+};
+
+notifyOtherSessionUsers = (sessionMembers) => {
+  //Send some type of notification about Match
+};
+
 getSessionRestaurants = async (req, res) => {
-  const session = await Session.findOne({ ID: req.body.ID }).select(
-    "restaurants restaurantIndex"
+  const session = await Session.findOne({ ID: req.body.sessionID }).select(
+    "restaurants members matchedRestaurantIndex"
   );
 
-  res.json({ session });
+  //Filter out member with the userID of the current user
+  const memberDetails = session.members.filter(
+    (member) => member.userID == req.body.userID
+  );
+
+  const sessionDetails = {
+    restaurants: session.restaurants,
+    matchedRestaurantIndex: session.matchedRestaurantIndex,
+    member: memberDetails[0],
+  };
+
+  res.json(sessionDetails);
 };
 
 addRestaurantsToSession = async (categories, location, sessionID) => {
@@ -64,4 +120,5 @@ createRestaurantModel = (yelpRestaurant) => {
 module.exports = {
   getSessionRestaurants,
   addRestaurantsToSession,
+  addVoteToSession,
 };

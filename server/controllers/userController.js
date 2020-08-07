@@ -474,12 +474,13 @@ const updatePassword = async (req, res) => {
 
 const getUserSessions = async (req, res) => {
   try {
-    let userSessions = await Session.find({ members: req.body.ID })
+    let userSessions = await Session.find({ "members.userID": req.body.ID })
       .select("ID members status")
       .lean();
 
     for (let userSession of userSessions) {
-      userSession.memberNames = await getUsersNameByID(userSession.members);
+      const membersIDs = userSession.members.map((member) => member.userID);
+      userSession.membersNames = await getUsersNameByID(membersIDs);
     }
 
     res.json({ success: true, sessions: userSessions });
@@ -510,30 +511,34 @@ const createSession = async (req, res) => {
     sessionFriends,
   } = req.body.sessionConfigurables;
 
-  const sessionFriendsIDs = sessionFriends.map(
-    (sessionFriend) => sessionFriend.ID
-  );
+  const sessionUsers = [currentUser, ...sessionFriends];
 
-  const sessionIDs = [...sessionFriendsIDs, currentUser.ID];
+  const members = sessionUsers.map((user) => {
+    return {
+      userID: user.ID,
+    };
+  });
+
+  const membersIDs = sessionUsers.map((member) => member.ID);
 
   try {
     const count = await Session.countDocuments();
 
     let newSession = new Session({
       ID: count + 1,
-      members: sessionIDs,
       categories: sessionCategories,
       latitude: sessionLocation.latitude,
       longitude: sessionLocation.longitude,
+      members,
     });
 
-    addSessionToUsers(newSession.ID, sessionIDs);
+    addSessionToUsers(newSession.ID, sessionUsers);
 
     await newSession.save();
 
-    const memberNames = await getUsersNameByID(sessionIDs);
+    const membersNames = await getUsersNameByID(membersIDs);
 
-    const userSession = { ...newSession.toObject(), memberNames };
+    const userSession = { ...newSession.toObject(), membersNames };
 
     res.json({ success: true, userSession });
 
@@ -549,9 +554,9 @@ const createSession = async (req, res) => {
   }
 };
 
-const addSessionToUsers = (sessionID, usersIDs) => {
-  usersIDs.forEach(async (userID) => {
-    await User.updateOne({ ID: userID }, { $push: { sessions: sessionID } });
+const addSessionToUsers = (sessionID, users) => {
+  users.forEach(async (user) => {
+    await User.updateOne({ ID: user.ID }, { $push: { sessions: sessionID } });
   });
 };
 
