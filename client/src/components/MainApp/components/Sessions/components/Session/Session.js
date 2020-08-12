@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Platform, View } from "react-native";
+import { Platform, View, AppState } from "react-native";
 import { withNavigation } from "react-navigation";
 import { Text } from "react-native-elements";
 import Swiper from "react-native-deck-swiper";
@@ -18,6 +18,7 @@ class Session extends Component {
   };
 
   componentDidMount = () => {
+    AppState.addEventListener("change", this._handleAppStateChange);
     this.newStartup();
   };
 
@@ -44,8 +45,32 @@ class Session extends Component {
     });
   };
 
+  _handleAppStateChange = async (nextAppState) => {
+    //App is paused - Possible Issue too many updates to DB
+    if (nextAppState.match(/inactive|background/)) {
+      await this.updateRestaurantIndex();
+    }
+  };
+
+  updateRestaurantIndex = async () => {
+    const { sessionDetails } = this.props.route.params;
+    const currentUser = await getCurrentUser();
+
+    const updateRestaurantIndexResponse = await axios.post(
+      `${baseURL}/session/updateSessionMemberRestaurantIndex`,
+      {
+        currentRestaurantIndex: this.state.restaurantIndex,
+        sessionID: sessionDetails.ID,
+        userID: currentUser.ID,
+      }
+    );
+
+    return updateRestaurantIndexResponse.data;
+  };
+
   componentWillUnmount() {
-    console.log("Unmounting Session");
+    this.updateRestaurantIndex();
+    AppState.removeEventListener("change", this._handleAppStateChange);
   }
 
   componentDidUpdate = () => {

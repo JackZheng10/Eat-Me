@@ -1,6 +1,22 @@
 const { yelp } = require("./apis/yelp");
 const Session = require("../models/Session");
 
+updateSessionMemberRestaurantIndex = async (req, res) => {
+  const { userID, sessionID, currentRestaurantIndex } = req.body;
+
+  try {
+    await Session.findOneAndUpdate(
+      { ID: sessionID, "members.userID": userID },
+      { $set: { "members.$.currentRestaurantIndex": currentRestaurantIndex } }
+    );
+
+    res.json({ success: true });
+  } catch (error) {
+    console.log("Error updating members restaurant index: " + error);
+    res.json({ success: false, error });
+  }
+};
+
 addVoteToSession = async (req, res) => {
   try {
     const session = await Session.findOneAndUpdate(
@@ -121,4 +137,5 @@ module.exports = {
   getSessionRestaurants,
   addRestaurantsToSession,
   addVoteToSession,
+  updateSessionMemberRestaurantIndex,
 };
