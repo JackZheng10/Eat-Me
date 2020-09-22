@@ -14,6 +14,13 @@ const MemberSchema = new mongoose.Schema({
     default: 0,
   },
 
+  selectedRestaurants: {
+    type: [Number],
+    unique: false,
+    required: true,
+    default: [],
+  },
+
   sessionStarted: {
     type: Boolean,
     unique: false,

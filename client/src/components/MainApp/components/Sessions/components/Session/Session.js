@@ -1,28 +1,81 @@
 import React, { Component } from "react";
-import { Platform, View, AppState } from "react-native";
+import { Platform, View, AppState, StyleSheet } from "react-native";
 import { withNavigation } from "react-navigation";
-import { Text } from "react-native-elements";
+import { Button, Text, Divider } from "react-native-elements";
 import Swiper from "react-native-deck-swiper";
 import RestaurantCard from "./components/RestaurantCard";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 import { getCurrentUser } from "../../../../../../helpers/session";
 import baseURL from "../../../../../../../baseURL";
 import axios from "axios";
+import { FlatList } from "react-native-gesture-handler";
+
+const styles = StyleSheet.create({
+  memberFinishedContainer: {
+    flex: 1,
+    flexDirection: "column",
+    alignItems: "center",
+    marginTop: hp("3%"),
+  },
+  memberFinishedHeader: {
+    fontSize: hp("4.2%"),
+    color: "#00B2CA",
+    textAlign: "center",
+  },
+  memberFinishedButton: {
+    marginTop: hp("2%"),
+    backgroundColor: "#F79256",
+    width: wp("75%"),
+    borderRadius: 50,
+  },
+  memberFinishedSelectionContainer: {
+    marginTop: hp("5%"),
+    alignItems: "center",
+  },
+  memberFinishedSelectionDivider: {
+    backgroundColor: "#F79256",
+    width: wp("90%"),
+    height: hp("0.2%"),
+  },
+  memberFinishedSelectionText: {
+    marginTop: hp("1%"),
+    textAlign: "center",
+    fontSize: hp("2.2%"),
+    color: "#00B2CA",
+  },
+});
 
 class Session extends Component {
   state = {
     restaurants: [],
+    selectedRestaurants: [],
     currentRestaurant: null,
     restaurantIndex: 0,
     needMoreRestaurants: false,
     matchedRestaurantIndex: -1,
+    memberFinished: false,
   };
 
   componentDidMount = () => {
     AppState.addEventListener("change", this._handleAppStateChange);
-    this.newStartup();
+    this.fetchSessionStats();
   };
 
-  newStartup = async () => {
+  componentWillUnmount() {
+    this.updateRestaurantIndex();
+    AppState.removeEventListener("change", this._handleAppStateChange);
+  }
+
+  _handleAppStateChange = async (nextAppState) => {
+    //App is paused - Possible Issue too many updates to DB
+    if (nextAppState.match(/inactive|background/))
+      await this.updateRestaurantIndex();
+  };
+
+  fetchSessionStats = async () => {
     const currentUser = await getCurrentUser();
     const { sessionDetails } = this.props.route.params;
 
@@ -37,19 +90,57 @@ class Session extends Component {
       matchedRestaurantIndex,
     } = sessionRestaurants.data;
 
+    const memberFinished = member.currentRestaurantIndex >= restaurants.length;
+
     this.setState({
       restaurants,
       restaurantIndex: member.currentRestaurantIndex,
       currentRestaurant: restaurants[member.currentRestaurantIndex],
+      selectedRestaurants: [...member.selectedRestaurants],
+      memberFinished,
       matchedRestaurantIndex,
     });
   };
 
-  _handleAppStateChange = async (nextAppState) => {
-    //App is paused - Possible Issue too many updates to DB
-    if (nextAppState.match(/inactive|background/)) {
-      await this.updateRestaurantIndex();
+  renderSessionView = () => {
+    const {
+      currentRestaurant,
+      matchedRestaurantIndex,
+      memberFinished,
+    } = this.state;
+
+    if (
+      currentRestaurant !== null &&
+      matchedRestaurantIndex == -1 &&
+      !memberFinished
+    ) {
+      return this.renderSwiper();
+    } else if (matchedRestaurantIndex == -1 && memberFinished) {
+      return this.renderMemberFinished();
+    } else if (matchedRestaurantIndex !== -1) {
+      return this.renderMatchedRestaurant();
+    } else {
+      //Return Loading Spinner or such
     }
+  };
+
+  renderSwiper = () => {
+    const { restaurants, restaurantIndex } = this.state;
+
+    //Update Swiper View
+    return (
+      <Swiper
+        useViewOverflow={Platform.OS === "ios"}
+        cards={restaurants}
+        renderCard={this.renderRestaurant}
+        verticalSwipe={false}
+        onSwiped={this.onSwiped}
+        onSwipedRight={this.onSwipedRight}
+        onSwipedLeft={this.onSwipedLeft}
+        cardIndex={restaurantIndex}
+        backgroundColor="#F5F1ED"
+      />
+    );
   };
 
   updateRestaurantIndex = async () => {
@@ -65,28 +156,37 @@ class Session extends Component {
       }
     );
 
-    return updateRestaurantIndexResponse.data;
+    //Check for error with response
+    if (!updateRestaurantIndexResponse.data.success) {
+      //Failure scenario - what to do? Store index in local storage
+    }
   };
 
-  componentWillUnmount() {
-    this.updateRestaurantIndex();
-    AppState.removeEventListener("change", this._handleAppStateChange);
-  }
-
-  componentDidUpdate = () => {
-    /*
-	  if (this.state.needMoreRestaurants) {
-      //this.fetchRestaurants();
-  	}
-	  */
+  renderRestaurant = (restaurant, index) => {
+    return <RestaurantCard restaurant={this.state.currentRestaurant} />;
   };
 
-  fetchRestaurants = async () => {
-    //Try to fetch more restaurants if possible, If not then give the user options
+  updateRestaurantIndex = async () => {
+    const { sessionDetails } = this.props.route.params;
+    const currentUser = await getCurrentUser();
+
+    const updateRestaurantIndexResponse = await axios.post(
+      `${baseURL}/session/updateSessionMemberRestaurantIndex`,
+      {
+        currentRestaurantIndex: this.state.restaurantIndex,
+        sessionID: sessionDetails.ID,
+        userID: currentUser.ID,
+      }
+    );
+
+    //Check for error with response
+    if (!updateRestaurantIndexResponse.data.success) {
+      //Failure scenario - what to do? Store index in local storage
+    }
   };
 
   onSwiped = (index) => {
-    //If less than 3 restaraunts left fetch more
+    //If less than 3 restaraunts left fetch more. Relook into this idea for all sessions
     const needMoreRestaurants =
       this.state.restaurants.length - this.state.restaurantIndex < 3;
 
@@ -94,6 +194,7 @@ class Session extends Component {
       currentRestaurant: this.state.restaurants[index + 1],
       restaurantIndex: index + 1,
       needMoreRestaurants,
+      memberFinished: index + 1 >= this.state.restaurants.length,
     });
   };
 
@@ -101,16 +202,20 @@ class Session extends Component {
     //Good Swipe - Update DB with Vote and Maybe something with UI but that's probably done outside of this method
     const { sessionDetails } = this.props.route.params;
 
+    const currentUser = await getCurrentUser();
+
     const vote = await axios.post(`${baseURL}/session/addVoteToSession`, {
       sessionID: sessionDetails.ID,
       restaurantIndex: index,
+      userID: currentUser.ID,
     });
 
     if (vote.data.success) {
       const { matchedRestaurantIndex } = vote.data;
-      if (matchedRestaurantIndex != -1) {
-        this.setState({ matchedRestaurantIndex });
-      }
+      this.setState({
+        selectedRestaurants: [...this.state.selectedRestaurants, index],
+        matchedRestaurantIndex,
+      });
     } else {
       //Maybe Retry
       console.log("Error trying to add vote: " + vote.data.error);
@@ -120,46 +225,62 @@ class Session extends Component {
 
   onSwipedLeft = (index) => {};
 
-  renderRestaurant = (restaurant, index) => {
-    return <RestaurantCard restaurant={this.state.currentRestaurant} />;
-  };
+  //View shown to user when no matches are made and list is completed. UPDATE! Rethink responsiveness and style
+  renderMemberFinished = () => {
+    return (
+      <View style={styles.memberFinishedContainer}>
+        <Text style={styles.memberFinishedHeader}>
+          That's all the restaraunts we have for you!
+        </Text>
 
-  renderSwiper = () => {
-    if (
-      this.state.restaurants.length > 0 &&
-      this.state.currentRestaurant !== null &&
-      this.state.matchedRestaurantIndex == -1
-    ) {
-      return (
-        <Swiper
-          useViewOverflow={Platform.OS === "ios"}
-          cards={this.state.restaurants}
-          renderCard={this.renderRestaurant}
-          verticalSwipe={false}
-          onSwiped={this.onSwiped}
-          onSwipedRight={this.onSwipedRight}
-          onSwipedLeft={this.onSwipedLeft}
-          cardIndex={this.state.restaurantIndex}
-          backgroundColor="#F5F1ED"
+        <Button
+          buttonStyle={styles.memberFinishedButton}
+          title="Wait for your friends to start matching with your choices!"
+          onPress={this.renderSessionsView}
         />
-      );
-    }
-  };
 
-  renderMatchedRestaurant = () => {
-    const { matchedRestaurantIndex } = this.state;
-    if (this.state.matchedRestaurantIndex !== -1) {
-      //View which shows restaurant Details
-      const { restaurants } = this.state;
-      return (
-        <View>
-          <RestaurantCard
-            restaurant={restaurants[matchedRestaurantIndex]}
-            match={true}
+        <View style={styles.memberFinishedSelectionContainer}>
+          <Divider style={styles.memberFinishedSelectionDivider} />
+          <Text style={styles.memberFinishedSelectionText}>Your Choices:</Text>
+          <FlatList
+            horizontal={true}
+            data={this.getSelectedRestaurantsIndex()}
+            renderItem={this.renderSelectedRestaurant}
+            keyExtractor={(item) => item.ID}
           />
         </View>
-      );
-    }
+      </View>
+    );
+  };
+
+  renderSessionsView = () => {
+    this.props.navigation.pop();
+  };
+
+  getSelectedRestaurantsIndex = () => {
+    return this.state.selectedRestaurants.map((selectedRestaruantIndex) => {
+      return this.state.restaurants[selectedRestaruantIndex];
+    });
+  };
+
+  renderSelectedRestaurant = (selectedRestaurant) => {
+    return (
+      <RestaurantCard restaurant={selectedRestaurant.item} match={false} />
+    );
+  };
+
+  //Update Matched View
+  renderMatchedRestaurant = () => {
+    const { restaurants, matchedRestaurantIndex } = this.state;
+    //View which shows restaurant Details
+    return (
+      <View>
+        <RestaurantCard
+          restaurant={restaurants[matchedRestaurantIndex]}
+          match={true}
+        />
+      </View>
+    );
   };
 
   render() {
@@ -169,11 +290,11 @@ class Session extends Component {
           flex: 1,
         }}
       >
-        {this.renderSwiper()}
-        {this.renderMatchedRestaurant()}
+        {this.renderSessionView()}
       </View>
     );
   }
 }
 
+//Update render methods to render correct view based on boolean values
 export default withNavigation(Session);

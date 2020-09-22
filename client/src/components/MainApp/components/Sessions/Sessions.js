@@ -136,6 +136,7 @@ class Sessions extends Component {
 
   createNewSession = () => {
     this.setState({ modalVisible: true });
+    //this.props.navigation.push("CreateSession");
   };
 
   exitModal = () => {

@@ -3,7 +3,6 @@ const Session = require("../models/Session");
 
 updateSessionMemberRestaurantIndex = async (req, res) => {
   const { userID, sessionID, currentRestaurantIndex } = req.body;
-
   try {
     await Session.findOneAndUpdate(
       { ID: sessionID, "members.userID": userID },
@@ -18,20 +17,36 @@ updateSessionMemberRestaurantIndex = async (req, res) => {
 };
 
 addVoteToSession = async (req, res) => {
+  const { restaurantIndex, sessionID, userID } = req.body;
+
   try {
     const session = await Session.findOneAndUpdate(
-      { ID: req.body.sessionID },
-      { $push: { votes: req.body.restaurantIndex } }
+      { ID: sessionID, "members.userID": userID },
+      {
+        $push: {
+          "members.$.selectedRestaurants": restaurantIndex,
+        },
+      }
     );
 
-    session.votes.push(req.body.restaurantIndex);
+    for (let i = 0; i < session.members; i++) {
+      if (session.members[i].userID == userID) {
+        session.members[i].selectedRestaurants.push(restaurantIndex);
+        break;
+      }
+    }
 
-    let matchedRestaurantIndex = findDuplicateRestaurantIndex(session.votes);
+    const matchedRestaurantIndex = checkForMatch(session.members);
 
     if (matchedRestaurantIndex != -1) {
-      notifyOtherSessionUsers(session.members, req.body.userID);
+      //Filters out user who caused the match
+      const otherSessionUsers = session.members.filter(
+        (sessionMember) => sessionMember.userID != userID
+      );
+      notifyOtherSessionUsers(otherSessionUsers);
+
       await Session.findOneAndUpdate(
-        { ID: req.body.sessionID },
+        { ID: sessionID },
         { status: "Match", matchedRestaurantIndex }
       );
     }
@@ -42,20 +57,19 @@ addVoteToSession = async (req, res) => {
   }
 };
 
-findDuplicateRestaurantIndex = (votes) => {
-  let votesMap = {};
+checkForMatch = (sessionMembers) => {
+  let matches = new Set(sessionMembers[0].selectedRestaurants);
 
-  for (let i = 0; i < votes.length; i++) {
-    if (!votesMap[votes[i]]) votesMap[votes[i]] = 0;
-
-    votesMap[votes[i]] += 1;
-
-    if (votesMap[votes[i]] > 1) {
-      return votes[i];
-    }
+  for (let i = 1; i < sessionMembers.length; i++) {
+    matches = new Set(
+      [...matches].filter((restaurantIndex) =>
+        new Set(sessionMembers[i].selectedRestaurants).has(restaurantIndex)
+      )
+    );
   }
 
-  return -1;
+  //return index of first restaruant from set if there is a match
+  return matches.size > 0 ? matches.values().next().value : -1;
 };
 
 notifyOtherSessionUsers = (sessionMembers) => {
