@@ -53,7 +53,7 @@ class Session extends Component {
     restaurants: [],
     selectedRestaurants: [],
     currentRestaurant: null,
-    restaurantIndex: 0,
+    restaurantIndex: null,
     needMoreRestaurants: false,
     matchedRestaurantIndex: -1,
     memberFinished: false,
@@ -64,10 +64,19 @@ class Session extends Component {
     this.fetchSessionStats();
   };
 
-  componentWillUnmount() {
-    this.updateRestaurantIndex();
+  componentWillUnmount = () => {
+    //this.updateRestaurantIndex();
     AppState.removeEventListener("change", this._handleAppStateChange);
-  }
+  };
+
+  componentDidUpdate = (prevProps, prevState, snapshot) => {
+    if (
+      this.state.restaurantIndex > prevState.restaurantIndex &&
+      prevState.restaurantIndex != null
+    ) {
+      this.updateRestaurantIndex();
+    }
+  };
 
   _handleAppStateChange = async (nextAppState) => {
     //App is paused - Possible Issue too many updates to DB
@@ -166,25 +175,6 @@ class Session extends Component {
     return <RestaurantCard restaurant={this.state.currentRestaurant} />;
   };
 
-  updateRestaurantIndex = async () => {
-    const { sessionDetails } = this.props.route.params;
-    const currentUser = await getCurrentUser();
-
-    const updateRestaurantIndexResponse = await axios.post(
-      `${baseURL}/session/updateSessionMemberRestaurantIndex`,
-      {
-        currentRestaurantIndex: this.state.restaurantIndex,
-        sessionID: sessionDetails.ID,
-        userID: currentUser.ID,
-      }
-    );
-
-    //Check for error with response
-    if (!updateRestaurantIndexResponse.data.success) {
-      //Failure scenario - what to do? Store index in local storage
-    }
-  };
-
   onSwiped = (index) => {
     //If less than 3 restaraunts left fetch more. Relook into this idea for all sessions
     const needMoreRestaurants =
@@ -223,7 +213,9 @@ class Session extends Component {
     }
   };
 
-  onSwipedLeft = (index) => {};
+  onSwipedLeft = (index) => {
+    //Maybe need it to show whether or not user like/disliked restaurant
+  };
 
   //View shown to user when no matches are made and list is completed. UPDATE! Rethink responsiveness and style
   renderMemberFinished = () => {
