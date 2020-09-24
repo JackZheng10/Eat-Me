@@ -1,16 +1,21 @@
 import React, { Component } from "react";
-import { TouchableWithoutFeedback, StyleSheet, View } from "react-native";
+import {
+  TouchableWithoutFeedback,
+  StyleSheet,
+  View,
+  Image,
+} from "react-native";
 import { Card, Text } from "react-native-elements";
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from "react-native-responsive-screen";
 
 const styles = StyleSheet.create({
   restaurantCard: {
     alignItems: "center",
     paddingBottom: 20,
     backgroundColor: "#fcfbfa",
-  },
-  restaurantImage: {
-    width: 300,
-    height: 300,
   },
 });
 
@@ -31,23 +36,19 @@ class RestaurantCard extends Component {
     this.setState({ imageIndex });
   };
 
-  renderRestaruantDetails = () => {
-    const { restaurant } = this.props;
-
-    if (this.props.match) {
-      return (
-        <Card>
-          <Text>Rating: {restaurant.rating}</Text>
-          <Text>Options: {restaurant.transactions.toString()}</Text>
-          <Text>URL: {restaurant.url}</Text>
-        </Card>
-      );
-    }
-  };
-
   //ContentContainerStyle to get appropriate height for box
   render() {
     const currentImage = this.props.restaurant.images[this.state.imageIndex];
+    const adjustedWidth = wp(this.props.widthPercentageOfImage);
+    let adjustedHeight = 300;
+
+    Image.getSize(currentImage, (imageWidth, imageHeight) => {
+      const ratioFactor = adjustedWidth / imageWidth;
+      adjustedHeight =
+        ratioFactor >= 1
+          ? imageHeight / ratioFactor
+          : imageHeight * ratioFactor;
+    });
     return (
       <View>
         <TouchableWithoutFeedback onPress={(event) => this.onPress(event)}>
@@ -57,10 +58,12 @@ class RestaurantCard extends Component {
             image={{
               uri: currentImage,
             }}
-            imageStyle={styles.restaurantImage}
+            imageStyle={{
+              width: adjustedWidth,
+              height: adjustedHeight,
+            }}
           ></Card>
         </TouchableWithoutFeedback>
-        {this.renderRestaruantDetails()}
       </View>
     );
   }

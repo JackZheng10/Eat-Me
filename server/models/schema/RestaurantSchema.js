@@ -19,6 +19,12 @@ const RestaurantSchema = new mongoose.Schema({
     required: false,
   },
 
+  phone: {
+    type: String,
+    unique: false,
+    required: false,
+  },
+
   name: {
     type: String,
     unique: false,

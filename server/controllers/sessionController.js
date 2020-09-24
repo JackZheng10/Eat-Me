@@ -142,6 +142,7 @@ createRestaurantModel = (yelpRestaurant) => {
     rating: yelpRestaurant.rating,
     transactions: yelpRestaurant.transactions,
     url: yelpRestaurant.url,
+    phone: yelpRestaurant.display_phone,
   };
 
   return restaurantModel;

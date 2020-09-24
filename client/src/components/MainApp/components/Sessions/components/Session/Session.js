@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import { Platform, View, AppState, StyleSheet } from "react-native";
+import { Platform, View, AppState, StyleSheet, Linking } from "react-native";
 import { withNavigation } from "react-navigation";
-import { Button, Text, Divider } from "react-native-elements";
+import { Button, Text, Divider, Icon } from "react-native-elements";
 import Swiper from "react-native-deck-swiper";
 import RestaurantCard from "./components/RestaurantCard";
 import {
@@ -12,6 +12,7 @@ import { getCurrentUser } from "../../../../../../helpers/session";
 import baseURL from "../../../../../../../baseURL";
 import axios from "axios";
 import { FlatList } from "react-native-gesture-handler";
+import WebModal from "../../../../../utility/WebModal";
 
 const styles = StyleSheet.create({
   memberFinishedContainer: {
@@ -46,6 +47,39 @@ const styles = StyleSheet.create({
     fontSize: hp("2.2%"),
     color: "#00B2CA",
   },
+  matchedContainer: {
+    flex: 1,
+    alignItems: "center",
+  },
+  matchedHeader: {
+    fontSize: hp("4.2%"),
+    color: "#F79256",
+    marginTop: hp("2.5%"),
+    fontWeight: "bold",
+  },
+  matchedRestaurantDetailsTextContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: wp("100%"),
+    marginTop: hp("2%"),
+  },
+  matchedRestaurantDetailsText: {
+    fontSize: hp("3%"),
+
+    color: "#10a6af",
+  },
+  matchedRestaurantDetailsButtonContainer: {
+    flexDirection: "column",
+    marginTop: hp("2%"),
+    justifyContent: "space-around",
+    height: hp("15%"),
+  },
+  matchedRestaurantDetailsButton: {
+    height: hp("5%"),
+    width: wp("75%"),
+    borderRadius: 50,
+    backgroundColor: "#F79256",
+  },
 });
 
 class Session extends Component {
@@ -57,6 +91,7 @@ class Session extends Component {
     needMoreRestaurants: false,
     matchedRestaurantIndex: -1,
     memberFinished: false,
+    webModal: false,
   };
 
   componentDidMount = () => {
@@ -138,17 +173,19 @@ class Session extends Component {
 
     //Update Swiper View
     return (
-      <Swiper
-        useViewOverflow={Platform.OS === "ios"}
-        cards={restaurants}
-        renderCard={this.renderRestaurant}
-        verticalSwipe={false}
-        onSwiped={this.onSwiped}
-        onSwipedRight={this.onSwipedRight}
-        onSwipedLeft={this.onSwipedLeft}
-        cardIndex={restaurantIndex}
-        backgroundColor="#F5F1ED"
-      />
+      <View style={{ flex: 1 }}>
+        <Swiper
+          useViewOverflow={Platform.OS === "ios"}
+          cards={restaurants}
+          renderCard={this.renderRestaurant}
+          verticalSwipe={false}
+          onSwiped={this.onSwiped}
+          onSwipedRight={this.onSwipedRight}
+          onSwipedLeft={this.onSwipedLeft}
+          cardIndex={restaurantIndex}
+          backgroundColor="#F5F1ED"
+        />
+      </View>
     );
   };
 
@@ -172,7 +209,12 @@ class Session extends Component {
   };
 
   renderRestaurant = (restaurant, index) => {
-    return <RestaurantCard restaurant={this.state.currentRestaurant} />;
+    return (
+      <RestaurantCard
+        restaurant={this.state.currentRestaurant}
+        widthPercentageOfImage={"85%"}
+      />
+    );
   };
 
   onSwiped = (index) => {
@@ -257,34 +299,66 @@ class Session extends Component {
 
   renderSelectedRestaurant = (selectedRestaurant) => {
     return (
-      <RestaurantCard restaurant={selectedRestaurant.item} match={false} />
+      <RestaurantCard
+        restaurant={selectedRestaurant.item}
+        widthPercentageOfImage={"65%"}
+      />
     );
   };
 
   //Update Matched View
   renderMatchedRestaurant = () => {
     const { restaurants, matchedRestaurantIndex } = this.state;
+    const matchedRestaurant = restaurants[matchedRestaurantIndex];
+
     //View which shows restaurant Details
     return (
-      <View>
+      <View style={styles.matchedContainer}>
+        <Text style={styles.matchedHeader}>We decided!</Text>
         <RestaurantCard
-          restaurant={restaurants[matchedRestaurantIndex]}
-          match={true}
+          restaurant={matchedRestaurant}
+          widthPercentageOfImage={"100%"}
+        />
+
+        <View style={styles.matchedRestaurantDetailsTextContainer}>
+          <Text style={styles.matchedRestaurantDetailsText}>
+            Rating: {matchedRestaurant.rating}
+          </Text>
+          <Text style={styles.matchedRestaurantDetailsText}>
+            Options: {matchedRestaurant.transactions.toString()}
+          </Text>
+        </View>
+        <View style={styles.matchedRestaurantDetailsButtonContainer}>
+          <Button
+            onPress={this.toggleWebModal}
+            title={`Visit Yelp page`}
+            buttonStyle={styles.matchedRestaurantDetailsButton}
+          />
+          <Button
+            title={`Call ${matchedRestaurant.name}`}
+            onPress={() => Linking.openURL(`tel:${matchedRestaurant.phone}`)}
+            buttonStyle={styles.matchedRestaurantDetailsButton}
+          />
+        </View>
+
+        <WebModal
+          visible={this.state.webModal}
+          title={matchedRestaurant.name}
+          url={matchedRestaurant.url[0]}
+          exit={this.toggleWebModal}
         />
       </View>
     );
   };
 
+  toggleWebModal = () => {
+    this.setState({
+      webModal: !this.state.webModal,
+    });
+  };
+
   render() {
-    return (
-      <View
-        style={{
-          flex: 1,
-        }}
-      >
-        {this.renderSessionView()}
-      </View>
-    );
+    return <React.Fragment>{this.renderSessionView()}</React.Fragment>;
   }
 }
 
