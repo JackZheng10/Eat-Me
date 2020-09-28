@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import { Platform, View, AppState, StyleSheet, Linking } from "react-native";
 import { withNavigation } from "react-navigation";
-import { Button, Text, Divider, Icon } from "react-native-elements";
+import { Button, Text, Divider, Card, Icon } from "react-native-elements";
 import Swiper from "react-native-deck-swiper";
 import RestaurantCard from "./components/RestaurantCard";
+import SwiperOverlayLabel from "./components/SwiperOverlayLabel";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -80,6 +81,30 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     backgroundColor: "#F79256",
   },
+  searchRestaurantsContainer: {
+    flex: 1,
+    alignItems: "center",
+    flexDirection: "column",
+  },
+  searchRestaurantsSwiperSection: {
+    height: "80%",
+    width: "100%",
+  },
+  searchRestaurantsBottomSection: {
+    flex: 1,
+    justifyContent: "flex-end",
+    marginBottom: hp("3%"),
+  },
+  searchRestaurantsIconContainer: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    width: "100%",
+  },
+  searchRestaurantsOverlayWrapper: {
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    marginTop: 30,
+  },
 });
 
 class Session extends Component {
@@ -96,6 +121,7 @@ class Session extends Component {
 
   componentDidMount = () => {
     AppState.addEventListener("change", this._handleAppStateChange);
+
     this.fetchSessionStats();
   };
 
@@ -158,33 +184,98 @@ class Session extends Component {
       matchedRestaurantIndex == -1 &&
       !memberFinished
     ) {
-      return this.renderSwiper();
+      return this.renderSearchRestaurants();
     } else if (matchedRestaurantIndex == -1 && memberFinished) {
       return this.renderMemberFinished();
     } else if (matchedRestaurantIndex !== -1) {
+      console.log("Rendering Matched");
       return this.renderMatchedRestaurant();
     } else {
       //Return Loading Spinner or such
     }
   };
 
-  renderSwiper = () => {
+  renderSearchRestaurants = () => {
     const { restaurants, restaurantIndex } = this.state;
 
-    //Update Swiper View
+    //Don't why I need width specified for View containing the Swiper component
     return (
-      <View style={{ flex: 1 }}>
-        <Swiper
-          useViewOverflow={Platform.OS === "ios"}
-          cards={restaurants}
-          renderCard={this.renderRestaurant}
-          verticalSwipe={false}
-          onSwiped={this.onSwiped}
-          onSwipedRight={this.onSwipedRight}
-          onSwipedLeft={this.onSwipedLeft}
-          cardIndex={restaurantIndex}
-          backgroundColor="#F5F1ED"
-        />
+      <View style={styles.searchRestaurantsContainer}>
+        <View style={styles.searchRestaurantsSwiperSection}>
+          <Swiper
+            ref={(swiper) => {
+              this.swiper = swiper;
+            }}
+            cardVerticalMargin={hp("2%")}
+            useViewOverflow={Platform.OS === "ios"}
+            cards={restaurants}
+            renderCard={this.renderRestaurant}
+            showSecondCard={true}
+            verticalSwipe={false}
+            onSwiped={this.onSwiped}
+            onSwipedRight={this.onSwipedRight}
+            onSwipedLeft={this.onSwipedLeft}
+            cardIndex={restaurantIndex}
+            backgroundColor="#F5F1ED"
+            animateOverlayLabelsOpacity
+            overlayOpacityHorizontalThreshold={wp("100%") / 15}
+            inputOverlayLabelsOpacityRangeX={[
+              -wp("100%") / 3,
+              -wp("100%") / 15,
+              0,
+              wp("100%") / 15,
+              wp("100%") / 3,
+            ]}
+            overlayLabels={{
+              left: {
+                title: "NOPE",
+                element: (
+                  <SwiperOverlayLabel labelText={"NOPE"} color={"#E5566D"} />
+                ),
+                style: {
+                  wrapper: {
+                    ...styles.searchRestaurantsOverlayWrapper,
+                    alignItems: "flex-end",
+                    marginLeft: -30,
+                  },
+                },
+              },
+              right: {
+                title: "LIKE",
+                element: (
+                  <SwiperOverlayLabel labelText={"LIKE"} color={"#4CCC93"} />
+                ),
+                style: {
+                  wrapper: {
+                    ...styles.searchRestaurantsOverlayWrapper,
+                    alignItems: "flex-start",
+                    marginLeft: 30,
+                  },
+                },
+              },
+            }}
+          />
+        </View>
+        <View style={styles.searchRestaurantsBottomSection}>
+          <View style={styles.searchRestaurantsIconContainer}>
+            <Icon
+              type="font-awesome-5"
+              name="times"
+              color="red"
+              raised
+              size={hp("4%")}
+              onPress={() => this.swiper.swipeLeft()}
+            />
+            <Icon
+              type="font-awesome"
+              name="heart"
+              color="limegreen"
+              raised
+              size={hp("4%")}
+              onPress={() => this.swiper.swipeRight()}
+            />
+          </View>
+        </View>
       </View>
     );
   };
@@ -210,10 +301,14 @@ class Session extends Component {
 
   renderRestaurant = (restaurant, index) => {
     return (
-      <RestaurantCard
-        restaurant={this.state.currentRestaurant}
-        widthPercentageOfImage={"85%"}
-      />
+      <View style={{ alignItems: "center" }}>
+        <RestaurantCard
+          restaurant={this.state.currentRestaurant}
+          widthPercentage={"98%"}
+          heightPercentage={"60%"}
+          displayOverlayText
+        />
+      </View>
     );
   };
 
@@ -298,15 +393,21 @@ class Session extends Component {
   };
 
   renderSelectedRestaurant = (selectedRestaurant) => {
+    //Think about height percentage of Card. IDK why I need to specify that
     return (
-      <RestaurantCard
-        restaurant={selectedRestaurant.item}
-        widthPercentageOfImage={"65%"}
-      />
+      <Card
+        title={selectedRestaurant.item.name}
+        containerStyle={{ height: hp("45%") }}
+      >
+        <RestaurantCard
+          restaurant={selectedRestaurant.item}
+          widthPercentage={"65%"}
+          heightPercentage={"35%"}
+        />
+      </Card>
     );
   };
 
-  //Update Matched View
   renderMatchedRestaurant = () => {
     const { restaurants, matchedRestaurantIndex } = this.state;
     const matchedRestaurant = restaurants[matchedRestaurantIndex];
@@ -317,17 +418,11 @@ class Session extends Component {
         <Text style={styles.matchedHeader}>We decided!</Text>
         <RestaurantCard
           restaurant={matchedRestaurant}
-          widthPercentageOfImage={"100%"}
+          widthPercentage={"95%"}
+          heightPercentage={"40%"}
+          displayOverlayText
         />
 
-        <View style={styles.matchedRestaurantDetailsTextContainer}>
-          <Text style={styles.matchedRestaurantDetailsText}>
-            Rating: {matchedRestaurant.rating}
-          </Text>
-          <Text style={styles.matchedRestaurantDetailsText}>
-            Options: {matchedRestaurant.transactions.toString()}
-          </Text>
-        </View>
         <View style={styles.matchedRestaurantDetailsButtonContainer}>
           <Button
             onPress={this.toggleWebModal}
