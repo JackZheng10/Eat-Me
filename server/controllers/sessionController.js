@@ -74,6 +74,25 @@ checkForMatch = (sessionMembers) => {
 
 notifyOtherSessionUsers = (sessionMembers) => {
   //Send some type of notification about Match
+  const sessionMemberIDs = sessionMembers.map((sessionMember) => {
+    return sessionMember.ID;
+  });
+  const otherSessionUsers = User.find({ ID: sessionMemberIDs }).select(
+    "phone pushToken"
+  );
+
+  try {
+    const SIO = require("../server").SIO;
+
+    otherSessionUsers.forEach((sessionUser) => {
+      SIO.of("/api/socket").to(recipient.phone).emit("incomingFriendRequest");
+
+      sendPushNotification(
+        recipient.pushToken,
+        `You've received a friend request from ${req.body.senderName}`
+      );
+    });
+  } catch (error) {}
 };
 
 getSessionRestaurants = async (req, res) => {

@@ -54,6 +54,8 @@ class Sessions extends Component {
   componentDidMount = async () => {
     const currentUser = await getCurrentUser();
 
+    //await this.addSocketListeners(this.context.SIO, currentUser.phone);
+
     const userSessions = await axios.post(baseURL + "/user/getUserSessions", {
       ID: currentUser.ID,
     });
@@ -63,6 +65,28 @@ class Sessions extends Component {
     } else {
       alert("Error retrieving sessions");
     }
+  };
+
+  addSocketListeners = async (socket, phone) => {
+    socket.on("sessionMatch", async (sessionID) => {
+      if (await updateToken(phone)) {
+        updateSessionList(sessionID);
+      }
+    });
+  };
+
+  updateSessionList = (sessionID) => {
+    //Highlight new session, at least update
+    let newSessionList = this.state.sessionList;
+    for (let i = 0; i < newSessionList.length; i++) {
+      if (newSessionList[i].ID == sessionID) {
+        newSessionList.status = "Match";
+        break;
+      }
+    }
+    this.setState({
+      sessionList: newSessionList,
+    });
   };
 
   setSessionsView = () => {

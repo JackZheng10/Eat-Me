@@ -12,6 +12,19 @@ import {
 } from "react-native-responsive-screen";
 
 const styles = StyleSheet.create({
+  imageOverlayTabContainer: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "center",
+    marginLeft: 5,
+    marginRight: 5,
+  },
+  imageOverlayTab: {
+    borderRadius: 50,
+    margin: 3,
+    flex: 1,
+    height: hp("0.5%"),
+  },
   overlayTextContainer: {
     width: "100%",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
@@ -50,6 +63,26 @@ class RestaurantCard extends Component {
     this.setState({ imageIndex });
   };
 
+  renderImageOverlayTabs = () => {
+    const imageOverlayTabs = this.props.restaurant.images.map(
+      (image, index) => {
+        const backgroundColor =
+          this.state.imageIndex == index ? "white" : "rgba(0, 0, 0, 0.1)";
+
+        return (
+          <View
+            style={{ ...styles.imageOverlayTab, backgroundColor }}
+            key={index}
+          />
+        );
+      }
+    );
+
+    return (
+      <View style={styles.imageOverlayTabContainer}>{imageOverlayTabs}</View>
+    );
+  };
+
   renderOverlayLabel = () => {
     if (this.props.displayOverlayText) {
       return (
@@ -74,6 +107,7 @@ class RestaurantCard extends Component {
               height: this.state.adjustedHeight,
             }}
           >
+            {this.renderImageOverlayTabs()}
             {this.renderOverlayLabel()}
           </ImageBackground>
         </View>
