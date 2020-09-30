@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import { View, StyleSheet, Dimensions, ScrollView } from "react-native";
 import { withNavigation } from "react-navigation";
-import { getCurrentUser } from "../../../../helpers/session";
+import { getCurrentUser, updateToken } from "../../../../helpers/session";
 import baseURL from "../../../../../baseURL";
 import axios from "axios";
 import CreateSession from "./components/CreateSession/CreateSession";
 import { ListItem, Text, Icon } from "react-native-elements";
+import { SocketContext } from "../../../../contexts";
 
 const styles = StyleSheet.create({
   listItem: {
@@ -45,6 +46,7 @@ const styles = StyleSheet.create({
 });
 
 class Sessions extends Component {
+  static contextType = SocketContext;
   state = {
     key: 0,
     sessionList: [],
@@ -54,7 +56,7 @@ class Sessions extends Component {
   componentDidMount = async () => {
     const currentUser = await getCurrentUser();
 
-    //await this.addSocketListeners(this.context.SIO, currentUser.phone);
+    await this.addSocketListeners(this.context.SIO, currentUser.phone);
 
     const userSessions = await axios.post(baseURL + "/user/getUserSessions", {
       ID: currentUser.ID,
@@ -68,19 +70,28 @@ class Sessions extends Component {
   };
 
   addSocketListeners = async (socket, phone) => {
-    socket.on("sessionMatch", async (sessionID) => {
+    socket.on("sessionMatch", async (data) => {
       if (await updateToken(phone)) {
-        updateSessionList(sessionID);
+        //Gold Circle around actual session
+        this.updateSessionList(data.sessionID);
+      }
+    });
+
+    //Practice Notification
+    socket.on("testingSessions", async (data) => {
+      if (await updateToken(phone)) {
+        alert(data.data);
       }
     });
   };
 
+  //Update to maybe display modal and change App View to Sessions
   updateSessionList = (sessionID) => {
     //Highlight new session, at least update
-    let newSessionList = this.state.sessionList;
+    let newSessionList = [...this.state.sessionList];
     for (let i = 0; i < newSessionList.length; i++) {
       if (newSessionList[i].ID == sessionID) {
-        newSessionList.status = "Match";
+        newSessionList[i].status = "Match";
         break;
       }
     }

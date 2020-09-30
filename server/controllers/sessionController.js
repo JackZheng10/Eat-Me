@@ -1,5 +1,7 @@
 const { yelp } = require("./apis/yelp");
 const Session = require("../models/Session");
+const sendPushNotification = require("../helpers/pushNotifications")
+  .sendPushNotification;
 
 updateSessionMemberRestaurantIndex = async (req, res) => {
   const { userID, sessionID, currentRestaurantIndex } = req.body;
@@ -43,7 +45,7 @@ addVoteToSession = async (req, res) => {
       const otherSessionUsers = session.members.filter(
         (sessionMember) => sessionMember.userID != userID
       );
-      notifyOtherSessionUsers(otherSessionUsers);
+      notifyOtherSessionUsers(sessionID, otherSessionUsers);
 
       await Session.findOneAndUpdate(
         { ID: sessionID },
@@ -72,8 +74,7 @@ checkForMatch = (sessionMembers) => {
   return matches.size > 0 ? matches.values().next().value : -1;
 };
 
-notifyOtherSessionUsers = (sessionMembers) => {
-  //Send some type of notification about Match
+notifyOtherSessionUsers = (sessionID, sessionMembers) => {
   const sessionMemberIDs = sessionMembers.map((sessionMember) => {
     return sessionMember.ID;
   });
@@ -85,11 +86,13 @@ notifyOtherSessionUsers = (sessionMembers) => {
     const SIO = require("../server").SIO;
 
     otherSessionUsers.forEach((sessionUser) => {
-      SIO.of("/api/socket").to(recipient.phone).emit("incomingFriendRequest");
+      SIO.of("/api/socket")
+        .to(sessionUser.phone)
+        .emit("sessionMatch", { sessionID });
 
       sendPushNotification(
-        recipient.pushToken,
-        `You've received a friend request from ${req.body.senderName}`
+        sessionUser.pushToken,
+        `You have a match! Go see which spot you all selected.`
       );
     });
   } catch (error) {}

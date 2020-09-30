@@ -28,7 +28,6 @@ import Constants from "expo-constants";
 import * as Permissions from "expo-permissions";
 import axios from "axios";
 import baseURL from "../../../baseURL";
-import CreateSession from "./components/Sessions/components/CreateSession/CreateSession";
 
 const FriendsStack = createStackNavigator();
 const SessionsStack = createStackNavigator();
@@ -77,12 +76,10 @@ const SessionsStackScreen = () => {
         name="Session"
         component={Session}
       />
-      {
-        //Precursor to possibly integrating CreateSession Modal into Main App Compoent
-        /*
+      {/*Precursor to possibly integrating CreateSession Modal into Main App Compoent
+
       <SessionsStack.Screen name={"CreateSession"} component={CreateSession} />
-	    */
-      }
+	    */}
     </SessionsStack.Navigator>
   );
 };

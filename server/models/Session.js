@@ -9,12 +9,6 @@ const SessionSchema = new mongoose.Schema({
     required: true,
   },
 
-  members: {
-    type: [Number],
-    unique: false,
-    required: true,
-  },
-
   restaurants: {
     type: [RestaurantSchema],
     unique: false,
@@ -25,14 +19,6 @@ const SessionSchema = new mongoose.Schema({
     type: [MemberSchema],
     unique: false,
     required: true,
-  },
-
-  //Need to think about all this
-  votes: {
-    type: [Number],
-    unique: false,
-    required: false,
-    default: [],
   },
 
   matchedRestaurantIndex: {

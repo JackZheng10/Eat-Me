@@ -2,6 +2,9 @@ const mongoose = require("mongoose");
 const Session = require("../models/Session");
 const User = require("../models/User");
 
+const sendPushNotification = require("../helpers/pushNotifications")
+  .sendPushNotification;
+
 const helloWorld = (req, res) => {
   return res.json({ success: true, message: "Hello world!" });
 };
@@ -105,4 +108,22 @@ const helloDB = async (req, res) => {
   res.json({ success: true, message: "Hello DB!" });
 };
 
-module.exports = { helloWorld, helloDB, getDB, deleteDB };
+const sendNotification = async (req, res) => {
+  try {
+    const user = await User.findOne({ phone: "3527923548" });
+
+    const SIO = require("../server").SIO;
+
+    SIO.of("/api/socket").to(user.phone).emit("testingSessions", {
+      data: "Hey this is the notification!",
+    });
+
+    sendPushNotification(user.pushToken, `Practice Notification`);
+
+    res.json("Hey were sending notifications");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+module.exports = { helloWorld, helloDB, getDB, deleteDB, sendNotification };
