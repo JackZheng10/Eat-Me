@@ -1,10 +1,11 @@
 import React, { Component } from "react";
-import { View, StyleSheet, ScrollView, YellowBox } from "react-native";
+import { View, ScrollView, YellowBox } from "react-native";
 import { withNavigation } from "react-navigation";
 import { getCurrentUser, updateToken } from "../../../../helpers/session";
 import baseURL from "../../../../../baseURL";
 import axios from "axios";
 import CreateSession from "./components/CreateSession/CreateSession";
+import { SessionsStyles as styles } from "./styles";
 import { ListItem, Text, Icon } from "react-native-elements";
 import { SocketContext } from "../../../../contexts";
 
@@ -12,43 +13,6 @@ import { SocketContext } from "../../../../contexts";
 YellowBox.ignoreWarnings([
   "Non-serializable values were found in the navigation state",
 ]);
-
-const styles = StyleSheet.create({
-  listItem: {
-    margin: 10,
-    borderStyle: "solid",
-    borderColor: "#00B2CA",
-    borderWidth: 2,
-    borderRadius: 50,
-  },
-  containerStyle: {
-    backgroundColor: "#fcfbfa",
-    borderStyle: "solid",
-    borderColor: "#F79256",
-    borderRadius: 50,
-  },
-  titleStyle: {
-    fontWeight: "bold",
-    color: "#F79256",
-  },
-  subtitleStyle: {
-    color: "black",
-  },
-  emptySession: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  addSessionContainer: {
-    position: "absolute",
-    bottom: 25,
-    right: 50,
-  },
-  sessionsContainer: {
-    flex: 1,
-    backgroundColor: "#F5F1ED",
-  },
-});
 
 class Sessions extends Component {
   static contextType = SocketContext;
