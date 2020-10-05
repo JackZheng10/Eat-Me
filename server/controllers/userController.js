@@ -475,7 +475,7 @@ const updatePassword = async (req, res) => {
 const getUserSessions = async (req, res) => {
   try {
     let userSessions = await Session.find({ "members.userID": req.body.ID })
-      .select("ID members status")
+      .select("ID members matchedRestaurantIndex")
       .lean();
 
     for (let userSession of userSessions) {
@@ -492,7 +492,7 @@ const getUserSessions = async (req, res) => {
 
 //Duplicate of getUsersByID but I only get name for now,
 //maybe move this method elsewhere no so directly related to userController
-getUsersNameByID = async (userIDs) => {
+const getUsersNameByID = async (userIDs) => {
   const userNames = Promise.all(
     userIDs.map(async (ID) => {
       const user = await User.findOne({ ID });

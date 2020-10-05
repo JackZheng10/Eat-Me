@@ -1,4 +1,5 @@
 const { yelp } = require("./apis/yelp");
+const User = require("../models/User");
 const Session = require("../models/Session");
 const sendPushNotification = require("../helpers/pushNotifications")
   .sendPushNotification;
@@ -6,9 +7,22 @@ const sendPushNotification = require("../helpers/pushNotifications")
 updateSessionMemberRestaurantIndex = async (req, res) => {
   const { userID, sessionID, currentRestaurantIndex } = req.body;
   try {
+    const session = await Session.findOne({ ID: sessionID });
+
+    const memberSessionStatus =
+      currentRestaurantIndex >= session.restaurants.length
+        ? "Waiting on friends"
+        : "Started";
+
+    //Update Status everytime. Maybe an issue, maybe not
     await Session.findOneAndUpdate(
       { ID: sessionID, "members.userID": userID },
-      { $set: { "members.$.currentRestaurantIndex": currentRestaurantIndex } }
+      {
+        $set: {
+          "members.$.status": memberSessionStatus,
+          "members.$.currentRestaurantIndex": currentRestaurantIndex,
+        },
+      }
     );
 
     res.json({ success: true });
@@ -47,9 +61,10 @@ addVoteToSession = async (req, res) => {
       );
       notifyOtherSessionUsers(sessionID, otherSessionUsers);
 
+      //Maybe don't need status for overall session
       await Session.findOneAndUpdate(
         { ID: sessionID },
-        { status: "Match", matchedRestaurantIndex }
+        { status: "Matched", matchedRestaurantIndex }
       );
     }
 
@@ -85,10 +100,11 @@ notifyOtherSessionUsers = (sessionID, sessionMembers) => {
   try {
     const SIO = require("../server").SIO;
 
+    //Need Constants file to store certain textual information
     otherSessionUsers.forEach((sessionUser) => {
       SIO.of("/api/socket")
         .to(sessionUser.phone)
-        .emit("sessionMatch", { sessionID });
+        .emit("sessionMatch", { sessionID, status: "Matched" });
 
       sendPushNotification(
         sessionUser.pushToken,

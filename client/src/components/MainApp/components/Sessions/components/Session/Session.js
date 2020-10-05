@@ -126,8 +126,23 @@ class Session extends Component {
   };
 
   componentWillUnmount = () => {
-    //this.updateRestaurantIndex();
+    //Maybe store restaurantIndex in async storage just in case;
     AppState.removeEventListener("change", this._handleAppStateChange);
+
+    const { restaurantIndex, restaurants } = this.state;
+
+    //Use Constants instead
+    let updatedSessionStatus;
+
+    if (restaurantIndex == 0) updatedSessionStatus = "No Progress";
+    else if (restaurantIndex > 0 && restaurantIndex < restaurants.length)
+      updatedSessionStatus = "Started";
+    else updatedSessionStatus = "Waiting for Friends";
+
+    this.props.route.params.updateSessionStatus(
+      this.props.route.params.sessionDetails.ID,
+      updatedSessionStatus
+    );
   };
 
   componentDidUpdate = (prevProps, prevState, snapshot) => {
@@ -139,10 +154,12 @@ class Session extends Component {
     }
   };
 
+  //Maybe just store index change in Async storage instead. Too many calls to Server
   _handleAppStateChange = async (nextAppState) => {
     //App is paused - Possible Issue too many updates to DB
-    if (nextAppState.match(/inactive|background/))
-      await this.updateRestaurantIndex();
+    if (nextAppState.match(/inactive|background/)) {
+      //await this.updateRestaurantIndex();
+    }
   };
 
   fetchSessionStats = async () => {
@@ -188,7 +205,6 @@ class Session extends Component {
     } else if (matchedRestaurantIndex == -1 && memberFinished) {
       return this.renderMemberFinished();
     } else if (matchedRestaurantIndex !== -1) {
-      console.log("Rendering Matched");
       return this.renderMatchedRestaurant();
     } else {
       //Return Loading Spinner or such

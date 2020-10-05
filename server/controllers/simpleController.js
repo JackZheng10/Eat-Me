@@ -30,7 +30,7 @@ const helloDB = async (req, res) => {
     ID: 3,
     fName: "Will",
     lName: "G",
-    phone: "9999999999",
+    phone: "3527923548",
     password: "FAKE1",
     sessions: [],
     friends: [4, 5],

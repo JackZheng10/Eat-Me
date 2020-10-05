@@ -21,11 +21,11 @@ const MemberSchema = new mongoose.Schema({
     default: [],
   },
 
-  sessionStarted: {
-    type: Boolean,
+  status: {
+    type: String,
     unique: false,
     required: true,
-    default: false,
+    default: "No progress",
   },
 });
 

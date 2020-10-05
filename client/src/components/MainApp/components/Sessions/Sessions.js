@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, StyleSheet, Dimensions, ScrollView } from "react-native";
+import { View, StyleSheet, ScrollView, YellowBox } from "react-native";
 import { withNavigation } from "react-navigation";
 import { getCurrentUser, updateToken } from "../../../../helpers/session";
 import baseURL from "../../../../../baseURL";
@@ -7,6 +7,11 @@ import axios from "axios";
 import CreateSession from "./components/CreateSession/CreateSession";
 import { ListItem, Text, Icon } from "react-native-elements";
 import { SocketContext } from "../../../../contexts";
+
+//Ignores warning about passing in function callback to individual Session
+YellowBox.ignoreWarnings([
+  "Non-serializable values were found in the navigation state",
+]);
 
 const styles = StyleSheet.create({
   listItem: {
@@ -51,6 +56,7 @@ class Sessions extends Component {
     key: 0,
     sessionList: [],
     modalVisible: false,
+    userID: null,
   };
 
   componentDidMount = async () => {
@@ -63,7 +69,10 @@ class Sessions extends Component {
     });
 
     if (userSessions.data.success) {
-      this.setState({ sessionList: userSessions.data.sessions });
+      this.setState({
+        sessionList: userSessions.data.sessions,
+        userID: currentUser.ID,
+      });
     } else {
       alert("Error retrieving sessions");
     }
@@ -72,8 +81,8 @@ class Sessions extends Component {
   addSocketListeners = async (socket, phone) => {
     socket.on("sessionMatch", async (data) => {
       if (await updateToken(phone)) {
-        //Gold Circle around actual session
-        this.updateSessionList(data.sessionID);
+        //Gold Circle around actual session - render conditons will handle approproate styling
+        this.updateSessionStatus(data.sessionID, data.status);
       }
     });
 
@@ -85,13 +94,16 @@ class Sessions extends Component {
     });
   };
 
-  //Update to maybe display modal and change App View to Sessions
-  updateSessionList = (sessionID) => {
-    //Highlight new session, at least update
+  updateSessionStatus = (sessionID, status) => {
     let newSessionList = [...this.state.sessionList];
     for (let i = 0; i < newSessionList.length; i++) {
       if (newSessionList[i].ID == sessionID) {
-        newSessionList[i].status = "Match";
+        for (let j = 0; j < newSessionList[i].members.length; j++) {
+          if (newSessionList[i].members[j].userID == this.state.userID) {
+            newSessionList[i].members[j].status = status;
+            break;
+          }
+        }
         break;
       }
     }
@@ -119,11 +131,23 @@ class Sessions extends Component {
   };
 
   renderSession = (sessionDetails) => {
-    this.props.navigation.push("Session", { sessionDetails });
+    //Passing in callback causes warning. Ignored by Yellowbox instruction at the top of the file
+    this.props.navigation.push("Session", {
+      sessionDetails,
+      updateSessionStatus: this.updateSessionStatus,
+    });
   };
 
   renderSessions = () => {
     return this.state.sessionList.map((session) => {
+      const member = session.members.filter((sessionMember) => {
+        return sessionMember.userID == this.state.userID;
+      });
+
+      //Status is based on individual member in Session or if match was found
+      const memberStatus =
+        session.matchedRestaurantIndex != -1 ? "Matched" : member[0].status;
+
       return (
         <ListItem
           onPress={() => this.renderSession(session)}
@@ -131,7 +155,7 @@ class Sessions extends Component {
           leftElement={this.renderSessionMembers}
           title={session.membersNames.toString()}
           titleStyle={styles.titleStyle}
-          subtitle={session.status}
+          subtitle={memberStatus}
           subtitleStyle={styles.subtitleStyle}
           avatar
           style={styles.listItem}
