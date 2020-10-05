@@ -1,6 +1,6 @@
 const User = require("../models/User");
 const Session = require("../models/Session");
-const { addRestaurantsToSession } = require("./sessionController");
+const { addRestaurantsToSession } = require("../helpers/sessionHelper");
 const signToken = require("../helpers/auth").signToken;
 const sendPushNotification = require("../helpers/pushNotifications")
   .sendPushNotification;
