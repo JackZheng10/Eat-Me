@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { View } from "react-native";
-import { Text } from "react-native-elements";
+import { Divider, Text } from "react-native-elements";
 import { ModalStyles, SessionSaveStyles as styles } from "./styles";
 import CreateSessionHeader from "./CreateSessionHeader";
 import CreateSessionFooter from "./CreateSessionFooter";
@@ -42,32 +42,35 @@ class SessionSave extends Component {
   renderSessionLocation = () => {
     const { sessionLocation } = this.props.sessionConfigurables;
 
-    //Change later to display address name not coordinates
-    const addressName =
-      sessionLocation.latitude + ", " + sessionLocation.longitude;
     return (
       <>
         <Text style={styles.sectionHeader} h3>
           Selected Location:
         </Text>
-        <Text h4>{addressName}</Text>
+        <Text h4>{sessionLocation.address}</Text>
       </>
     );
   };
 
   renderSessionCategories = () => {
     const categories = this.props.sessionConfigurables.sessionCategories;
-    const selectedCategoriesText = categories.reduce(
-      (categoryText, category) => {
-        return categoryText + `, ${category}`;
-      }
-    );
+
+    const selectedCategoriesText = categories
+      .map((category) => {
+        return category.name;
+      })
+      .join(", ");
+
+    categories.reduce((categoryText, category) => {
+      return { x: `${categoryText.name}, ${category.name}` };
+    });
 
     return (
       <>
         <Text style={styles.sectionHeader} h3>
           Selected Categories:
         </Text>
+        <Divider />
         <Text h4>{selectedCategoriesText}</Text>
       </>
     );

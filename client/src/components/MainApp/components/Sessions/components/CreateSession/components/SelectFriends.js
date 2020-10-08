@@ -15,11 +15,7 @@ class SelectFriends extends Component {
     selectedFriends: [...this.props.selectedFriends],
   };
 
-  componentDidMount = () => {
-    this.loadFriends();
-  };
-
-  loadFriends = async () => {
+  componentDidMount = async () => {
     const friends = await fetchFriends();
     this.setState({ friends });
   };
@@ -81,9 +77,9 @@ class SelectFriends extends Component {
   handleSearchChange = (event) => {
     const searchTerm = event.nativeEvent.text;
 
-    const friends = this.state.friends.filter((friend) =>
-      friend.fname.includes(searchTerm)
-    );
+    const friends = this.state.friends.filter((friend) => {
+      return friend.fName.includes(searchTerm);
+    });
 
     this.setState({ searchTerm: event.nativeEvent.text, friends });
   };

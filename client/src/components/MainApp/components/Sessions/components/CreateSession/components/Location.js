@@ -51,10 +51,21 @@ class Location extends Component {
   };
 
   //Add name of Address to location object
-  addLocationToSession = () => {
+  addLocationToSession = async () => {
+    //Get name of location right now...
+
+    const address = await axios.post(
+      baseURL + "/session/reverseGeocodeLatLong",
+      {
+        latitude: this.state.locationLatitude,
+        longitude: this.state.locationLongitude,
+      }
+    );
+
     const location = {
       latitude: this.state.locationLatitude,
       longitude: this.state.locationLongitude,
+      address: address.data,
     };
 
     this.props.updateSessionConfigurable(location);

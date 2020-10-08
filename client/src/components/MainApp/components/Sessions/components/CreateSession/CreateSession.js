@@ -20,6 +20,7 @@ class CreateSession extends Component {
       sessionLocation: {
         latitude: 0,
         longitude: 0,
+        address: "",
       },
       sessionFriends: [],
     },

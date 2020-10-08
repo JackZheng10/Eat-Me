@@ -41,7 +41,7 @@ const SessionSchema = new mongoose.Schema({
   },
 
   streetName: {
-    type: [String],
+    type: String,
     unique: false,
     required: false,
   },

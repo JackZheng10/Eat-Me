@@ -3,6 +3,7 @@ const {
   notifyOtherSessionUsers,
 } = require("../helpers/sessionHelper");
 const Session = require("../models/Session");
+const { reverseGeocodeLocationIQ } = require("./apis/LocationIQ");
 
 updateSessionMemberRestaurantIndex = async (req, res) => {
   const { userID, sessionID, currentRestaurantIndex } = req.body;
@@ -93,8 +94,30 @@ getSessionRestaurants = async (req, res) => {
   res.json(sessionDetails);
 };
 
+reverseGeocodeLatLong = async (req, res) => {
+  const { latitude, longitude } = req.body;
+  try {
+    const addressResponse = await reverseGeocodeLocationIQ.get("", {
+      params: {
+        lat: latitude,
+        lon: longitude,
+        format: "json",
+      },
+    });
+
+    const { house_number, road, city, state } = addressResponse.data.address;
+
+    const streetAddress = `${house_number} ${road} ${city}, ${state}`;
+
+    res.json(streetAddress);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 module.exports = {
   getSessionRestaurants,
   addVoteToSession,
   updateSessionMemberRestaurantIndex,
+  reverseGeocodeLatLong,
 };

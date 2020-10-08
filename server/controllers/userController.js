@@ -521,14 +521,20 @@ const createSession = async (req, res) => {
 
   const membersIDs = sessionUsers.map((member) => member.ID);
 
+  //Convert Category objects to array of strings only
+  const sessionCategoryCodes = sessionCategories.map((category) => {
+    return category.code;
+  });
+
   try {
     const count = await Session.countDocuments();
 
     let newSession = new Session({
       ID: count + 1,
-      categories: sessionCategories,
+      categories: sessionCategoryCodes,
       latitude: sessionLocation.latitude,
       longitude: sessionLocation.longitude,
+      streetName: sessionLocation.address,
       members,
     });
 
@@ -544,7 +550,7 @@ const createSession = async (req, res) => {
 
     //Save Restaurants after sending back response
     await addRestaurantsToSession(
-      sessionCategories,
+      sessionCategoryCodes,
       sessionLocation,
       userSession.ID
     );
