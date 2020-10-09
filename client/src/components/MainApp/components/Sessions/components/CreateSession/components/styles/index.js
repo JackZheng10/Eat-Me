@@ -1,4 +1,8 @@
 import { StyleSheet } from "react-native";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 
 const ModalStyles = StyleSheet.create({
   headerCenterText: {
@@ -79,6 +83,15 @@ const FriendItemStyles = StyleSheet.create({
 const SessionSaveStyles = StyleSheet.create({
   sectionHeader: {
     color: "#F79256",
+    textAlign: "center",
+  },
+  sessionReviewMap: {
+    width: wp("75%"),
+    height: hp("35%"),
+    borderStyle: "solid",
+    borderColor: "black",
+    borderWidth: 2,
+    borderRadius: 10,
   },
 });
 

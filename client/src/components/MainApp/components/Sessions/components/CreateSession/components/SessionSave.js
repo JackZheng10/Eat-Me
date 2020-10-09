@@ -1,9 +1,14 @@
 import React, { Component } from "react";
 import { View } from "react-native";
-import { Divider, Text } from "react-native-elements";
+import { Text } from "react-native-elements";
+import MapView, { Marker } from "react-native-maps";
 import { ModalStyles, SessionSaveStyles as styles } from "./styles";
 import CreateSessionHeader from "./CreateSessionHeader";
 import CreateSessionFooter from "./CreateSessionFooter";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 
 class SessionSave extends Component {
   state = {};
@@ -12,67 +17,96 @@ class SessionSave extends Component {
 
   renderSessionFriendsList = () => {
     const friendsList = this.props.sessionConfigurables.sessionFriends;
-    const friendsListText = friendsList.reduce((friendText, friend) => {
-      return {
-        names:
-          friendText.fName +
-          " " +
-          friendText.lName +
-          ", " +
-          friend.fName +
-          " " +
-          friend.lName,
-      };
+    const friendsListNames = friendsList.map((friend) => {
+      return friend.fName + " " + friend.lName;
     });
 
-    return (
-      <>
-        <Text style={styles.sectionHeader} h3>
-          Selected Friends:
-        </Text>
-        <Text h4>
-          {friendsList.length > 0
-            ? friendsListText.names
-            : `${friendsListText.fName} ${friendsListText.lName}`}
-        </Text>
-      </>
+    const friendsListText = this.combineSelectionsWithConjuctions(
+      friendsListNames,
+      "and"
     );
+
+    return this.renderSectionHeaderAndText("with", friendsListText);
   };
 
   renderSessionLocation = () => {
     const { sessionLocation } = this.props.sessionConfigurables;
 
-    return (
-      <>
-        <Text style={styles.sectionHeader} h3>
-          Selected Location:
-        </Text>
-        <Text h4>{sessionLocation.address}</Text>
-      </>
-    );
+    return this.renderSectionHeaderAndText("around", sessionLocation.address);
   };
 
   renderSessionCategories = () => {
     const categories = this.props.sessionConfigurables.sessionCategories;
 
-    const selectedCategoriesText = categories
-      .map((category) => {
-        return category.name;
-      })
-      .join(", ");
-
-    categories.reduce((categoryText, category) => {
-      return { x: `${categoryText.name}, ${category.name}` };
+    const selectedCategoriesNames = categories.map((category) => {
+      return category.name;
     });
 
+    const selectedCategoriesText = this.combineSelectionsWithConjuctions(
+      selectedCategoriesNames,
+      "or"
+    );
+
+    return this.renderSectionHeaderAndText(
+      "You're looking for",
+      selectedCategoriesText
+    );
+  };
+
+  renderSectionHeaderAndText = (header, text) => {
     return (
       <>
         <Text style={styles.sectionHeader} h3>
-          Selected Categories:
+          {header}
         </Text>
-        <Divider />
-        <Text h4>{selectedCategoriesText}</Text>
+
+        <Text h4 style={{ textAlign: "center" }}>
+          {text}
+        </Text>
       </>
+    );
+  };
+
+  combineSelectionsWithConjuctions = (selections, conjuction) => {
+    let selectionsCombinedText = "";
+
+    selections.forEach((selection, index) => {
+      if (index == 0) selectionsCombinedText += selection;
+      else if (index == 1 && selections.length == 2)
+        selectionsCombinedText += ` ${conjuction} ${selection}`;
+      else if (index == selections.length - 1)
+        selectionsCombinedText += `, ${conjuction} ${selection}`;
+      else selectionsCombinedText += `, ${selection}`;
+    });
+
+    return selectionsCombinedText;
+  };
+
+  renderMap = () => {
+    const {
+      latitude,
+      longitude,
+    } = this.props.sessionConfigurables.sessionLocation;
+
+    //Need to play around with the delta values
+    return (
+      <MapView
+        provider="google"
+        style={styles.sessionReviewMap}
+        initialRegion={{
+          latitude,
+          longitude,
+          latitudeDelta: 0.00922,
+          longitudeDelta: 0.0,
+        }}
+      >
+        <Marker
+          coordinate={{
+            latitude,
+            longitude,
+          }}
+        />
+      </MapView>
     );
   };
 
@@ -86,18 +120,25 @@ class SessionSave extends Component {
         />
 
         <View style={ModalStyles.content}>
-          <View style={{ flex: 1, justifyContent: "space-around" }}>
-            <View style={{ flex: 1, margin: 10 }}>
-              {this.renderSessionCategories()}
-            </View>
+          <View
+            style={{
+              marginTop: hp("2.5%"),
+            }}
+          >
+            {this.renderSessionCategories()}
 
-            <View style={{ flex: 1, margin: 10 }}>
-              {this.renderSessionLocation()}
-            </View>
+            {this.renderSessionLocation()}
 
-            <View style={{ flex: 1, margin: 10 }}>
-              {this.renderSessionFriendsList()}
-            </View>
+            {this.renderSessionFriendsList()}
+          </View>
+
+          <View
+            style={{
+              marginTop: hp("2.5%"),
+              alignItems: "center",
+            }}
+          >
+            {this.renderMap()}
           </View>
         </View>
 
